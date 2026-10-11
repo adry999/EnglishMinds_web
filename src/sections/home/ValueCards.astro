@@ -1,0 +1,16 @@
+---
+import { site } from '@shared/content/site';
+import Star from '@shared/ui/Star.astro';
+import './ValueCards.css';
+---
+<section class="value-cards" aria-label="De ce English Minds">
+  <ul>
+    {site.values.map((value) => (
+      <li class={`value-card value-card--${value.tone}`}>
+        <Star tone={value.tone === 'sun' ? 'orange' : 'sun'} size={44} />
+        <h3>{value.title}</h3>
+        <p>{value.text}</p>
+      </li>
+    ))}
+  </ul>
+</section>

@@ -1,0 +1,17 @@
+---
+import EmaPortrait from '@shared/ui/EmaPortrait.astro';
+import Eyebrow from '@shared/ui/Eyebrow.astro';
+import './TestTeaser.css';
+---
+<section class="test-teaser" id="test" aria-labelledby="test-heading">
+  <div class="test-teaser__inner">
+    <Eyebrow tone="white">Test de nivel · 3 minute</Eyebrow>
+    <h2 id="test-heading">Descoperă nivelul potrivit copilului tău</h2>
+    <div class="test-teaser__ema">
+      <EmaPortrait size="sm" alt="Ema" />
+      <p class="test-teaser__bubble">Hai să vedem ce știi deja!</p>
+    </div>
+    <a class="test-teaser__cta" href="/test-de-nivel/">Începe testul</a>
+    <p class="test-teaser__note">Testul complet, cu audio și diplomă la final.</p>
+  </div>
+</section>

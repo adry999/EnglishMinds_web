@@ -1,17 +1,23 @@
 ---
 import type { FaqEntry } from '@shared/content/site';
+import Eyebrow from '@shared/ui/Eyebrow.astro';
 import './faq.css';
 
 interface Props {
   items: readonly FaqEntry[];
   heading?: string;
   id?: string;
+  eyebrow?: string;
 }
 
-const { items, heading = 'Întrebări frecvente', id = 'faq' } = Astro.props;
+const { items, heading = 'Întrebări frecvente', id = 'faq', eyebrow } = Astro.props;
 ---
-<section class="faq" aria-labelledby={`${id}-heading`}>
-  <h2 id={`${id}-heading`} class="faq__heading">{heading}</h2>
+<section class="faq" id={id} aria-labelledby={`${id}-heading`}>
+  <div class="faq__intro">
+    {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+    <h2 id={`${id}-heading`} class="faq__heading">{heading}</h2>
+    <slot />
+  </div>
   <faq-list>
     {items.map((item, index) => (
       <div class="faq__item">
