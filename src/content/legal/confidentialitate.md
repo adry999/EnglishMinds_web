@@ -17,7 +17,7 @@ Când ceri o lecție demo, ne trimiți:
 - numele tău, ca părinte;
 - numărul de telefon;
 - grupa de vârstă a copilului;
-- pagina de pe care a venit cererea și, dacă ai făcut testul de nivel, nivelul recomandat;
+- formularul din care a venit cererea (pagina principală, pagina lecției demo sau testul de nivel) și, dacă ai făcut testul de nivel, nivelul recomandat;
 - parametrii campaniei (UTM), dacă ai ajuns la noi dintr-o reclamă;
 - momentul în care ți-ai dat acordul și versiunea acestei politici.
 
@@ -25,7 +25,7 @@ Când ceri o lecție demo, ne trimiți:
 
 - Numele copilului. Diploma de la testul de nivel se face doar în browserul tău și nu ajunge la noi.
 - Răspunsurile copilului la test.
-- Adresa IP în clar. Păstrăm doar o amprentă (hash cu sare), folosită ca să limităm abuzurile, care se șterge după 24 de ore.
+- Adresa IP în clar. Păstrăm doar o amprentă (hash cu sare), folosită ca să limităm abuzurile, care se șterge automat în cel mult 2 zile.
 - User-agent-ul (datele despre browserul tău).
 
 ## De ce folosim datele
@@ -34,12 +34,15 @@ Doar ca să te contactăm pentru lecția demo și să stabilim împreună ziua �
 
 ## Cât timp le păstrăm
 
-12 luni de la cerere. Apoi se șterg automat, printr-o ștergere care rulează zilnic.
+12 luni de la cerere. Apoi se șterg automat din baza de date, printr-o ștergere care rulează zilnic.
+
+O copie a cererii ajunge și prin email la academie. Aceste emailuri nu se șterg automat: le ștergem manual, în aceleași 12 luni.
 
 ## Cine le primește
 
 - furnizorul de găzduire a site-ului, cu serverele în Uniunea Europeană;
-- adresa de email a academiei, unde primim notificarea cererii;
+- serviciul de email care trimite notificarea (serverul de email al domeniului nostru);
+- furnizorul căsuței de email a academiei, unde primim notificarea cererii;
 - WhatsApp (Meta), doar dacă tu alegi să trimiți mesajul. În acest caz se aplică și politica de confidențialitate WhatsApp.
 
 ## Statistici și reclame
