@@ -36,7 +36,12 @@ export function planTags(ids: TrackingIds, choice: ConsentChoice, previous: Cons
   const pixelNow = pixelOn(ids, choice);
   const pixelBefore = pixelOn(ids, previous);
   if (pixelNow && !pixelBefore) {
-    calls.push(fbq('consent', 'grant'), fbq('init', ids.metaPixel), fbq('track', 'PageView'));
+    calls.push(
+      fbq('consent', 'grant'),
+      fbq('set', 'autoConfig', false, ids.metaPixel),
+      fbq('init', ids.metaPixel),
+      fbq('track', 'PageView'),
+    );
   }
   if (!pixelNow && pixelBefore) calls.push(fbq('consent', 'revoke'));
 

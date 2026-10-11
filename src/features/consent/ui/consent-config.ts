@@ -27,7 +27,7 @@ export function buildConsentConfig(handlers: Handlers): CookieConsentApi.CookieC
         autoClear: { cookies: [{ name: /^_ga/ }, { name: '_gid' }], reloadPage: true },
       },
       marketing: {
-        autoClear: { cookies: [{ name: '_fbp' }, { name: /^_gcl/ }], reloadPage: true },
+        autoClear: { cookies: [{ name: /^_fb[cp]$/ }, { name: /^_gcl/ }], reloadPage: true },
       },
     },
     language: {

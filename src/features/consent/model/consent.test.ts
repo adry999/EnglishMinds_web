@@ -88,9 +88,21 @@ describe('planTags', () => {
       { sink: 'gtag', args: ['config', 'G-ABC123XYZ'] },
       { sink: 'gtag', args: ['config', 'AW-1234567890'] },
       { sink: 'fbq', args: ['consent', 'grant'] },
+      { sink: 'fbq', args: ['set', 'autoConfig', false, '123456789012345'] },
       { sink: 'fbq', args: ['init', '123456789012345'] },
       { sink: 'fbq', args: ['track', 'PageView'] },
     ]);
+  });
+
+  it('turns off Meta automatic form scraping before init', () => {
+    const fbqArgs = planTags(IDS, ALL, NO_CONSENT, NOW)
+      .calls.filter((c) => c.sink === 'fbq')
+      .map((c) => c.args);
+    const autoConfig = fbqArgs.findIndex((a) => a[0] === 'set' && a[1] === 'autoConfig');
+    const init = fbqArgs.findIndex((a) => a[0] === 'init');
+    expect(autoConfig).toBeGreaterThan(-1);
+    expect(autoConfig).toBeLessThan(init);
+    expect(fbqArgs[init]).toEqual(['init', '123456789012345']);
   });
 
   it('repeats nothing when the same choice arrives again', () => {
