@@ -1,0 +1,32 @@
+#cc-main {
+  --cc-font-family: var(--font-body);
+  --cc-bg: var(--color-white);
+  --cc-primary-color: var(--color-navy);
+  --cc-secondary-color: var(--color-navy);
+  --cc-link-color: var(--color-text-accent);
+  --cc-btn-border-radius: var(--radius-pill);
+  --cc-modal-border-radius: var(--radius-card);
+  --cc-btn-primary-bg: var(--color-navy);
+  --cc-btn-primary-color: var(--color-white);
+  --cc-btn-primary-border-color: var(--color-navy);
+  --cc-btn-primary-hover-bg: #0b1530;
+  --cc-btn-primary-hover-color: var(--color-white);
+  --cc-btn-primary-hover-border-color: #0b1530;
+  --cc-btn-secondary-bg: var(--color-cream);
+  --cc-btn-secondary-color: var(--color-navy);
+  --cc-btn-secondary-border-color: var(--color-cream-border);
+  --cc-btn-secondary-hover-bg: var(--color-peach);
+  --cc-btn-secondary-hover-color: var(--color-navy);
+  --cc-btn-secondary-hover-border-color: var(--color-cream-border);
+  --cc-toggle-on-bg: var(--color-navy);
+  --cc-cookie-category-block-bg: var(--color-cream);
+  --cc-cookie-category-block-border: var(--color-cream-border);
+  --cc-footer-bg: var(--color-cream);
+  --cc-footer-color: var(--color-navy);
+  --cc-footer-border-color: var(--color-cream-border);
+}
+
+#cc-main :focus-visible {
+  outline: 3px solid var(--color-navy);
+  outline-offset: 2px;
+}

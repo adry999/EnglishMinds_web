@@ -68,3 +68,4 @@ Design complet: `docs/superpowers/specs/2026-10-09-site-englishminds-design.md`.
 | 2026-10-09 | Fără pagină `/admin` | Contactele vin pe email; GDPR prin phpMyAdmin |
 | 2026-10-09 | Plăți online în pauză | Etapă viitoare |
 | 2026-10-11 | Strat `src/sections/` pentru secțiunile unei pagini | Pagini subțiri fără a umfla `shared/ui` cu piese folosite o singură dată |
+| 2026-10-12 | Consent Mode „basic”: gtag.js și fbevents.js se încarcă doar după acord | Spec: taguri doar cu acord; `default denied` inline, primul în `<head>` |

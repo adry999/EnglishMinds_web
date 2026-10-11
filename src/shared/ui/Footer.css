@@ -62,6 +62,16 @@
   color: var(--color-white);
 }
 
+.site-footer__cookie-settings {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-white);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .site-footer__legal ul {
   display: flex;
   flex-wrap: wrap;

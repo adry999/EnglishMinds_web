@@ -67,6 +67,24 @@ describe('built pages', () => {
     expect(subfolders).toEqual([]);
   });
 
+  it.each(PAGES)('%s sends consent defaults (all denied) before any other script', (page) => {
+    const html = read(page);
+    const head = html.slice(0, html.indexOf('</head>'));
+    const firstScript = head.slice(head.indexOf('<script'));
+    expect(firstScript).toMatch(/^<script>window\.dataLayer=/);
+    for (const signal of ['analytics_storage', 'ad_storage', 'ad_user_data', 'ad_personalization']) {
+      expect(firstScript).toContain(`"${signal}":"denied"`);
+    }
+  });
+
+  it.each(PAGES)('%s ships the banner but no tag script in the static HTML', (page) => {
+    const html = read(page);
+    expect(html).toContain('<cookie-consent');
+    expect(html).toContain('data-cc="show-preferencesModal"');
+    expect(html).not.toMatch(/<script[^>]*src="https:\/\/www\.googletagmanager\.com/);
+    expect(html).not.toMatch(/<script[^>]*src="https:\/\/connect\.facebook\.net/);
+  });
+
   it('ships optimized images, not the original jpgs', () => {
     const home = read('index.html');
     expect(home).toMatch(/type="image\/avif"/);

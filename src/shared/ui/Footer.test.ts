@@ -32,6 +32,10 @@ describe('Footer', () => {
     expect(await render()).toMatch(/lecția <span class="site-footer__highlight">demo gratuită<\/span>/);
   });
 
+  it('lets the visitor reopen the cookie settings', async () => {
+    expect(await render()).toMatch(/<button[^>]*type="button"[^>]*data-cc="show-preferencesModal"[^>]*>Setări cookies<\/button>/);
+  });
+
   it('can hide the call to action block', async () => {
     const container = await AstroContainer.create();
     const html = await container.renderToString(Footer, { props: { showCta: false } });
