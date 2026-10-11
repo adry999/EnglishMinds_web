@@ -37,6 +37,10 @@ export default defineConfig(
               regex: '^@features/[^/]+/.+',
               message: 'Paginile importă un feature doar prin index-ul lui: @features/<nume>.',
             },
+            {
+              regex: '^\\.{1,2}/(.*/)?features/',
+              message: 'Paginile importă un feature doar prin @features/<nume>.',
+            },
           ],
         },
       ],
@@ -53,6 +57,27 @@ export default defineConfig(
             {
               group: ['@features/*'],
               message: 'Un feature nu importă alt feature; folosește un CustomEvent din @shared/contracts.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: ['src/features/*/*'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            noDeepRelative,
+            {
+              group: ['@features/*'],
+              message: 'Un feature nu importă alt feature; folosește un CustomEvent din @shared/contracts.',
+            },
+            {
+              group: ['../*'],
+              message: 'Un fișier din rădăcina unui feature nu iese din feature cu ../; folosește @shared/ sau @core/.',
             },
           ],
         },

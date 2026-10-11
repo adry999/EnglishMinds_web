@@ -51,4 +51,24 @@ describe('eslint boundaries', () => {
       await ruleIds('export function f(g: () => void) {\n  try { g(); } catch {}\n}\n', 'src/shared/x.ts'),
     ).toContain('no-empty');
   });
+
+  it('rejects a relative feature import from an .astro page', async () => {
+    expect(await ruleIds(astroImport('../features/faq/ui/Faq.astro'), 'src/pages/x.astro')).toContain(
+      'no-restricted-imports',
+    );
+  });
+
+  it('allows a relative layout import from an .astro page', async () => {
+    expect(await ruleIds(astroImport('../layouts/BaseLayout.astro'), 'src/pages/x.astro')).toEqual([]);
+  });
+
+  it('rejects a feature-root file leaving its feature with ../', async () => {
+    expect(await ruleIds(astroImport('../beta/index'), 'src/features/alpha/X.astro')).toContain(
+      'no-restricted-imports',
+    );
+  });
+
+  it('allows a feature subfolder file importing a sibling folder', async () => {
+    expect(await ruleIds(astroImport('../model/m'), 'src/features/alpha/ui/A.astro')).toEqual([]);
+  });
 });
