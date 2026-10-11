@@ -6,9 +6,9 @@ describe('clientIpOf', () => {
     expect(clientIpOf('198.51.100.1', '10.0.0.5', false)).toBe('10.0.0.5');
   });
 
-  it('uses the first forwarded address behind a trusted proxy', () => {
-    expect(clientIpOf(' 198.51.100.1 , 10.0.0.1', '127.0.0.1', true)).toBe('198.51.100.1');
-    expect(clientIpOf(['198.51.100.2, 10.0.0.1', '10.0.0.9'], '127.0.0.1', true)).toBe('198.51.100.2');
+  it('uses the last forwarded address, appended by the trusted proxy', () => {
+    expect(clientIpOf('198.51.100.1 , 10.0.0.1 ', '127.0.0.1', true)).toBe('10.0.0.1');
+    expect(clientIpOf(['198.51.100.2, 10.0.0.1', '10.0.0.9'], '127.0.0.1', true)).toBe('10.0.0.9');
   });
 
   it('falls back to the socket address when the header is missing or empty', () => {

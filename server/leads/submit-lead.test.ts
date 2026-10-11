@@ -86,6 +86,13 @@ describe('submitLead', () => {
     expect(logged()).not.toMatch(/Ștefănescu|0722|\+40722|203\.0\.113\.7/);
   });
 
+  it('logs only safe error fields, never the message', async () => {
+    repository.failWith = Object.assign(new Error('Duplicate Ștefănescu +40722123456'), { code: 'ER_DUP_ENTRY' });
+    await submitLead(body, '1.1.1.1', deps);
+    expect(logged()).toContain('ER_DUP_ENTRY');
+    expect(logged()).not.toMatch(/Ștefănescu|40722123456|Duplicate/);
+  });
+
   it('answers 500 when the rate limiter fails', async () => {
     rateLimiter.failWith = new Error('ECONNREFUSED');
     await expect(submitLead(body, '1.1.1.1', deps)).resolves.toEqual({ status: 500 });
@@ -93,9 +100,11 @@ describe('submitLead', () => {
   });
 
   it('keeps 201 and warns when the email fails after saving', async () => {
-    notifier.failWith = new Error('SMTP timeout');
+    notifier.failWith = Object.assign(new Error('SMTP timeout for Ștefănescu'), { responseCode: 421 });
     await expect(submitLead(body, '1.1.1.1', deps)).resolves.toEqual({ status: 201 });
+    await new Promise((resolve) => setImmediate(resolve));
     expect(repository.saved).toHaveLength(1);
+    expect(logged()).toContain('421');
     expect(logger.entries.some((entry) => entry.level === 'warn')).toBe(true);
     expect(logged()).not.toMatch(/Ștefănescu|0722/);
   });

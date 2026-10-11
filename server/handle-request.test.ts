@@ -76,11 +76,40 @@ describe('handle request', () => {
     ['invalid JSON', post('{nope')],
     ['a form-encoded body', post('parentName=Ana', { 'content-type': 'application/x-www-form-urlencoded' })],
     ['a missing content type', new Request(`${BASE}/api/lead`, { method: 'POST', body: JSON.stringify(lead) })],
+    ['a lookalike content type', post('{}', { 'content-type': 'application/jsonfoo' })],
     ['an oversized body', post(JSON.stringify({ ...lead, parentName: 'x'.repeat(MAX_BODY_BYTES) }))],
   ])('answers 400 without fields for %s', async (_label, request) => {
     const response = await handle(request, context);
     expect(response.status).toBe(400);
     expect(await response.json()).toEqual({ ok: false, error: 'validation', fields: [] });
+    expect(repository.saved).toEqual([]);
+  });
+
+  it('stops reading a streamed body that exceeds the cap', async () => {
+    let pulled = 0;
+    let cancelled = false;
+    const chunk = new TextEncoder().encode('x'.repeat(4000));
+    const body = new ReadableStream<Uint8Array>({
+      pull(controller) {
+        pulled += 1;
+        if (pulled > 50) controller.close();
+        else controller.enqueue(chunk);
+      },
+      cancel() {
+        cancelled = true;
+      },
+    });
+    const request = new Request(`${BASE}/api/lead`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body,
+      duplex: 'half',
+    } as RequestInit & { duplex: 'half' });
+    const response = await handle(request, context);
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({ ok: false, error: 'validation', fields: [] });
+    expect(cancelled).toBe(true);
+    expect(pulled).toBeLessThan(50);
     expect(repository.saved).toEqual([]);
   });
 

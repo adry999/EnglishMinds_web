@@ -18,7 +18,17 @@ export type SubmitLeadOutcome =
   | { readonly status: 429 }
   | { readonly status: 500 };
 
-const errorName = (error: unknown): string => (error instanceof Error ? `${error.name}: ${error.message}` : String(error));
+/** Safe error fields only: never the message, which may echo personal data. */
+function safeError(error: unknown): Record<string, string | number | boolean> {
+  if (typeof error !== 'object' || error === null) return { errorName: typeof error };
+  const source = error as Record<string, unknown>;
+  const safe: Record<string, string | number | boolean> = { errorName: error instanceof Error ? error.name : 'Error' };
+  for (const key of ['code', 'errno', 'responseCode']) {
+    const value = source[key];
+    if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') safe[key] = value;
+  }
+  return safe;
+}
 
 export function isLikelyBot(body: unknown): boolean {
   if (typeof body !== 'object' || body === null) return false;
@@ -45,15 +55,14 @@ export async function submitLead(body: unknown, clientIp: string | null, deps: S
     }
     await deps.repository.save(record);
   } catch (error) {
-    deps.logger.error('[lead] could not save lead', { source: record.source, error: errorName(error) });
+    deps.logger.error('[lead] could not save lead', { source: record.source, ...safeError(error) });
     return { status: 500 };
   }
 
-  try {
-    await deps.notifier.notify(record);
-  } catch (error) {
-    deps.logger.warn('[lead] notification failed; lead is saved', { source: record.source, error: errorName(error) });
-  }
+  // Best effort: a slow or failing mail server must not delay or fail the response.
+  void deps.notifier.notify(record).catch((error: unknown) => {
+    deps.logger.warn('[lead] notification failed; lead is saved', { source: record.source, ...safeError(error) });
+  });
   deps.logger.info('[lead] saved', { source: record.source });
   return { status: 201 };
 }

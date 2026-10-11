@@ -39,17 +39,35 @@ async function handleLead(request: Request, context: RequestContext, deps: Submi
 }
 
 async function readJsonBody(request: Request): Promise<unknown> {
-  const type = request.headers.get('content-type')?.toLowerCase() ?? '';
-  if (!type.startsWith('application/json')) return INVALID_BODY;
+  const type = (request.headers.get('content-type') ?? '').split(';')[0]?.trim().toLowerCase();
+  if (type !== 'application/json') return INVALID_BODY;
   const declared = Number(request.headers.get('content-length') ?? '0');
   if (Number.isFinite(declared) && declared > MAX_BODY_BYTES) return INVALID_BODY;
-  const text = await request.text();
-  if (new TextEncoder().encode(text).byteLength > MAX_BODY_BYTES) return INVALID_BODY;
+  const bytes = await readCapped(request);
+  if (bytes === null) return INVALID_BODY;
   try {
-    return JSON.parse(text) as unknown;
+    return JSON.parse(new TextDecoder().decode(bytes)) as unknown;
   } catch {
     return INVALID_BODY;
   }
+}
+
+async function readCapped(request: Request): Promise<Uint8Array | null> {
+  if (request.body === null) return new Uint8Array();
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > MAX_BODY_BYTES) {
+      await reader.cancel();
+      return null;
+    }
+    chunks.push(value);
+  }
+  return Buffer.concat(chunks);
 }
 
 function json(status: number, body: unknown, extraHeaders: Record<string, string> = {}): Response {
