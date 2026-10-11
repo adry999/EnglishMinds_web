@@ -208,5 +208,11 @@ export const site = {
     cui: 'TODO: CUI',
     registeredOffice: 'TODO: sediul social',
   },
+  tracking: {
+    ga4MeasurementId: 'TODO: ID GA4 (G-…)',
+    metaPixelId: 'TODO: ID Meta Pixel',
+    googleAdsId: 'TODO: ID Google Ads (AW-…)',
+    googleAdsLeadLabel: 'TODO: eticheta conversiei Lead din Google Ads',
+  },
   faq,
 } as const;
