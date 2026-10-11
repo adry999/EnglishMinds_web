@@ -16,6 +16,8 @@ const FIELD_ERRORS: Partial<Record<LeadField, string>> = {
   consent: 'Bifează acordul ca să te putem contacta.',
 };
 const GENERAL_ERROR = 'Verifică datele și încearcă din nou.';
+const MIN_FILL_MS = 3200;
+const SEND_FAILED = 'Nu am putut trimite cererea. Scrie-ne pe WhatsApp sau sună-ne.';
 const SENDING = 'Se trimite…';
 const DONE_OPENED = 'Ți-am deschis WhatsApp cu mesajul completat. Trimite-l și te sunăm să stabilim ziua lecției.';
 const DONE_BLOCKED = 'Am primit datele tale și te sunăm în curând. Dacă vrei, scrie-ne și pe WhatsApp.';
@@ -121,16 +123,18 @@ export class LeadForm extends HTMLElement {
     }
     const popup = window.open('', '_blank');
     if (popup) popup.opener = null;
-    const ageGroup: AgeGroup | null = local.lead.childAgeGroup;
-    const whatsappUrl = leadWhatsappUrl({
-      parentName: request.parentName,
-      phone: request.phone,
-      childAgeGroup: ageGroup,
-      testResult: this.source === 'test' && this.testOutcome ? testResultLabel(this.testOutcome) : null,
-    });
     this.setSubmitting(form, true);
     try {
-      const result = await submitLead(request);
+      const ageGroup: AgeGroup | null = local.lead.childAgeGroup;
+      const whatsappUrl = leadWhatsappUrl({
+        parentName: request.parentName,
+        phone: request.phone,
+        childAgeGroup: ageGroup,
+        testResult: this.source === 'test' && this.testOutcome ? testResultLabel(this.testOutcome) : null,
+      });
+      const remaining = MIN_FILL_MS - (performance.now() - this.startedAt);
+      if (remaining > 0) await new Promise<void>((done) => setTimeout(done, remaining));
+      const result = await submitLead({ ...request, elapsedMs: Math.round(performance.now() - this.startedAt) });
       if (result.kind === 'ok' || result.kind === 'network' || result.kind === 'server') {
         popup?.location.replace(whatsappUrl);
         const text = result.kind !== 'ok' ? DONE_UNSAVED : popup ? DONE_OPENED : DONE_BLOCKED;
@@ -141,6 +145,10 @@ export class LeadForm extends HTMLElement {
       popup?.close();
       if (result.kind === 'validation') this.showFieldErrors(form, result.fields);
       else this.showAlert(form, rateLimitedMessage(this.dataset.phoneDisplay ?? ''));
+    } catch (error) {
+      popup?.close();
+      this.showAlert(form, SEND_FAILED);
+      console.error('[lead-form] trimiterea a eșuat', error);
     } finally {
       this.setSubmitting(form, false);
     }

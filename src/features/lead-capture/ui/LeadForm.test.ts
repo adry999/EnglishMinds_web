@@ -18,6 +18,8 @@ describe('LeadForm.astro', () => {
     expect(html).toContain('href="/confidentialitate/"');
     expect(html).toContain('name="website"');
     expect(html.match(/name="childAgeGroup"/g)).toHaveLength(5);
+    expect(html).toMatch(/<div[^>]*class="lead-form__done"[^>]*role="group"[^>]*aria-labelledby="lead-landing-done-title"/);
+    expect(html).toContain('id="lead-landing-done-title"');
     expect(html).toMatch(/<h2[^>]*id="lead-landing-title"[^>]*>Rezervă locul acum<\/h2>/);
   });
 

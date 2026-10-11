@@ -65,6 +65,10 @@ lead-form {
   font-weight: 700;
 }
 
+.lead-form input::placeholder {
+  color: rgb(20 34 74 / 0.7);
+}
+
 .lead-form input[aria-invalid='true'] {
   border-width: 3px;
 }
@@ -76,10 +80,18 @@ lead-form {
   font-weight: 800;
 }
 
-.lead-form__error:empty,
+.lead-form__error:empty {
+  display: none;
+}
+
 .lead-form__alert:empty,
 .lead-form__status:empty {
-  display: none;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .lead-form__ages {

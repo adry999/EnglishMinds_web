@@ -56,6 +56,7 @@ function fill({ name = 'Ana Pop', phone = '0722 123 456', consent = true, age }:
   input('parentName').value = name;
   input('phone').value = phone;
   input('consent').checked = consent;
+  if (now < 4000) now = 4000;
   if (age) (el(`input[value="${age}"]`) as HTMLInputElement).checked = true;
 }
 
@@ -267,5 +268,34 @@ describe('<lead-form>', () => {
     host.remove();
     document.dispatchEvent(createLevelTestCompleted({ mode: 'exam', level: 'a2-key', score: 9, total: 12 }));
     expect(host.hidden).toBe(true);
+  });
+
+  it('waits out the bot timer before sending, then reports the real elapsed time', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout'] });
+    submitMock.mockResolvedValue({ kind: 'ok' });
+    mount();
+    fill();
+    now = 1000;
+    submit();
+    await flush();
+    expect(submitMock).not.toHaveBeenCalled();
+    now = 3300;
+    await vi.advanceTimersByTimeAsync(2200);
+    await flush();
+    expect(submitMock).toHaveBeenCalledTimes(1);
+    expect(submitMock.mock.calls[0]?.[0].elapsedMs).toBeGreaterThanOrEqual(3200);
+    vi.useRealTimers();
+  });
+
+  it('closes the window, alerts and re-enables the button when sending throws', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    submitMock.mockRejectedValue(new Error('boom'));
+    mount();
+    fill();
+    submit();
+    await flush();
+    expect(popup?.close).toHaveBeenCalled();
+    expect(el('.lead-form__alert').textContent).toBe('Nu am putut trimite cererea. Scrie-ne pe WhatsApp sau sună-ne.');
+    expect(el<HTMLButtonElement>('.lead-form__submit').disabled).toBe(false);
   });
 });

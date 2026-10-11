@@ -81,8 +81,8 @@ const callVariant = tone === 'navy' ? 'button--outline-light' : 'button--outline
     <p class="lead-form__status" role="status"></p>
     <p class="lead-form__note">Nu plătești nimic. Te contactăm doar pentru lecția demo.</p>
   </form>
-  <div class="lead-form__done" hidden tabindex="-1">
-    <p class="lead-form__done-title">Mulțumim, <span data-name></span>!</p>
+  <div class="lead-form__done" hidden tabindex="-1" role="group" aria-labelledby={id('done-title')}>
+    <p class="lead-form__done-title" id={id('done-title')}>Mulțumim, <span data-name></span>!</p>
     <p class="lead-form__done-text" data-done-text></p>
     <div class="lead-form__done-actions">
       <a class="button button--whatsapp" data-whatsapp href={contact.whatsappUrl} target="_blank" rel="noopener">Trimite pe WhatsApp</a>
