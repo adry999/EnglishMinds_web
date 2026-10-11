@@ -249,6 +249,15 @@ describe('<level-test>', () => {
     error.mockRestore();
   });
 
+  it('keeps the print button hidden until a name is typed', () => {
+    finishWithName('');
+    expect(card().querySelector<HTMLButtonElement>('.level-test__print')!.hidden).toBe(true);
+    const input = card().querySelector<HTMLInputElement>('input[name="childName"]')!;
+    input.value = 'Ana';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    expect(card().querySelector<HTMLButtonElement>('.level-test__print')!.hidden).toBe(false);
+  });
+
   describe('diploma export', () => {
     const canvas = () => document.createElement('canvas');
 

@@ -18,6 +18,10 @@ body {
   background: var(--color-cream);
 }
 
+[hidden] {
+  display: none !important;
+}
+
 img {
   display: block;
   max-width: 100%;

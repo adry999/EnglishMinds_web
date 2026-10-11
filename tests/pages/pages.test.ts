@@ -34,6 +34,13 @@ describe('built pages', () => {
     }
   });
 
+  it('level test page ships the element, the WhatsApp fallback and the active nav link', () => {
+    const html = read('test-de-nivel/index.html');
+    expect(html).toContain('<level-test');
+    expect(html).toContain('href="https://wa.me/40775630680"');
+    expect(html).toMatch(/<a[^>]*href="\/test-de-nivel\/"[^>]*aria-current="page"|<a[^>]*aria-current="page"[^>]*href="\/test-de-nivel\/"/);
+  });
+
   it('blog shows the empty state and publishes no draft posts', () => {
     expect(read('blog/index.html')).toContain('Primele articole apar în curând.');
     const subfolders = readdirSync(join(dist, 'blog')).filter((name) => statSync(join(dist, 'blog', name)).isDirectory());

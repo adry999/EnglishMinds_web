@@ -123,6 +123,11 @@
   background: var(--color-sun);
 }
 
+.level-test__mode:hover .level-test__eyebrow,
+.level-test__mode:focus-visible .level-test__eyebrow {
+  color: var(--color-navy);
+}
+
 .level-test__label {
   margin: 0;
   font-weight: 800;
