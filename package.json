@@ -16,6 +16,7 @@
     "lint": "eslint .",
     "deps": "depcruise src server --config .dependency-cruiser.cjs --ts-config tsconfig.json",
     "test:dist": "vitest run --config vitest.dist.config.ts",
+    "test:e2e": "playwright test",
     "verify": "npm run lint && npm run check && npm run test && npm run deps && npm run build && npm run test:dist && npm run build:server"
   },
   "dependencies": {
@@ -30,6 +31,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "1.63.0",
     "@types/node": "^22.20.5",
     "dependency-cruiser": "^18.5.0",
     "esbuild": "^0.28.2",
