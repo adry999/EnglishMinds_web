@@ -258,7 +258,7 @@ export function resultView(input: ResultViewInput, on: Handlers): Node {
         h('h3', {}, 'Următorul pas: lecția demo gratuită'),
         h('p', {}, 'Trimitem rezultatul pe WhatsApp și stabilim ziua lecției.'),
       ),
-      h('a', { class: 'button button--whatsapp', href: input.whatsappUrl }, 'Trimite rezultatul pe WhatsApp'),
+      h('a', { class: 'button button--whatsapp', href: input.whatsappUrl, target: '_blank', rel: 'noopener' }, 'Trimite rezultatul pe WhatsApp'),
     ),
     restart,
   );

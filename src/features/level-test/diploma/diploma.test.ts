@@ -10,7 +10,7 @@ import {
 
 function fakeContext() {
   const calls: string[] = [];
-  const texts: { text: string; font: string }[] = [];
+  const texts: { text: string; font: string; maxWidth?: number }[] = [];
   const moves: number[][] = [];
   const lines: number[][] = [];
   const ctx = {
@@ -36,8 +36,8 @@ function fakeContext() {
     stroke: () => calls.push('stroke'),
     setLineDash: (dash: number[]) => calls.push(`dash:${dash.join(',')}`),
     measureText: (text: string) => ({ width: text.length * 20 }),
-    fillText(text: string) {
-      texts.push({ text, font: this.font });
+    fillText(text: string, _x?: number, _y?: number, maxWidth?: number) {
+      texts.push({ text, font: this.font, maxWidth });
     },
   };
   return { ctx: ctx as unknown as DiplomaContext, calls, texts, moves, lines };
@@ -58,6 +58,13 @@ describe('drawDiploma', () => {
     expect(texts.map((item) => item.text)).toContain('<b>Ana</b>');
     expect(texts.map((item) => item.text)).toContain('7 din 12 răspunsuri corecte');
   });
+
+  it('caps only the child name at 1250px wide', () => {
+    const { ctx, texts } = fakeContext();
+    drawDiploma(ctx, data);
+    expect(texts.find((item) => item.text === '<b>Ana</b>')?.maxWidth).toBe(1250);
+    expect(texts.filter((item) => item.maxWidth !== undefined)).toHaveLength(1);
+  });
 });
 
 describe('createDiplomaCanvas fonts', () => {
@@ -66,6 +73,7 @@ describe('createDiplomaCanvas fonts', () => {
     const doc = { fonts: { load, ready: Promise.resolve() }, createElement: (tag: string) => document.createElement(tag) } as unknown as Document;
     await expect(createDiplomaCanvas(doc, data)).rejects.toThrow('Canvas 2D indisponibil');
     expect(load.mock.calls.map((call) => (call as unknown[])[0])).toEqual(['700 32px Nunito', '800 40px Nunito', '900 104px Nunito']);
+    expect(load.mock.calls.map((call) => (call as unknown[])[1])).toEqual(Array(3).fill('ĂăÂâÎîȘșȚț'));
   });
 
   it('warns and continues when a font fails to load', async () => {
@@ -104,8 +112,7 @@ describe('downloadDiploma', () => {
 describe('printDiploma', () => {
   it('returns false when the pop-up is blocked', () => {
     const canvas = document.createElement('canvas');
-    const win = { open: () => null } as unknown as Window;
-    expect(printDiploma(win, canvas, 'Ana')).toBe(false);
+    expect(printDiploma(null, canvas, 'Ana')).toBe(false);
   });
 
   it('builds the print page with DOM APIs so the name cannot inject markup', () => {
@@ -113,8 +120,7 @@ describe('printDiploma', () => {
     canvas.toDataURL = () => 'data:image/png;base64,AAA';
     const popupDocument = document.implementation.createHTMLDocument('');
     const popup = { document: popupDocument, print: vi.fn(), focus: vi.fn() };
-    const win = { open: () => popup } as unknown as Window;
-    expect(printDiploma(win, canvas, '  </title><script>alert(1)</script>  ')).toBe(true);
+    expect(printDiploma(popup as unknown as Window, canvas, '  </title><script>alert(1)</script>  ')).toBe(true);
     expect(popupDocument.title).toBe('Diplomă </title><script>alert(1)</script>');
     expect(popupDocument.querySelector('script')).toBeNull();
     expect(popupDocument.querySelector('img')?.getAttribute('src')).toBe('data:image/png;base64,AAA');

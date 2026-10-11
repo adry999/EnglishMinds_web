@@ -78,5 +78,7 @@ describe('diploma content', () => {
     expect(texts[0]).toMatchObject({ y: 370, font: '800 40px Nunito, sans-serif', color: '#c4501a' });
     expect(texts[2]).toMatchObject({ font: `900 ${fitNameFont('Ana Pop', measureByLength)}px Nunito, sans-serif`, y: 520 });
     expect(texts[10]).toMatchObject({ x: 1245, y: 995 });
+    expect(texts[2]?.maxWidth).toBe(1250);
+    expect(texts.filter((item) => item.maxWidth !== undefined)).toHaveLength(1);
   });
 });

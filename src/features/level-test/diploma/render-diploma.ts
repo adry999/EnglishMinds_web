@@ -92,15 +92,17 @@ export function drawDiploma(ctx: DiplomaContext, data: DiplomaData): void {
   for (const item of diplomaTexts(data, measure)) {
     ctx.font = item.font;
     ctx.fillStyle = item.color;
-    ctx.fillText(item.text, item.x, item.y);
+    if (item.maxWidth === undefined) ctx.fillText(item.text, item.x, item.y);
+    else ctx.fillText(item.text, item.x, item.y, item.maxWidth);
   }
 }
 
+const FONT_SAMPLE = 'ĂăÂâÎîȘșȚț';
 const FONT_WEIGHTS = ['700 32px Nunito', '800 40px Nunito', '900 104px Nunito'];
 
 export async function createDiplomaCanvas(doc: Document, data: DiplomaData): Promise<HTMLCanvasElement> {
   try {
-    await Promise.all(FONT_WEIGHTS.map((font) => doc.fonts?.load(font)));
+    await Promise.all(FONT_WEIGHTS.map((font) => doc.fonts?.load(font, FONT_SAMPLE)));
     await doc.fonts?.ready;
   } catch (error) {
     console.warn('Fonturile diplomei nu s-au încărcat, folosim fontul de rezervă', error);
@@ -123,9 +125,8 @@ export function downloadDiploma(doc: Document, canvas: HTMLCanvasElement, childN
   link.remove();
 }
 
-export function printDiploma(win: Window, canvas: HTMLCanvasElement, childName: string): boolean {
+export function printDiploma(popup: Window | null, canvas: HTMLCanvasElement, childName: string): boolean {
   const dataUrl = canvas.toDataURL('image/png');
-  const popup = win.open('', '_blank');
   if (!popup) return false;
   const doc = popup.document;
   doc.title = `Diplomă ${cleanChildName(childName)}`;

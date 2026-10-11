@@ -18,6 +18,7 @@ export type DiplomaText = {
   readonly color: string;
   readonly x: number;
   readonly y: number;
+  readonly maxWidth?: number;
 };
 
 export type Measure = (font: string, text: string) => number;
@@ -28,6 +29,7 @@ const FONT = 'Nunito, sans-serif';
 const CENTER = DIPLOMA_SIZE.width / 2;
 
 const SLUG_MAX = 60;
+export const NAME_MAX_WIDTH = 1250;
 
 export function cleanChildName(name: string): string {
   return name.normalize('NFC').trim().replace(/\s+/g, ' ');
@@ -60,7 +62,7 @@ export function formatDiplomaDate(date: Date): string {
 
 export function fitNameFont(name: string, measure: Measure): number {
   let size = 104;
-  while (size > 50 && measure(`900 ${size}px ${FONT}`, name) > 1250) size -= 4;
+  while (size > 50 && measure(`900 ${size}px ${FONT}`, name) > NAME_MAX_WIDTH) size -= 4;
   return Math.max(size, 50);
 }
 
@@ -86,7 +88,7 @@ export function diplomaTexts(data: DiplomaData, measure: Measure): DiplomaText[]
   return [
     text('DIPLOMĂ', '800 40px', ACCENT, 370),
     text('Se acordă lui / ei', '700 32px', NAVY, 420),
-    text(name, `900 ${fitNameFont(name, measure)}px`, NAVY, 520),
+    { ...text(name, `900 ${fitNameFont(name, measure)}px`, NAVY, 520), maxWidth: NAME_MAX_WIDTH },
     text(diplomaLine(data.mode), '700 40px', NAVY, 590),
     text(data.title, '900 84px', ACCENT, 700),
     text(`${data.score} din ${data.total} răspunsuri corecte`, '800 34px', NAVY, 770),

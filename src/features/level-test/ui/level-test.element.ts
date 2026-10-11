@@ -58,6 +58,7 @@ export class LevelTest extends HTMLElement {
     this.state = reduceTest(this.state, action);
     if (this.state === previous) return;
     if (previous.step === 'question' || action.type === 'restart') this.speech.cancel();
+    if (action.type === 'restart') this.speechFailed = false;
     const stepChanged = previous.step !== this.state.step;
     const isOptionChange = action.type === 'chooseOption';
     this.render({ focus: !isOptionChange || stepChanged, focusChoice: isOptionChange });
@@ -171,6 +172,8 @@ export class LevelTest extends HTMLElement {
     const note = region.querySelector('.level-test__diploma-note');
     if (error) error.textContent = '';
     if (note) note.textContent = '';
+    // Opened synchronously, before any await, so Safari treats it as user-initiated.
+    const popup = kind === 'print' ? window.open('', '_blank') : null;
     this.exporting = true;
     this.refreshDiploma();
     try {
@@ -183,11 +186,12 @@ export class LevelTest extends HTMLElement {
         date: new Date(),
       });
       if (kind === 'print') {
-        if (printDiploma(window, canvas, cleanName)) return;
+        if (printDiploma(popup, canvas, cleanName)) return;
         if (note) note.textContent = PRINT_BLOCKED;
       }
       downloadDiploma(document, canvas, cleanName);
     } catch (cause) {
+      popup?.close();
       console.error('[level-test] diploma nu a putut fi generată', cause);
       if (error) error.textContent = DIPLOMA_ERROR;
     } finally {

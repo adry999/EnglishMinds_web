@@ -177,6 +177,27 @@ describe('<level-test>', () => {
     expect(document.activeElement).toBe(card().querySelector('h2'));
   });
 
+  it('offers the audio button again after a restart', () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    let fail = true;
+    stubSpeech(() => {
+      if (fail) throw new Error('no voice');
+    });
+    button('Test de nivel').click();
+    button('9–10 ani').click();
+    button('Începe testul').click();
+    answerAll(MID.slice(0, 2) as typeof MID, () => 0);
+    expect(button('Ascultă din nou')).toBeUndefined();
+    answerAll(MID.slice(2) as typeof MID, () => 0);
+    fail = false;
+    button('Fă un alt test').click();
+    button('Test de nivel').click();
+    button('9–10 ani').click();
+    button('Începe testul').click();
+    answerAll(MID.slice(0, 2) as typeof MID, () => 0);
+    expect(button('Ascultă din nou')).toBeTruthy();
+  });
+
   it('cancels speech when leaving a question and when disconnected', () => {
     const cancel = vi.fn();
     stubSpeech(vi.fn(), cancel);
@@ -232,6 +253,8 @@ describe('<level-test>', () => {
     expect(button('Descarcă diploma (PNG)').disabled).toBe(false);
     expect(document.activeElement).toBe(input);
     const whatsapp = card().querySelector<HTMLAnchorElement>('a.button--whatsapp')!;
+    expect(whatsapp.target).toBe('_blank');
+    expect(whatsapp.rel).toBe('noopener');
     expect(decodeURIComponent(whatsapp.href)).toContain('<img src=x onerror=alert(1)> a făcut testul pe site');
   });
 
@@ -274,19 +297,57 @@ describe('<level-test>', () => {
       const made = canvas();
       vi.mocked(createDiplomaCanvas).mockResolvedValueOnce(made);
       vi.mocked(printDiploma).mockReturnValue(true);
+      const popup = { close: vi.fn() };
+      vi.spyOn(window, 'open').mockReturnValue(popup as unknown as Window);
       finishWithName('Ana');
       button('Tipărește').click();
-      await vi.waitFor(() => expect(printDiploma).toHaveBeenCalledWith(window, made, 'Ana'));
+      await vi.waitFor(() => expect(printDiploma).toHaveBeenCalledWith(popup, made, 'Ana'));
       expect(downloadDiploma).not.toHaveBeenCalled();
+      expect(popup.close).not.toHaveBeenCalled();
+    });
+
+    it('opens the print popup synchronously, before the canvas is ready', async () => {
+      let finish: (value: HTMLCanvasElement) => void = () => undefined;
+      vi.mocked(createDiplomaCanvas).mockReturnValueOnce(new Promise((resolve) => (finish = resolve)));
+      vi.mocked(printDiploma).mockReturnValue(true);
+      const open = vi.spyOn(window, 'open').mockReturnValue({ close: vi.fn() } as unknown as Window);
+      finishWithName('Ana');
+      button('Tipărește').click();
+      expect(open).toHaveBeenCalledWith('', '_blank');
+      expect(printDiploma).not.toHaveBeenCalled();
+      finish(canvas());
+      await vi.waitFor(() => expect(printDiploma).toHaveBeenCalledOnce());
+    });
+
+    it('does not open a popup when downloading', async () => {
+      const open = vi.spyOn(window, 'open');
+      vi.mocked(createDiplomaCanvas).mockResolvedValueOnce(canvas());
+      finishWithName('Ana');
+      button('Descarcă diploma (PNG)').click();
+      await vi.waitFor(() => expect(downloadDiploma).toHaveBeenCalled());
+      expect(open).not.toHaveBeenCalled();
+    });
+
+    it('closes the popup when the canvas fails', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined);
+      const popup = { close: vi.fn() };
+      vi.spyOn(window, 'open').mockReturnValue(popup as unknown as Window);
+      vi.mocked(createDiplomaCanvas).mockRejectedValueOnce(new Error('boom'));
+      finishWithName('Ana');
+      button('Tipărește').click();
+      await vi.waitFor(() => expect(popup.close).toHaveBeenCalledOnce());
+      expect(printDiploma).not.toHaveBeenCalled();
     });
 
     it('downloads and explains when the print popup is blocked', async () => {
       const made = canvas();
       vi.mocked(createDiplomaCanvas).mockResolvedValueOnce(made);
       vi.mocked(printDiploma).mockReturnValue(false);
+      vi.spyOn(window, 'open').mockReturnValue(null);
       finishWithName('Ana');
       button('Tipărește').click();
       await vi.waitFor(() => expect(downloadDiploma).toHaveBeenCalledWith(document, made, 'Ana'));
+      expect(printDiploma).toHaveBeenCalledWith(null, made, 'Ana');
       expect(card().querySelector('[role="status"]')!.textContent).toBe(
         'Fereastra de tipărire a fost blocată, am descărcat diploma ca imagine.',
       );
