@@ -1,11 +1,29 @@
 export const AGE_GROUPS = ['5–6 ani', '7–8 ani', '9–10 ani', '11–12 ani', '13–14 ani'] as const;
 export type AgeGroup = (typeof AGE_GROUPS)[number];
 
+export type PhotoKey = 'class' | 'hands' | 'group' | 'boyReading' | 'teacherEma' | 'emaReading';
+export type LevelSlug = 'starters' | 'pre-a1' | 'movers' | 'flyers' | 'a2-key';
+
+export type ValueCard = {
+  readonly title: string;
+  readonly text: string;
+  readonly tone: 'navy' | 'orange' | 'sun';
+};
+
+export type CampSlot = {
+  readonly time: string;
+  readonly title: string;
+  readonly text: string;
+};
+
 export type Level = {
+  readonly slug: LevelSlug;
   readonly name: string;
   readonly ageGroup: AgeGroup;
+  readonly summary: string;
   readonly description: string;
   readonly outcomes: readonly string[];
+  readonly photo: PhotoKey;
 };
 
 export type FaqEntry = {
@@ -21,6 +39,7 @@ const contact = {
   instagramHandle: '@englishminds_academy',
   street: 'Str. Observatorului 90, et.2',
   city: 'Cluj-Napoca',
+  mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Str.%20Observatorului%2090%2C%20Cluj-Napoca',
 } as const;
 
 const courseFacts = {
@@ -33,8 +52,10 @@ const courseFacts = {
 
 const levels: readonly Level[] = [
   {
+    slug: 'starters',
     name: 'Starters',
     ageGroup: '5–6 ani',
+    summary: 'Primele cuvinte și propoziții, prin joc, cântece și povești.',
     description:
       'Primele cuvinte și propoziții, prin joc, cântece și povești. Copilul prinde curaj să vorbească fără teama de a greși.',
     outcomes: [
@@ -43,10 +64,13 @@ const levels: readonly Level[] = [
       'Înțelege instrucțiuni simple din clasă',
       'Cântă și ascultă povești scurte',
     ],
+    photo: 'class',
   },
   {
+    slug: 'pre-a1',
     name: 'Pre A1',
     ageGroup: '7–8 ani',
+    summary: 'Vocabular de bază, citit și scris simplu, primele dialoguri.',
     description:
       'Vocabular de bază, citit și scris simplu, primele dialoguri. Engleza începe să se lege de ce învață la școală.',
     outcomes: [
@@ -55,10 +79,13 @@ const levels: readonly Level[] = [
       'Scrie cuvinte și propoziții scurte',
       'Răspunde la întrebări simple în dialog',
     ],
+    photo: 'hands',
   },
   {
+    slug: 'movers',
     name: 'Movers',
     ageGroup: '9–10 ani',
+    summary: 'Propoziții complete, povestit la trecut și conversații scurte.',
     description: 'Propoziții complete, povestit la trecut și conversații scurte despre viața de zi cu zi.',
     outcomes: [
       'Povestește ce a făcut, la timpul trecut',
@@ -66,10 +93,13 @@ const levels: readonly Level[] = [
       'Citește și înțelege texte scurte',
       'Susține dialoguri de zi cu zi',
     ],
+    photo: 'group',
   },
   {
+    slug: 'flyers',
     name: 'Flyers',
     ageGroup: '11–12 ani',
+    summary: 'Texte mai lungi, gramatică explicată simplu, pregătire pentru examen.',
     description:
       'Texte mai lungi și gramatică explicată simplu, cu pregătire pentru examenul Cambridge A2 Flyers.',
     outcomes: [
@@ -78,10 +108,13 @@ const levels: readonly Level[] = [
       'Înțelege texte și înregistrări mai lungi',
       'Se pregătește pentru examenul A2 Flyers',
     ],
+    photo: 'boyReading',
   },
   {
+    slug: 'a2-key',
     name: 'A2 Key',
     ageGroup: '13–14 ani',
+    summary: 'Engleză pentru școală și viață, cu pregătire pentru examenul Cambridge.',
     description: 'Engleză pentru școală și viață, cu pregătire pentru examenul Cambridge A2 Key.',
     outcomes: [
       'Conversează despre școală, hobby-uri și călătorii',
@@ -89,6 +122,7 @@ const levels: readonly Level[] = [
       'Înțelege engleza vorbită în situații reale',
       'Se pregătește pentru examenul A2 Key',
     ],
+    photo: 'teacherEma',
   },
 ];
 
@@ -105,7 +139,7 @@ const faq: readonly FaqEntry[] = [
   { question: 'Câte ore pe săptămână sunt cursurile?', answer: `${courseFacts.duration}.` },
   {
     question: 'După ce metodă predați?',
-    answer: 'După metoda Cambridge, adaptată vârstei copiilor, cu manuale Cambridge precum Kid’s Box.',
+    answer: `După metoda Cambridge, adaptată vârstei copiilor, cu manualul ${courseFacts.textbook}.`,
   },
   {
     question: 'Când se văd rezultatele?',
@@ -123,10 +157,50 @@ export const site = {
   contact,
   levels,
   courseFacts,
+  offer: {
+    label: 'Ofertă pre-sale 2026',
+    headline: '4 + 1 lună cadou',
+    detail: 'Reducere pentru primii 20 înscriși',
+  },
+  values: [
+    {
+      title: 'Program structurat pe niveluri',
+      text: 'Fiecare copil începe la nivelul lui, stabilit prin test și lecția demo.',
+      tone: 'navy',
+    },
+    {
+      title: 'Metodologie Cambridge',
+      text: 'Manuale Cambridge, adaptate fiecărei grupe.',
+      tone: 'orange',
+    },
+    {
+      title: 'Rezultate vizibile după prima lună',
+      text: 'Progres pas cu pas, pe care îl vezi și acasă.',
+      tone: 'sun',
+    },
+  ] satisfies readonly ValueCard[],
   camps: {
+    year: 'TODO: anul taberei',
+    ageRange: 'TODO: vârstele copiilor',
     period: 'TODO: perioada taberei',
     schedule: 'TODO: programul zilnic',
-    price: 'TODO: prețul taberei',
+    price: 'TODO: prețul pe săptămână',
+    day: [
+      { time: 'TODO: ora', title: 'Good morning!', text: 'Cântec de dimineață și jocul zilei.' },
+      {
+        time: 'TODO: ora',
+        title: 'Proiectul săptămânii',
+        text: 'Lucru în echipă pe o temă: călătorii, natură, meserii.',
+      },
+      { time: 'TODO: ora', title: 'Gustare și joacă', text: 'Pauză, tot în engleză.' },
+      { time: 'TODO: ora', title: 'Show & tell', text: 'Fiecare copil prezintă ce a făcut azi.' },
+    ] satisfies readonly CampSlot[],
+    includes: [
+      'TODO: Materiale și manuale',
+      'TODO: Gustare',
+      'TODO: Diplomă de participare',
+      'TODO: Ieșire tematică',
+    ],
   },
   company: {
     legalName: 'TODO: denumirea firmei',
