@@ -6,6 +6,7 @@ import '@fontsource/nunito/900.css';
 import '@fontsource/barlow-condensed/700.css';
 import '../styles/tokens.css';
 import '../styles/base.css';
+import { UtmCapture } from '@features/lead-capture';
 import { site } from '@shared/content/site';
 
 interface Props {
@@ -28,5 +29,6 @@ const fullTitle = title === site.name ? title : `${title} · ${site.name}`;
   <body>
     <a class="skip-link" href="#continut">Sari la conținut</a>
     <slot />
+    <UtmCapture />
   </body>
 </html>

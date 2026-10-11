@@ -1,0 +1,22 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import LandingBand from '@sections/lectie-demo/LandingBand.astro';
+import LandingHeader from '@sections/lectie-demo/LandingHeader.astro';
+import LandingHero from '@sections/lectie-demo/LandingHero.astro';
+import LandingPhotos from '@sections/lectie-demo/LandingPhotos.astro';
+import LandingSteps from '@sections/lectie-demo/LandingSteps.astro';
+import Footer from '@shared/ui/Footer.astro';
+---
+<BaseLayout
+  title="Lecție demo gratuită"
+  description="Rezervă o lecție demo gratuită de engleză pentru copilul tău (5–14 ani), după metoda Cambridge, în Cluj-Napoca. Afli nivelul și grupa potrivită."
+>
+  <LandingHeader />
+  <main id="continut">
+    <LandingHero />
+    <LandingSteps />
+    <LandingPhotos />
+    <LandingBand />
+  </main>
+  <Footer showCta={false} />
+</BaseLayout>

@@ -1,5 +1,6 @@
-export const AGE_GROUPS = ['5–6 ani', '7–8 ani', '9–10 ani', '11–12 ani', '13–14 ani'] as const;
-export type AgeGroup = (typeof AGE_GROUPS)[number];
+import { AGE_GROUPS, type AgeGroup } from '@shared/contracts/age-groups';
+
+export { AGE_GROUPS, type AgeGroup };
 
 export type PhotoKey = 'class' | 'hands' | 'group' | 'boyReading' | 'teacherEma' | 'emaReading';
 export type LevelSlug = 'starters' | 'pre-a1' | 'movers' | 'flyers' | 'a2-key';

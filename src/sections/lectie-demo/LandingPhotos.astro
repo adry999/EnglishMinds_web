@@ -1,0 +1,21 @@
+---
+import type { PhotoKey } from '@shared/content/site';
+import Photo from '@shared/ui/Photo.astro';
+import './lectie-demo.css';
+
+const PHOTOS: { photo: PhotoKey; alt: string }[] = [
+  { photo: 'class', alt: 'Lecție' },
+  { photo: 'group', alt: 'Elevii academiei' },
+  { photo: 'teacherEma', alt: 'Profesoară la curs' },
+  { photo: 'hands', alt: 'Copii la curs' },
+];
+---
+<section class="landing-photos" aria-label="Fotografii de la English Minds">
+  <ul class="landing-photos__grid" role="list">
+    {PHOTOS.map((item) => (
+      <li class="landing-photos__item">
+        <Photo photo={item.photo} alt={item.alt} sizes="(min-width: 1100px) 280px, 50vw" widths={[360, 640]} />
+      </li>
+    ))}
+  </ul>
+</section>

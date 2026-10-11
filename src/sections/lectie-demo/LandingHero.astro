@@ -1,0 +1,23 @@
+---
+import { LeadForm } from '@features/lead-capture';
+import { site } from '@shared/content/site';
+import Badge from '@shared/ui/Badge.astro';
+import EmaPortrait from '@shared/ui/EmaPortrait.astro';
+import './lectie-demo.css';
+---
+<section class="landing-hero">
+  <div class="landing-hero__inner">
+    <div class="landing-hero__text">
+      <Badge>Cluj-Napoca · 5–14 ani</Badge>
+      <h1>Lecție demo gratuită de engleză</h1>
+      <p>Copilul tău participă la o lecție reală, după metoda Cambridge. Tu afli la ce nivel este și ce grupă i se potrivește.</p>
+      <div class="landing-hero__ema">
+        <EmaPortrait size="sm" eager />
+        <p class="landing-hero__bubble">Hei, eu sunt Ema! Te aștept la lecție.</p>
+      </div>
+    </div>
+    <div class="landing-hero__card">
+      <LeadForm source="landing" tone="cream" title="Rezervă locul acum" subtitle={site.offer.detail} submitLabel="Rezervă lecția gratuită" />
+    </div>
+  </div>
+</section>

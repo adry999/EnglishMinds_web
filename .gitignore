@@ -4,3 +4,4 @@ dist-server/
 .astro/
 .env
 .env.*
+!.env.example

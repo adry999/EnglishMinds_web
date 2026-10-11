@@ -1,17 +1,19 @@
 import { build } from 'esbuild';
 import { parseArgs } from 'node:util';
 
-const { values } = parseArgs({
-  options: { outfile: { type: 'string', default: 'dist-server/app.cjs' } },
-});
+const { values } = parseArgs({ options: { outdir: { type: 'string', default: 'dist-server' } } });
 
 await build({
-  entryPoints: ['server/entry.node.ts'],
+  entryPoints: {
+    app: 'server/entry.node.ts',
+    'purge-expired-leads': 'server/jobs/purge-expired-leads.ts',
+  },
   bundle: true,
   platform: 'node',
   target: 'node22',
   format: 'cjs',
-  outfile: values.outfile,
+  outdir: values.outdir,
+  outExtension: { '.js': '.cjs' },
   tsconfig: 'tsconfig.json',
   logLevel: 'warning',
 });

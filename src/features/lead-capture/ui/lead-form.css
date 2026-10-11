@@ -1,0 +1,295 @@
+lead-form {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+}
+
+.lead-form__fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.lead-form__fallback p {
+  margin: 0;
+}
+
+.lead-form__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.lead-form__title {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.lead-form__subtitle {
+  margin: -8px 0 0;
+  font-weight: 700;
+}
+
+.lead-form__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: 16px;
+}
+
+.lead-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lead-form label,
+.lead-form legend {
+  font-weight: 800;
+  font-size: 0.9375rem;
+}
+
+.lead-form input[type='text'],
+.lead-form input[type='tel'] {
+  width: 100%;
+  min-height: 52px;
+  padding: 14px 16px;
+  border: 2px solid var(--color-navy);
+  border-radius: 14px;
+  background: var(--color-white);
+  color: var(--color-navy);
+  font: inherit;
+  font-size: 1.0625rem;
+  font-weight: 700;
+}
+
+.lead-form input::placeholder {
+  color: rgb(20 34 74 / 0.7);
+}
+
+.lead-form input[aria-invalid='true'] {
+  border-width: 3px;
+}
+
+.lead-form__error {
+  min-height: 0;
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 800;
+}
+
+.lead-form__error:empty {
+  display: none;
+}
+
+.lead-form__alert:empty,
+.lead-form__status:empty {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.lead-form__ages {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.lead-form__optional {
+  font-weight: 600;
+}
+
+.lead-form__pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.lead-form__pill {
+  position: relative;
+}
+
+.lead-form__pill input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.lead-form__pill span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 2px solid currentColor;
+  border-radius: var(--radius-pill);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.lead-form__pill input:focus-visible + span {
+  outline: 3px solid var(--color-navy);
+  outline-offset: 3px;
+}
+
+.lead-form__trap {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.lead-form__consent {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 12px;
+  align-items: start;
+}
+
+.lead-form__consent input {
+  width: 22px;
+  height: 22px;
+  margin: 2px 0 0;
+  accent-color: var(--color-orange);
+}
+
+.lead-form__consent label {
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+.lead-form__consent .lead-form__error {
+  grid-column: 2;
+}
+
+.lead-form__submit {
+  align-self: stretch;
+  justify-content: center;
+}
+
+.lead-form__alert,
+.lead-form__alert-actions,
+.lead-form__status,
+.lead-form__note {
+  margin: 0;
+}
+
+.lead-form__alert {
+  font-weight: 800;
+}
+
+.lead-form__note {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.lead-form__done {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  border-radius: 22px;
+}
+
+.lead-form__done-title {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 900;
+}
+
+.lead-form__done-text {
+  margin: 0;
+  font-weight: 700;
+}
+
+.lead-form__alert-actions[hidden] {
+  display: none;
+}
+
+.lead-form__alert-actions,
+.lead-form__done-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* Pe crem / alb (landing, pagina testului) */
+.lead-form--cream {
+  color: var(--color-navy);
+}
+
+.lead-form--cream .lead-form__error,
+.lead-form--cream .lead-form__alert,
+.lead-form--cream .lead-form__subtitle {
+  color: var(--color-text-accent);
+}
+
+.lead-form--cream .lead-form__pill input:checked + span {
+  background: var(--color-navy);
+  color: var(--color-white);
+}
+
+.lead-form--cream .lead-form__consent a {
+  color: var(--color-text-accent);
+}
+
+.lead-form--cream .lead-form__done {
+  background: var(--color-white);
+}
+
+/* Pe navy (pagina principală) */
+.lead-form--navy {
+  color: var(--color-white);
+}
+
+.lead-form--navy :focus-visible,
+.lead-form--navy .lead-form__pill input:focus-visible + span {
+  outline-color: var(--color-sun);
+}
+
+.lead-form--navy input[type='text'],
+.lead-form--navy input[type='tel'] {
+  border-color: var(--color-white);
+}
+
+.lead-form--navy .lead-form__error,
+.lead-form--navy .lead-form__alert {
+  color: var(--color-sun);
+}
+
+.lead-form--navy .lead-form__pill span {
+  border-color: var(--color-sun);
+}
+
+.lead-form--navy .lead-form__pill input:checked + span {
+  background: var(--color-sun);
+  color: var(--color-navy);
+}
+
+.lead-form--navy .lead-form__consent a {
+  color: var(--color-sun);
+}
+
+.lead-form--navy .lead-form__done {
+  background: var(--color-sun);
+  color: var(--color-navy);
+}
+
+.lead-form--navy .lead-form__done :focus-visible {
+  outline-color: var(--color-navy);
+}
+
+.lead-form--navy .lead-form__done .button--outline-light {
+  border-color: var(--color-navy);
+  color: var(--color-navy);
+}
