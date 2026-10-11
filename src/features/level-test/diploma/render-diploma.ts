@@ -96,8 +96,15 @@ export function drawDiploma(ctx: DiplomaContext, data: DiplomaData): void {
   }
 }
 
+const FONT_WEIGHTS = ['700 32px Nunito', '800 40px Nunito', '900 104px Nunito'];
+
 export async function createDiplomaCanvas(doc: Document, data: DiplomaData): Promise<HTMLCanvasElement> {
-  await doc.fonts?.ready;
+  try {
+    await Promise.all(FONT_WEIGHTS.map((font) => doc.fonts?.load(font)));
+    await doc.fonts?.ready;
+  } catch (error) {
+    console.warn('Fonturile diplomei nu s-au încărcat, folosim fontul de rezervă', error);
+  }
   const canvas = doc.createElement('canvas');
   canvas.width = DIPLOMA_SIZE.width;
   canvas.height = DIPLOMA_SIZE.height;
@@ -111,24 +118,39 @@ export function downloadDiploma(doc: Document, canvas: HTMLCanvasElement, childN
   const link = doc.createElement('a');
   link.download = diplomaFileName(childName);
   link.href = canvas.toDataURL('image/png');
+  doc.body.append(link);
   link.click();
+  link.remove();
 }
 
 export function printDiploma(win: Window, canvas: HTMLCanvasElement, childName: string): boolean {
+  const dataUrl = canvas.toDataURL('image/png');
   const popup = win.open('', '_blank');
   if (!popup) return false;
   const doc = popup.document;
   doc.title = `Diplomă ${cleanChildName(childName)}`;
   const style = doc.createElement('style');
   style.textContent =
-    '@page { size: A4 landscape; margin: 0 } html, body { margin: 0; height: 100% } img { width: 100%; height: 100%; object-fit: contain }';
+    '@page { size: A4 landscape; margin: 0 } html, body { margin: 0; height: 100% } img { display: block; width: 100%; height: 100%; object-fit: contain }';
   const image = doc.createElement('img');
   image.alt = doc.title;
-  image.addEventListener('load', () => {
-    popup.focus();
-    popup.print();
-  });
-  image.src = canvas.toDataURL('image/png');
+  image.addEventListener(
+    'load',
+    () => {
+      popup.focus();
+      popup.print();
+    },
+    { once: true },
+  );
+  image.addEventListener(
+    'error',
+    () => {
+      console.error('Diploma nu a putut fi încărcată pentru tipărire');
+      popup.close();
+    },
+    { once: true },
+  );
+  image.src = dataUrl;
   doc.head.append(style);
   doc.body.replaceChildren(image);
   return true;
