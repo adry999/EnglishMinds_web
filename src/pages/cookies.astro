@@ -1,0 +1,17 @@
+---
+import { getEntry } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import LegalDocument from '@sections/legal/LegalDocument.astro';
+import Footer from '@shared/ui/Footer.astro';
+import Header from '@shared/ui/Header.astro';
+
+const entry = await getEntry('legal', 'cookies');
+if (!entry) throw new Error('Lipsește src/content/legal/cookies.md');
+---
+<BaseLayout title={entry.data.title} description={entry.data.description}>
+  <Header />
+  <main id="continut">
+    <LegalDocument entry={entry} showCookies />
+  </main>
+  <Footer />
+</BaseLayout>

@@ -24,11 +24,13 @@ Rulează mai întâi `SELECT`-ul de mai sus ca să vezi ce se șterge. Șterge �
 
 ## Păstrare
 
-Jobul zilnic (vezi `server.md`, secțiunea Cron) șterge contactele mai vechi de 12 luni și limitele de trimitere mai vechi de 24 de ore.
+Jobul zilnic (vezi `server.md`, secțiunea Cron) șterge contactele mai vechi de 12 luni și limitele de trimitere mai vechi de 24 de ore (rulând o dată pe zi, o amprentă IP dispare în cel mult 2 zile).
+
+Jobul nu atinge emailurile de notificare din căsuța `MAIL_TO`. Șterge manual, cel puțin lunar, emailurile de notificare mai vechi de 12 luni.
 
 ## Ce NU se stochează
 
 - Numele copilului.
 - Răspunsurile la testul de nivel (se salvează doar nivelul recomandat, dacă există).
-- Adresa IP în clar (doar o amprentă SHA-256 cu sare, în tabela `rate_limits`, ștearsă după 24 de ore).
+- Adresa IP în clar în baza de date (serverul o primește la cerere, iar jurnalele furnizorului de găzduire o pot păstra; aplicația stochează doar o amprentă SHA-256 cu sare, în tabela `rate_limits`, ștearsă automat în cel mult 2 zile).
 - User-agent-ul.

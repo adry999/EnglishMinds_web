@@ -1,9 +1,10 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+import sharp from 'sharp';
 import { beforeAll, describe, expect, it } from 'vitest';
 
 const dist = resolve(import.meta.dirname, '../../dist');
-const PAGES = ['index.html', 'grupe/index.html', 'metoda-cambridge/index.html', 'tabere/index.html', 'test-de-nivel/index.html', 'lectie-demo/index.html', 'blog/index.html', '404.html'];
+const PAGES = ['index.html', 'grupe/index.html', 'metoda-cambridge/index.html', 'tabere/index.html', 'test-de-nivel/index.html', 'lectie-demo/index.html', 'blog/index.html', 'confidentialitate/index.html', 'cookies/index.html', 'termeni/index.html', '404.html'];
 
 const read = (page: string) => readFileSync(join(dist, page), 'utf8');
 
@@ -85,10 +86,95 @@ describe('built pages', () => {
     expect(html).not.toMatch(/<script[^>]*src="https:\/\/connect\.facebook\.net/);
   });
 
+  const ROUTE: Record<string, string> = {
+    'index.html': '/',
+    'grupe/index.html': '/grupe/',
+    'metoda-cambridge/index.html': '/metoda-cambridge/',
+    'tabere/index.html': '/tabere/',
+    'test-de-nivel/index.html': '/test-de-nivel/',
+    'lectie-demo/index.html': '/lectie-demo/',
+    'blog/index.html': '/blog/',
+    'confidentialitate/index.html': '/confidentialitate/',
+    'cookies/index.html': '/cookies/',
+    'termeni/index.html': '/termeni/',
+  };
+
+  it.each(Object.entries(ROUTE))('%s has an absolute canonical and Open Graph tags', async (page, route) => {
+    const html = read(page);
+    const url = `https://englishminds.ro${route}`;
+    expect(html).toContain(`<link rel="canonical" href="${url}"`);
+    expect(html).toContain(`<meta property="og:url" content="${url}"`);
+    expect(html).toMatch(/<meta property="og:title" content="[^"]+"/);
+    expect(html).toMatch(/<meta property="og:description" content="[^"]+"/);
+    expect(html).not.toContain('name="robots"');
+    const image = html.match(/<meta property="og:image" content="([^"]+)"/)?.[1] ?? '';
+    expect(image).toMatch(/^https:\/\/englishminds\.ro\/_astro\/.+\.jpg$/);
+    expect(existsSync(join(dist, image.replace('https://englishminds.ro/', '')))).toBe(true);
+    const file = join(dist, image.replace('https://englishminds.ro/', ''));
+    const { width, height } = await sharp(file).metadata();
+    expect(html).toContain(`<meta property="og:image:width" content="${width}"`);
+    expect(html).toContain(`<meta property="og:image:height" content="${height}"`);
+  });
+
+  it('keeps the 404 page out of search results', () => {
+    expect(read('404.html')).toContain('<meta name="robots" content="noindex"');
+  });
+
   it('ships optimized images, not the original jpgs', () => {
     const home = read('index.html');
     expect(home).toMatch(/type="image\/avif"/);
     expect(home).not.toMatch(/src="[^"]*ema-reading\.jpg"/);
     for (const img of home.match(/<img[^>]*>/g) ?? []) expect(img).toMatch(/srcset="[^"]*\.\w+ \d+w/);
+  });
+
+  const jsonLdBlocks = (html: string): unknown[] =>
+    [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1] ?? ''));
+
+  it('home describes the organization and the FAQ', () => {
+    const types = jsonLdBlocks(read('index.html')).map((block) => (block as { '@type': unknown })['@type']);
+    expect(types).toContainEqual(['EducationalOrganization', 'LocalBusiness']);
+    expect(types).toContain('FAQPage');
+  });
+
+  it('the sitemap lists every built page except the 404, and every published article', () => {
+    const xml = read('sitemap.xml');
+    const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+    const built = readdirSync(dist, { recursive: true, encoding: 'utf8' })
+      .filter((file) => file.endsWith('index.html'))
+      .map((file) => `https://englishminds.ro/${file.replace(/\\/g, '/').replace(/index\.html$/, '')}`);
+    expect([...locs].sort()).toEqual([...built].sort());
+    expect(xml).not.toContain('404');
+  });
+
+  it('every internal link on every page points to a built file', () => {
+    const htmlFiles = readdirSync(dist, { recursive: true, encoding: 'utf8' }).filter((file) => file.endsWith('.html'));
+    const missing: string[] = [];
+    for (const file of htmlFiles) {
+      for (const [, href] of read(file).matchAll(/<a[^>]*\shref="(\/[^"#?]*)/g)) {
+        const target = href?.endsWith('/') ? join(dist, href, 'index.html') : join(dist, href ?? '');
+        if (!existsSync(target)) missing.push(`${file} → ${href}`);
+      }
+    }
+    expect(missing).toEqual([]);
+  });
+
+  it('the cookie policy shows the cookie table', () => {
+    const html = read('cookies/index.html');
+    for (const name of ['em_consent', '_ga', '_fbp', '_fbc', '_gcl_']) expect(html).toContain(name);
+  });
+
+  it('robots.txt points to the sitemap', () => {
+    expect(read('robots.txt')).toContain('Sitemap: https://englishminds.ro/sitemap.xml');
+  });
+
+  it('every published article has a valid BlogPosting', () => {
+    // Zero posts is allowed while every article is still a draft.
+    const posts = readdirSync(join(dist, 'blog')).filter((entry) => statSync(join(dist, 'blog', entry)).isDirectory());
+    for (const slug of posts) {
+      const [block] = jsonLdBlocks(read(`blog/${slug}/index.html`)) as { '@type': string; url: string; image: string }[];
+      expect(block?.['@type']).toBe('BlogPosting');
+      expect(block?.url).toBe(`https://englishminds.ro/blog/${slug}/`);
+      expect(block?.image).toMatch(/^https:\/\/englishminds\.ro\/_astro\/.+\.jpg$/);
+    }
   });
 });

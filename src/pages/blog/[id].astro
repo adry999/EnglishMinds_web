@@ -1,6 +1,10 @@
 ---
+import { getImage } from 'astro:assets';
 import BaseLayout from '@layouts/BaseLayout.astro';
 import { getPublishedPosts, PostArticle, type BlogPost } from '@features/blog';
+import { site } from '@shared/content/site';
+import { blogPostingJsonLd } from '@shared/seo/json-ld';
+import { canonicalUrl, ogImageSize } from '@shared/seo/page-meta';
 import Footer from '@shared/ui/Footer.astro';
 import Header from '@shared/ui/Header.astro';
 
@@ -14,8 +18,26 @@ interface Props {
 }
 
 const { post } = Astro.props;
+const cover = await getImage({ src: post.data.cover, ...ogImageSize(post.data.cover), fit: 'cover', format: 'jpg' });
 ---
-<BaseLayout title={post.data.title} description={post.data.description}>
+<BaseLayout
+  title={post.data.title}
+  description={post.data.description}
+  type="article"
+  image={post.data.cover}
+  imageAlt={post.data.coverAlt}
+  jsonLd={[
+    blogPostingJsonLd({
+      headline: post.data.title,
+      description: post.data.description,
+      url: canonicalUrl(Astro.url.pathname, site.url),
+      image: new URL(cover.src, site.url).href,
+      datePublished: post.data.publishedAt,
+      organizationUrl: site.url,
+      organizationName: site.name,
+    }),
+  ]}
+>
   <Header active="blog" />
   <main id="continut">
     <PostArticle post={post} />

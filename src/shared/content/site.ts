@@ -155,6 +155,7 @@ const faq: readonly FaqEntry[] = [
 
 export const site = {
   name: 'English Minds Academy',
+  url: 'https://englishminds.ro',
   contact,
   levels,
   courseFacts,

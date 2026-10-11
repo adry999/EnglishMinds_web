@@ -4,16 +4,17 @@ Site-ul încarcă Google Analytics 4, Google Ads și Meta Pixel doar după acord
 
 ## Ce cookie-uri folosește site-ul
 
-| Categorie | Serviciu | Cookie-uri | Durată |
-|---|---|---|---|
-| Necesar | Site (memorează alegerea) | `em_consent` | 182 de zile |
-| Statistici | Google Analytics 4 | `_ga`, `_ga_*` | 2 ani |
-| Marketing | Meta | `_fbp`, `_fbc` | 90 de zile |
-| Marketing | Google Ads | `_gcl_*` | 90 de zile |
+| Categorie | Serviciu | Cookie-uri | Durată | Scop |
+|---|---|---|---|---|
+| Necesar | English Minds Academy | `em_consent` | 182 de zile | Ține minte alegerea ta despre cookie-uri. |
+| Statistici | Google Analytics 4 | `_ga`, `_ga_*` | 2 ani | Numără vizitele și paginile citite. |
+| Statistici | Google Analytics 4 | `_gid` | 24 de ore | Deosebește vizitatorii în aceeași zi. |
+| Marketing | Meta Pixel | `_fbp`, `_fbc` | 90 de zile | Arată ce reclame Meta aduc rezervări. |
+| Marketing | Google Ads | `_gcl_*` | 90 de zile | Arată ce reclame Google aduc rezervări. |
 
 Duratele furnizorilor sunt orientative și pot varia (conform furnizorului).
 
-Tabelul e baza pentru politica de cookies din etapa 6.
+Tabelul este identic cu `COOKIE_INVENTORY` din `src/features/consent/model/cookie-inventory.ts`, pe care pagina `/cookies/` îl afișează. Când schimbi unul, schimbă-l și pe celălalt. (Etapa 6: am adăugat rândul `_gid`, 24 de ore, și coloana „Scop".)
 
 ## Unde se pun ID-urile
 
