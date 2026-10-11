@@ -584,7 +584,6 @@ const usableWidths = [...widths.filter((width) => width < image.width), image.wi
 ```astro
 ---
 import Photo from './Photo.astro';
-import { photos } from '@shared/content/photos';
 import './EmaPortrait.css';
 
 interface Props {
