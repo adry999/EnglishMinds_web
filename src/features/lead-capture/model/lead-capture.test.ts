@@ -61,6 +61,11 @@ describe('utm', () => {
     expect(parseUtm('')).toBeNull();
   });
 
+  it('strips control and invisible characters from UTM values', () => {
+    expect(parseUtm('?utm_source=a%00b%E2%80%8Bc')).toEqual({ ...EMPTY_UTM, source: 'abc' });
+    expect(parseUtm('?utm_medium=%00%E2%80%8B')).toBeNull();
+  });
+
   it('keeps partial UTM', () => {
     expect(parseUtm('?utm_campaign=demo')).toEqual({ ...EMPTY_UTM, campaign: 'demo' });
   });
@@ -71,6 +76,10 @@ describe('utm', () => {
     expect(parseStoredUtm('{broken')).toBeNull();
     expect(parseStoredUtm(JSON.stringify({ source: 5 }))).toBeNull();
     expect(parseStoredUtm(JSON.stringify({ source: null, medium: null, campaign: null }))).toBeNull();
+    expect(parseStoredUtm(JSON.stringify({ source: 'a\u0000b​c', medium: null, campaign: null }))).toEqual({
+      ...EMPTY_UTM,
+      source: 'abc',
+    });
   });
 });
 

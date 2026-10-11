@@ -10,7 +10,7 @@ export const UTM_STORAGE_KEY = 'em-utm';
 const KEYS = ['source', 'medium', 'campaign'] as const;
 
 const clean = (value: string | null): string | null => {
-  const trimmed = value?.trim().slice(0, 100) ?? '';
+  const trimmed = value?.replace(/[\p{Cc}\p{Cf}\p{Zl}\p{Zp}]/gu, '').trim().slice(0, 100) ?? '';
   return trimmed === '' ? null : trimmed;
 };
 
