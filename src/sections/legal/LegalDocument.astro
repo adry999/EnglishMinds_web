@@ -1,0 +1,85 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import { COOKIE_INVENTORY, COOKIE_REVISION } from '@features/consent';
+import { site } from '@shared/content/site';
+import { POLICY_VERSION } from '@shared/contracts/policy';
+import './legal.css';
+
+type Props = {
+  entry: CollectionEntry<'legal'>;
+  showCookies?: boolean;
+  showPolicyVersion?: boolean;
+};
+
+const { entry, showCookies = false, showPolicyVersion = false } = Astro.props;
+const { Content } = await render(entry);
+const { updatedAt } = entry.data;
+const updatedLabel = updatedAt.toLocaleDateString('ro-RO', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+const categoryLabel = { necessary: 'Necesare', analytics: 'Statistici', marketing: 'Marketing' } as const;
+---
+<article class="legal">
+  <h1>{entry.data.title}</h1>
+  <p class="legal__draft" role="note">Document în curs de verificare juridică.</p>
+  <p class="legal__updated">
+    Actualizat la <time datetime={updatedAt.toISOString().slice(0, 10)}>{updatedLabel}</time>
+  </p>
+  <section class="legal__operator" aria-labelledby="operator-titlu">
+    <h2 id="operator-titlu">Operator</h2>
+    <dl>
+      <dt>Denumire</dt>
+      <dd>{site.company.legalName}</dd>
+      <dt>CUI</dt>
+      <dd>{site.company.cui}</dd>
+      <dt>Sediu social</dt>
+      <dd>{site.company.registeredOffice}</dd>
+      <dt>Telefon</dt>
+      <dd><a href={`tel:${site.contact.phoneE164}`}>{site.contact.phoneDisplay}</a></dd>
+      <dt>Adresa academiei</dt>
+      <dd>{`${site.contact.street}, ${site.contact.city}`}</dd>
+    </dl>
+  </section>
+  <div class="legal__body">
+    <Content />
+  </div>
+  {
+    showCookies && (
+      <div class="legal__cookies">
+        <div class="legal__table-wrap">
+          <table>
+            <caption>Cookie-urile folosite</caption>
+            <thead>
+              <tr>
+                <th scope="col">Categorie</th>
+                <th scope="col">Serviciu</th>
+                <th scope="col">Cookie-uri</th>
+                <th scope="col">Durată</th>
+                <th scope="col">Scop</th>
+              </tr>
+            </thead>
+            <tbody>
+              {COOKIE_INVENTORY.map((cookie) => (
+                <tr>
+                  <td>{categoryLabel[cookie.category]}</td>
+                  <td>{cookie.service}</td>
+                  <td>
+                    <code>{cookie.names}</code>
+                  </td>
+                  <td>{cookie.duration}</td>
+                  <td>{cookie.purpose}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="legal__version">Versiunea politicii de cookies: {COOKIE_REVISION}</p>
+      </div>
+    )
+  }
+  {showPolicyVersion && <p class="legal__version">Versiunea politicii: {POLICY_VERSION}</p>}
+</article>

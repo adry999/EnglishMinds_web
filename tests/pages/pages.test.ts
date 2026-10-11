@@ -3,7 +3,7 @@ import { join, resolve } from 'node:path';
 import { beforeAll, describe, expect, it } from 'vitest';
 
 const dist = resolve(import.meta.dirname, '../../dist');
-const PAGES = ['index.html', 'grupe/index.html', 'metoda-cambridge/index.html', 'tabere/index.html', 'test-de-nivel/index.html', 'lectie-demo/index.html', 'blog/index.html', '404.html'];
+const PAGES = ['index.html', 'grupe/index.html', 'metoda-cambridge/index.html', 'tabere/index.html', 'test-de-nivel/index.html', 'lectie-demo/index.html', 'blog/index.html', 'confidentialitate/index.html', 'cookies/index.html', 'termeni/index.html', '404.html'];
 
 const read = (page: string) => readFileSync(join(dist, page), 'utf8');
 
@@ -93,6 +93,9 @@ describe('built pages', () => {
     'test-de-nivel/index.html': '/test-de-nivel/',
     'lectie-demo/index.html': '/lectie-demo/',
     'blog/index.html': '/blog/',
+    'confidentialitate/index.html': '/confidentialitate/',
+    'cookies/index.html': '/cookies/',
+    'termeni/index.html': '/termeni/',
   };
 
   it.each(Object.entries(ROUTE))('%s has an absolute canonical and Open Graph tags', (page, route) => {
@@ -128,8 +131,32 @@ describe('built pages', () => {
     expect(types).toContain('FAQPage');
   });
 
-  // TODO(task 4): activate once the legal pages (confidentialitate, cookies, termeni) are built.
-  it.todo('the sitemap lists every built page except the 404, and every published article');
+  it('the sitemap lists every built page except the 404, and every published article', () => {
+    const xml = read('sitemap.xml');
+    const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+    const built = readdirSync(dist, { recursive: true, encoding: 'utf8' })
+      .filter((file) => file.endsWith('index.html'))
+      .map((file) => `https://englishminds.ro/${file.replace(/\\/g, '/').replace(/index\.html$/, '')}`);
+    expect([...locs].sort()).toEqual([...built].sort());
+    expect(xml).not.toContain('404');
+  });
+
+  it('every internal link on every page points to a built file', () => {
+    const htmlFiles = readdirSync(dist, { recursive: true, encoding: 'utf8' }).filter((file) => file.endsWith('.html'));
+    const missing: string[] = [];
+    for (const file of htmlFiles) {
+      for (const [, href] of read(file).matchAll(/<a[^>]*\shref="(\/[^"#?]*)/g)) {
+        const target = href?.endsWith('/') ? join(dist, href, 'index.html') : join(dist, href ?? '');
+        if (!existsSync(target)) missing.push(`${file} → ${href}`);
+      }
+    }
+    expect(missing).toEqual([]);
+  });
+
+  it('the cookie policy shows the cookie table', () => {
+    const html = read('cookies/index.html');
+    for (const name of ['em_consent', '_ga', '_fbp', '_fbc', '_gcl_']) expect(html).toContain(name);
+  });
 
   it('robots.txt points to the sitemap', () => {
     expect(read('robots.txt')).toContain('Sitemap: https://englishminds.ro/sitemap.xml');

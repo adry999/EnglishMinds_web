@@ -1,0 +1,101 @@
+.legal {
+  max-width: 70ch;
+  margin-inline: auto;
+  padding: 48px var(--gutter) 72px;
+  background: #fff;
+  color: var(--color-navy);
+}
+
+.legal h1 {
+  margin-bottom: 16px;
+}
+
+.legal h2 {
+  margin-top: 32px;
+}
+
+.legal a {
+  color: var(--color-text-accent);
+}
+
+.legal :focus-visible {
+  outline-color: var(--color-navy);
+}
+
+.legal__draft {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--color-peach);
+  color: var(--color-navy);
+  font-weight: 700;
+}
+
+.legal__updated {
+  margin: 0 0 24px;
+}
+
+.legal__operator {
+  margin-bottom: 24px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: var(--color-peach);
+}
+
+.legal__operator h2 {
+  margin-top: 0;
+}
+
+.legal__operator dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 6px 16px;
+  margin: 0;
+}
+
+.legal__operator dt {
+  font-weight: 800;
+}
+
+.legal__operator dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.legal ul {
+  padding-left: 1.25rem;
+}
+
+.legal__table-wrap {
+  margin-top: 24px;
+  overflow-x: auto;
+}
+
+.legal table {
+  width: 100%;
+  min-width: 36rem;
+  border-collapse: collapse;
+}
+
+.legal caption {
+  padding-bottom: 8px;
+  font-weight: 800;
+  text-align: left;
+}
+
+.legal th,
+.legal td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-peach);
+  text-align: left;
+  vertical-align: top;
+}
+
+.legal th {
+  background: var(--color-peach);
+}
+
+.legal__version {
+  margin-top: 24px;
+  font-size: 0.9375rem;
+}
