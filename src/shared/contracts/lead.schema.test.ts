@@ -30,6 +30,10 @@ describe('validateLead', () => {
     expect(result.lead).not.toHaveProperty('elapsedMs');
   });
 
+  it('keeps plain names valid', () => {
+    expect(validateLead({ ...valid, parentName: 'Ana Pop' }).ok).toBe(true);
+  });
+
   it('accepts a missing age group and empty UTM', () => {
     expect(validateLead({ ...valid, childAgeGroup: null, utm: { source: null, medium: null, campaign: null } }).ok).toBe(true);
   });
@@ -38,6 +42,9 @@ describe('validateLead', () => {
     ['parentName', { parentName: ' A ' }],
     ['parentName', { parentName: 'x'.repeat(101) }],
     ['parentName', { parentName: 'Ana\u0000Pop' }],
+    ['parentName', { parentName: 'Ana\u200BPop' }],
+    ['parentName', { parentName: '🙂🙂' }],
+    ['utm', { utm: { source: 'a\u0007b', medium: null, campaign: null } }],
     ['phone', { phone: '+44 7911 123456' }],
     ['phone', { phone: '' }],
     ['childAgeGroup', { childAgeGroup: '4 ani' }],

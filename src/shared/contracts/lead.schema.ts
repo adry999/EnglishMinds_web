@@ -8,18 +8,19 @@ export type LeadSource = (typeof LEAD_SOURCES)[number];
 
 export const TEST_LEVEL_PATTERN = /^(level|exam):[a-z0-9-]{1,24}$/;
 
-const NO_CONTROL_CHARS = /^[^\p{Cc}]*$/u;
+const NO_INVISIBLE_CHARS = /^[^\p{Cc}\p{Cf}\p{Zl}\p{Zp}]*$/u;
 
-const utmValue = v.nullable(v.pipe(v.string(), v.trim(), v.maxLength(100)));
+const utmValue = v.nullable(v.pipe(v.string(), v.trim(), v.maxLength(100), v.regex(NO_INVISIBLE_CHARS)));
 
 export const LeadSchema = v.pipe(
   v.object({
-    parentName: v.pipe(v.string(), v.trim(), v.minLength(2), v.maxLength(100), v.regex(NO_CONTROL_CHARS)),
+    parentName: v.pipe(v.string(), v.trim(), v.minLength(2), v.maxLength(100), v.regex(NO_INVISIBLE_CHARS), v.regex(/\p{L}/u)),
     phone: v.pipe(
       v.string(),
       v.maxLength(30),
       v.check((value) => normalizeRoPhone(value) !== null),
-      v.transform((value) => normalizeRoPhone(value) ?? value),
+      // the check above guarantees a non-null result
+      v.transform((value) => normalizeRoPhone(value) as string),
     ),
     childAgeGroup: v.nullable(v.picklist(AGE_GROUPS)),
     source: v.picklist(LEAD_SOURCES),
