@@ -6,6 +6,7 @@ import '@fontsource/nunito/900.css';
 import '@fontsource/barlow-condensed/700.css';
 import '../styles/tokens.css';
 import '../styles/base.css';
+import { ConsentDefaults, CookieConsent } from '@features/consent';
 import { UtmCapture } from '@features/lead-capture';
 import { site } from '@shared/content/site';
 
@@ -21,6 +22,7 @@ const fullTitle = title === site.name ? title : `${title} · ${site.name}`;
 <html lang="ro">
   <head>
     <meta charset="utf-8" />
+    <ConsentDefaults />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
@@ -30,5 +32,6 @@ const fullTitle = title === site.name ? title : `${title} · ${site.name}`;
     <a class="skip-link" href="#continut">Sari la conținut</a>
     <slot />
     <UtmCapture />
+    <CookieConsent />
   </body>
 </html>
