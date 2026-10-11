@@ -1,7 +1,10 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { Readable } from 'node:stream';
 import { readEnvironment } from './config/environment';
-import { handleRequest } from './handle-request';
+import { clientIpOf } from './client-ip';
+import { createRequestHandler } from './handle-request';
+import { hashIp } from './leads/ip-hash';
+import { consoleLogger, systemClock } from './leads/ports';
 
 function toWebRequest(req: IncomingMessage): Request {
   const headers = new Headers();
@@ -25,11 +28,25 @@ async function sendWebResponse(response: Response, res: ServerResponse): Promise
   res.end(Buffer.from(await response.arrayBuffer()));
 }
 
-const { port } = readEnvironment();
+const env = readEnvironment();
+// Temporary adapters until the MySQL and SMTP adapters land.
+const unavailable = (): Promise<never> => Promise.reject(new Error('storage not configured yet'));
+const handle = createRequestHandler({
+  repository: { save: unavailable, deleteCreatedBefore: unavailable },
+  rateLimiter: { hit: unavailable, deleteWindowsBefore: unavailable },
+  notifier: { notify: unavailable },
+  clock: systemClock,
+  logger: consoleLogger,
+  hashIp: (ip) => hashIp(ip, env.ipHashSalt),
+});
 
 createServer((req, res) => {
   Promise.resolve()
-    .then(() => handleRequest(toWebRequest(req)))
+    .then(() =>
+      handle(toWebRequest(req), {
+        clientIp: clientIpOf(req.headers['x-forwarded-for'], req.socket.remoteAddress, env.trustProxy),
+      }),
+    )
     .then((response) => sendWebResponse(response, res))
     .catch((error: unknown) => {
       console.error('[server] unhandled request error', { method: req.method, url: req.url, error });
@@ -41,6 +58,6 @@ createServer((req, res) => {
       res.setHeader('content-type', 'application/json; charset=utf-8');
       res.end(JSON.stringify({ ok: false, error: 'internal' }));
     });
-}).listen(port, () => {
-  console.log(`[server] listening on ${port}`);
+}).listen(env.port, () => {
+  console.log(`[server] listening on ${env.port}`);
 });

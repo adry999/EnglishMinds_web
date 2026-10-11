@@ -9,7 +9,9 @@
       "@core/*": ["./src/core/*"],
       "@assets/*": ["./src/assets/*"],
       "@sections/*": ["./src/sections/*"],
-      "@layouts/*": ["./src/layouts/*"]
+      "@layouts/*": ["./src/layouts/*"],
+      "@test-support/*": ["./tests/support/*"],
+      "@server/*": ["./server/*"]
     }
   }
 }
