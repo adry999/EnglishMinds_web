@@ -177,6 +177,7 @@ lead-form {
 }
 
 .lead-form__alert,
+.lead-form__alert-actions,
 .lead-form__status,
 .lead-form__note {
   margin: 0;
@@ -211,6 +212,11 @@ lead-form {
   font-weight: 700;
 }
 
+.lead-form__alert-actions[hidden] {
+  display: none;
+}
+
+.lead-form__alert-actions,
 .lead-form__done-actions {
   display: flex;
   flex-wrap: wrap;

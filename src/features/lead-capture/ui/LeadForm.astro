@@ -78,6 +78,10 @@ const callVariant = tone === 'navy' ? 'button--outline-light' : 'button--outline
     </div>
     <button class:list={['button', submitVariant, 'lead-form__submit']} type="submit">{submitLabel}</button>
     <p class="lead-form__alert" role="alert"></p>
+    <p class="lead-form__alert-actions" hidden>
+      <a class="button button--whatsapp" data-alert-whatsapp href={contact.whatsappUrl} target="_blank" rel="noopener">Scrie pe WhatsApp</a>
+      <a class:list={['button', callVariant]} href={`tel:${contact.phoneE164}`}>Sună-ne</a>
+    </p>
     <p class="lead-form__status" role="status"></p>
     <p class="lead-form__note">Nu plătești nimic. Te contactăm doar pentru lecția demo.</p>
   </form>

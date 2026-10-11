@@ -24,12 +24,14 @@ const port = 39000 + Math.floor(Math.random() * 1000);
 const base = `http://127.0.0.1:${port}`;
 let dir: string;
 let child: ChildProcess;
+let stderr = '';
 
 beforeAll(async () => {
   dir = mkdtempSync(join(tmpdir(), 'em-server-'));
   const outfile = join(dir, 'app.cjs');
   execFileSync(process.execPath, ['scripts/build-server.mjs', '--outdir', dir], { stdio: 'inherit' });
   child = spawn(process.execPath, [outfile], { env: { ...process.env, ...TEST_ENV, PORT: String(port) } });
+  child.stderr?.on('data', (chunk: Buffer) => (stderr += chunk.toString()));
   await new Promise<void>((resolve, reject) => {
     child.stdout?.on('data', (chunk: Buffer) => {
       if (chunk.toString().includes('listening')) resolve();
@@ -76,6 +78,10 @@ describe('server bundle', () => {
       socket.on('error', reject);
     });
     expect(raw.startsWith('HTTP/1.1 500')).toBe(true);
+    await new Promise((done) => setTimeout(done, 200));
+    expect(stderr).toContain('unhandled request error');
+    expect(stderr).toContain('path: null');
+    expect(stderr).not.toContain('http://localhost');
     const health = await fetch(`${base}/api/health`);
     expect(health.status).toBe(200);
   });

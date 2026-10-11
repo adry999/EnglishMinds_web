@@ -1,5 +1,6 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { MIN_ELAPSED_MS } from '@shared/contracts/lead.schema';
 import { LEAD_SUBMITTED, createLevelTestCompleted } from '@shared/contracts/domain-events';
 import type { SubmitLeadResult } from '../api/lead.client';
 import { submitLead } from '../api/lead.client';
@@ -26,6 +27,7 @@ function markup(source: string, { ages = true, hidden = false } = {}): string {
       <p class="lead-form__error" data-error-for="consent"></p>
       <button class="lead-form__submit" type="submit">Rezervă</button>
       <p class="lead-form__alert" role="alert"></p>
+      <p class="lead-form__alert-actions" hidden><a data-alert-whatsapp href="https://wa.me/40775630680">WhatsApp</a><a href="tel:+40775630680">Sună-ne</a></p>
       <p class="lead-form__status" role="status"></p>
     </form>
     <div class="lead-form__done" hidden tabindex="-1">
@@ -211,14 +213,28 @@ describe('<lead-form>', () => {
     expect(el<HTMLButtonElement>('.lead-form__submit').disabled).toBe(false);
   });
 
-  it('shows a general alert when the server rejects unknown fields', async () => {
-    submitMock.mockResolvedValue({ kind: 'validation', fields: ['utm'] });
-    mount();
-    fill();
-    submit();
-    await flush();
-    expect(el('.lead-form__alert').textContent).toBe('Verifică datele și încearcă din nou.');
-  });
+  it.each([[['utm']], [[]], [['policyVersion']], [['source']]])(
+    'hands an unfixable server rejection (%j) to WhatsApp without a submitted event',
+    async (fields) => {
+      submitMock.mockResolvedValue({ kind: 'validation', fields });
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const events: unknown[] = [];
+      const listener = (event: Event): void => void events.push(event);
+      document.addEventListener(LEAD_SUBMITTED, listener);
+      mount();
+      fill();
+      submit();
+      await flush();
+      document.removeEventListener(LEAD_SUBMITTED, listener);
+      expect(popup?.close).not.toHaveBeenCalled();
+      expect(popup?.location.replace).toHaveBeenCalledTimes(1);
+      expect(el('[data-done-text]').textContent).toContain('Nu am putut salva cererea pe site');
+      expect(el<HTMLElement>('.lead-form__done').hidden).toBe(false);
+      expect(events).toEqual([]);
+      expect(warn).toHaveBeenCalled();
+      warn.mockRestore();
+    },
+  );
 
   it('closes the window and explains the hourly limit', async () => {
     submitMock.mockResolvedValue({ kind: 'rate_limited' });
@@ -230,6 +246,16 @@ describe('<lead-form>', () => {
     expect(el('.lead-form__alert').textContent).toBe(
       'Ai trimis deja mai multe cereri în ultima oră. Scrie-ne pe WhatsApp sau sună-ne la +40 775 630 680.',
     );
+    const actions = el<HTMLElement>('.lead-form__alert-actions');
+    expect(actions.hidden).toBe(false);
+    const href = actions.querySelector<HTMLAnchorElement>('[data-alert-whatsapp]')?.getAttribute('href') ?? '';
+    expect(href).toContain('wa.me');
+    expect(href).toContain(encodeURIComponent('Ana Pop'));
+    expect(actions.querySelector('a[href^="tel:"]')).not.toBeNull();
+    submitMock.mockResolvedValue({ kind: 'validation', fields: ['phone'] });
+    submit();
+    await flush();
+    expect(actions.hidden).toBe(true);
   });
 
   it('prefers UTM from the current address over the stored one', async () => {
@@ -283,7 +309,7 @@ describe('<lead-form>', () => {
     await vi.advanceTimersByTimeAsync(2200);
     await flush();
     expect(submitMock).toHaveBeenCalledTimes(1);
-    expect(submitMock.mock.calls[0]?.[0].elapsedMs).toBeGreaterThanOrEqual(3200);
+    expect(submitMock.mock.calls[0]?.[0].elapsedMs).toBeGreaterThanOrEqual(MIN_ELAPSED_MS + 200);
     vi.useRealTimers();
   });
 

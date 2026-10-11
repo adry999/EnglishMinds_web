@@ -1,6 +1,6 @@
 import type { AgeGroup } from '@shared/contracts/age-groups';
 import { LEVEL_TEST_COMPLETED, createLeadSubmitted, type LevelTestCompletedDetail } from '@shared/contracts/domain-events';
-import { validateLead, type LeadField, type LeadRequest, type LeadSource } from '@shared/contracts/lead.schema';
+import { MIN_ELAPSED_MS, validateLead, type LeadField, type LeadRequest, type LeadSource } from '@shared/contracts/lead.schema';
 import { POLICY_VERSION } from '@shared/contracts/policy';
 import { submitLead } from '../api/lead.client';
 import { ageGroupForLevel } from '../model/age-preselect';
@@ -16,7 +16,7 @@ const FIELD_ERRORS: Partial<Record<LeadField, string>> = {
   consent: 'Bifează acordul ca să te putem contacta.',
 };
 const GENERAL_ERROR = 'Verifică datele și încearcă din nou.';
-const MIN_FILL_MS = 3200;
+const MIN_FILL_MS = MIN_ELAPSED_MS + 200;
 const SEND_FAILED = 'Nu am putut trimite cererea. Scrie-ne pe WhatsApp sau sună-ne.';
 const SENDING = 'Se trimite…';
 const DONE_OPENED = 'Ți-am deschis WhatsApp cu mesajul completat. Trimite-l și te sunăm să stabilim ziua lecției.';
@@ -142,9 +142,15 @@ export class LeadForm extends HTMLElement {
         if (result.kind === 'ok') this.dispatchEvent(createLeadSubmitted({ source: this.source, ageGroup }));
         return;
       }
+      if (result.kind === 'validation' && !FIELD_ORDER.some((field) => result.fields.includes(field))) {
+        console.warn('[lead-form] server rejected fields the parent cannot fix', result.fields);
+        popup?.location.replace(whatsappUrl);
+        this.showDone(form, local.lead.parentName, whatsappUrl, DONE_UNSAVED);
+        return;
+      }
       popup?.close();
       if (result.kind === 'validation') this.showFieldErrors(form, result.fields);
-      else this.showAlert(form, rateLimitedMessage(this.dataset.phoneDisplay ?? ''));
+      else this.showRateLimited(form, whatsappUrl);
     } catch (error) {
       popup?.close();
       this.showAlert(form, SEND_FAILED);
@@ -180,6 +186,14 @@ export class LeadForm extends HTMLElement {
     first?.focus();
   }
 
+  private showRateLimited(form: HTMLFormElement, whatsappUrl: string): void {
+    this.showAlert(form, rateLimitedMessage(this.dataset.phoneDisplay ?? ''));
+    const actions = form.querySelector<HTMLElement>('.lead-form__alert-actions');
+    if (!actions) return;
+    actions.querySelector<HTMLAnchorElement>('[data-alert-whatsapp]')?.setAttribute('href', whatsappUrl);
+    actions.hidden = false;
+  }
+
   private showAlert(form: HTMLFormElement, message: string): void {
     const alert = form.querySelector('.lead-form__alert');
     if (alert) alert.textContent = message;
@@ -195,6 +209,8 @@ export class LeadForm extends HTMLElement {
   private clearAll(form: HTMLFormElement): void {
     for (const message of form.querySelectorAll('[data-error-for], .lead-form__alert')) message.textContent = '';
     for (const control of form.querySelectorAll('[aria-invalid]')) control.removeAttribute('aria-invalid');
+    const actions = form.querySelector<HTMLElement>('.lead-form__alert-actions');
+    if (actions) actions.hidden = true;
   }
 
   private showDone(form: HTMLFormElement, name: string, whatsappUrl: string, text: string): void {

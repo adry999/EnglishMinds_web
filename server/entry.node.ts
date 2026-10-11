@@ -6,6 +6,7 @@ import { createRequestHandler } from './handle-request';
 import { createDatabasePool } from './db/pool';
 import { hashIp } from './leads/ip-hash';
 import { createSmtpNotifier } from './leads/lead-notification';
+import { safeError } from './leads/safe-error';
 import { createMysqlLeadRepository } from './leads/lead.repository';
 import { consoleLogger, systemClock } from './leads/ports';
 import { createMysqlRateLimiter } from './leads/rate-limit';
@@ -24,6 +25,14 @@ function toWebRequest(req: IncomingMessage): Request {
     duplex: 'half',
   };
   return new Request(new URL(req.url ?? '/', 'http://localhost'), init);
+}
+
+function pathOf(target: string | undefined): string | null {
+  try {
+    return new URL(target ?? '/', 'http://localhost').pathname;
+  } catch {
+    return null;
+  }
 }
 
 async function sendWebResponse(response: Response, res: ServerResponse): Promise<void> {
@@ -52,7 +61,7 @@ createServer((req, res) => {
     )
     .then((response) => sendWebResponse(response, res))
     .catch((error: unknown) => {
-      console.error('[server] unhandled request error', { method: req.method, url: req.url, error });
+      console.error('[server] unhandled request error', { method: req.method, path: pathOf(req.url), ...safeError(error) });
       if (res.headersSent) {
         res.end();
         return;

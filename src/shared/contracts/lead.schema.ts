@@ -6,6 +6,9 @@ import { POLICY_VERSION } from './policy';
 export const LEAD_SOURCES = ['home', 'landing', 'test'] as const;
 export type LeadSource = (typeof LEAD_SOURCES)[number];
 
+/** Minimum fill time the server expects; the client waits slightly longer. */
+export const MIN_ELAPSED_MS = 3000;
+
 export const TEST_LEVEL_PATTERN = /^(level|exam):[a-z0-9-]{1,24}$/;
 
 const NO_INVISIBLE_CHARS = /^[^\p{Cc}\p{Cf}\p{Zl}\p{Zp}]*$/u;

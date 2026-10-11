@@ -1,8 +1,6 @@
-import { validateLead, type LeadField } from '@shared/contracts/lead.schema';
+import { MIN_ELAPSED_MS, validateLead, type LeadField } from '@shared/contracts/lead.schema';
 import type { Clock, LeadNotifier, LeadRecord, LeadRepository, Logger, RateLimiter } from './ports';
 import { safeError } from './safe-error';
-
-export const MIN_ELAPSED_MS = 3000;
 
 export type SubmitLeadDeps = {
   readonly repository: LeadRepository;
