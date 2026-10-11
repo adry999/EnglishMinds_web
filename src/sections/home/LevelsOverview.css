@@ -15,6 +15,11 @@
   font-size: clamp(2rem, 5vw, 3.5rem);
 }
 
+.levels-overview__eyebrow {
+  display: block;
+  margin-bottom: 12px;
+}
+
 .levels-overview__head p {
   max-width: 380px;
   margin: 0;

@@ -101,6 +101,32 @@ export default defineConfig(
     },
   },
   {
+    files: ['src/sections/**'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            noDeepRelative,
+            {
+              regex: '^@features/[^/]+/.+',
+              message: 'Paginile importă un feature doar prin index-ul lui: @features/<nume>.',
+            },
+            {
+              regex: '^\\.{1,2}/(.*/)?features/',
+              message: 'Paginile importă un feature doar prin @features/<nume>.',
+            },
+            { group: ['@layouts/*'], message: 'Secțiunile nu importă layout-uri.' },
+            {
+              regex: '^\\.{1,2}/(.*/)?layouts/',
+              message: 'Secțiunile nu importă layout-uri.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     files: ['src/features/**'],
     rules: {
       'no-restricted-imports': [

@@ -1,13 +1,12 @@
 ---
 import { site } from '@shared/content/site';
-import Eyebrow from '@shared/ui/Eyebrow.astro';
+import '@shared/ui/Eyebrow.css';
 import './LevelsOverview.css';
 ---
 <section class="levels-overview" id="cursuri" aria-labelledby="cursuri-heading">
   <div class="levels-overview__head">
     <div>
-      <Eyebrow>Grupele de vârstă</Eyebrow>
-      <h2 id="cursuri-heading">și structura cursurilor</h2>
+      <h2 id="cursuri-heading"><span class="eyebrow eyebrow--accent levels-overview__eyebrow">Grupele de vârstă</span> și structura cursurilor</h2>
     </div>
     <p>{site.courseFacts.duration}, într-o investiție în viitorul lui.</p>
   </div>

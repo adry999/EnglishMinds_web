@@ -130,6 +130,15 @@ describe('eslint boundaries', () => {
     );
   });
 
+  it('rejects a section importing a layout', async () => {
+    expect(await ruleIds(astroImport('@layouts/BaseLayout.astro'), 'src/sections/home/Hero.astro')).toContain(
+      'no-restricted-imports',
+    );
+    expect(await ruleIds(astroImport('../../layouts/BaseLayout.astro'), 'src/sections/home/Hero.astro')).toContain(
+      'no-restricted-imports',
+    );
+  });
+
   it('still rejects deep feature imports from a layout', async () => {
     expect(await ruleIds(astroImport('@features/faq/ui/Faq.astro'), 'src/layouts/BaseLayout.astro')).toContain(
       'no-restricted-imports',

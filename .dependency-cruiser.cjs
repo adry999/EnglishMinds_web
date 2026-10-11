@@ -44,6 +44,13 @@ module.exports = {
       to: { path: '^src/sections/' },
     },
     {
+      name: 'sections-not-to-layouts',
+      comment: 'Secțiunile nu importă layout-uri.',
+      severity: 'error',
+      from: { path: '^src/sections/' },
+      to: { path: '^src/layouts/' },
+    },
+    {
       name: 'server-only-contracts',
       comment: 'server/ importă din src/ doar shared/contracts/.',
       severity: 'error',

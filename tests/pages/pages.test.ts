@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { beforeAll, describe, expect, it } from 'vitest';
 
@@ -34,9 +34,15 @@ describe('built pages', () => {
     }
   });
 
+  it('blog shows the empty state and publishes no draft posts', () => {
+    expect(read('blog/index.html')).toContain('Primele articole apar în curând.');
+    const subfolders = readdirSync(join(dist, 'blog')).filter((name) => statSync(join(dist, 'blog', name)).isDirectory());
+    expect(subfolders).toEqual([]);
+  });
+
   it('ships optimized images, not the original jpgs', () => {
-    expect(read('index.html')).toMatch(/type="image\/avif"/);
     const home = read('index.html');
+    expect(home).toMatch(/type="image\/avif"/);
     expect(home).not.toMatch(/src="[^"]*ema-reading\.jpg"/);
     for (const img of home.match(/<img[^>]*>/g) ?? []) expect(img).toMatch(/srcset="[^"]*\.\w+ \d+w/);
   });
