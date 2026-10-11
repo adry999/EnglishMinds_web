@@ -9,6 +9,8 @@ describe('handleRequest', () => {
     const response = await handleRequest(new Request(`${BASE}/api/health`));
     expect(response.status).toBe(200);
     expect(response.headers.get('content-type')).toBe('application/json; charset=utf-8');
+    expect(response.headers.get('cache-control')).toBe('no-store');
+    expect(response.headers.get('x-content-type-options')).toBe('nosniff');
     expect(await response.json()).toEqual({ ok: true, policyVersion: POLICY_VERSION });
   });
 
