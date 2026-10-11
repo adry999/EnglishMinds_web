@@ -56,19 +56,6 @@
   line-height: 1.5;
 }
 
-.camp-includes__cta {
-  display: inline-flex;
-  align-items: center;
-  min-height: 56px;
-  padding: 14px 26px;
-  border-radius: var(--radius-pill);
-  background: var(--color-whatsapp);
-  color: var(--color-navy);
-  font-size: var(--text-button);
-  font-weight: 900;
-  text-decoration: none;
-}
-
 .camp-includes__cta:focus-visible {
   outline-color: var(--color-sun);
   outline-offset: 4px;

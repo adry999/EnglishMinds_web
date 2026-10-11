@@ -1,0 +1,26 @@
+---
+import EmaPortrait from '@shared/ui/EmaPortrait.astro';
+import WhatsAppButton from '@shared/ui/WhatsAppButton.astro';
+import './level-test.css';
+---
+<level-test class="level-test">
+  <div class="level-test__ema">
+    <EmaPortrait size="sm" alt="" />
+    <p class="level-test__bubble">Hei, eu sunt Ema! Alege testul și începem.</p>
+  </div>
+  <div class="level-test__card">
+    <div class="level-test__step">
+      <h2 class="level-test__title">Ce fel de test vrei să facă copilul?</h2>
+      <p class="level-test__fallback">
+        Testul pornește când JavaScript e activat în browser. Până atunci, scrie-ne pe WhatsApp și îți spunem grupa
+        potrivită.
+      </p>
+      <WhatsAppButton label="Scrie-ne pe WhatsApp" />
+    </div>
+  </div>
+</level-test>
+
+<script>
+  import { defineLevelTest } from './level-test.element';
+  defineLevelTest();
+</script>

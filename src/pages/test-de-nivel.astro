@@ -1,0 +1,24 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { LevelTest } from '@features/level-test';
+import Footer from '@shared/ui/Footer.astro';
+import Header from '@shared/ui/Header.astro';
+---
+<BaseLayout
+  title="Test de nivel"
+  description="Test de engleză gratuit pentru copii de 5–14 ani: 12 întrebări adaptate vârstei, cu audio, nivelul recomandat și diplomă la final."
+>
+  <Header active="test" />
+  <main id="continut" class="level-test-page">
+    <h1 class="visually-hidden">Test de nivel la engleză pentru copii</h1>
+    <LevelTest />
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  .level-test-page {
+    padding: 40px var(--gutter) 80px;
+    background: var(--gradient-hero);
+  }
+</style>

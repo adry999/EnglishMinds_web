@@ -19,22 +19,7 @@
   font-weight: 900;
 }
 
-.test-band__cta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 56px;
-  padding: 14px 32px;
-  border-radius: var(--radius-pill);
-  background: var(--color-navy);
-  color: var(--color-white);
-  font-size: var(--text-button);
-  font-weight: 900;
-  text-decoration: none;
-}
-
 .test-band__cta:focus-visible {
-  outline-color: var(--color-navy);
   outline-offset: 4px;
 }
 

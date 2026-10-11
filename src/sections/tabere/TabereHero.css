@@ -33,19 +33,6 @@
   line-height: 1.5;
 }
 
-.tabere-hero__cta {
-  display: inline-flex;
-  align-items: center;
-  min-height: 56px;
-  padding: 14px 28px;
-  border-radius: var(--radius-pill);
-  background: var(--color-navy);
-  color: var(--color-white);
-  font-size: var(--text-button);
-  font-weight: 900;
-  text-decoration: none;
-}
-
 .tabere-hero__cta:focus-visible {
   outline-offset: 4px;
 }

@@ -3,7 +3,7 @@ import { join, resolve } from 'node:path';
 import { beforeAll, describe, expect, it } from 'vitest';
 
 const dist = resolve(import.meta.dirname, '../../dist');
-const PAGES = ['index.html', 'grupe/index.html', 'metoda-cambridge/index.html', 'tabere/index.html', 'blog/index.html', '404.html'];
+const PAGES = ['index.html', 'grupe/index.html', 'metoda-cambridge/index.html', 'tabere/index.html', 'test-de-nivel/index.html', 'blog/index.html', '404.html'];
 
 const read = (page: string) => readFileSync(join(dist, page), 'utf8');
 
@@ -32,6 +32,13 @@ describe('built pages', () => {
       expect(home).toContain(`href="/grupe/#${slug}"`);
       expect(grupe).toContain(`id="${slug}"`);
     }
+  });
+
+  it('level test page ships the element, the WhatsApp fallback and the active nav link', () => {
+    const html = read('test-de-nivel/index.html');
+    expect(html).toContain('<level-test');
+    expect(html).toContain('href="https://wa.me/40775630680"');
+    expect(html).toMatch(/<a[^>]*href="\/test-de-nivel\/"[^>]*aria-current="page"|<a[^>]*aria-current="page"[^>]*href="\/test-de-nivel\/"/);
   });
 
   it('blog shows the empty state and publishes no draft posts', () => {

@@ -69,35 +69,6 @@
   gap: 12px;
 }
 
-.home-hero__primary,
-.home-hero__secondary {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 56px;
-  padding: 16px 28px;
-  border-radius: var(--radius-pill);
-  font-size: var(--text-button);
-  font-weight: 900;
-  text-align: center;
-  text-decoration: none;
-}
-
-.home-hero__primary {
-  background: var(--color-sun);
-  color: var(--color-navy);
-  box-shadow: 0 6px 0 var(--color-sun-shadow);
-}
-
-.home-hero__secondary {
-  border: 3px solid var(--color-white);
-  color: var(--color-white);
-}
-
-.home-hero__secondary:focus-visible {
-  outline-color: var(--color-white);
-}
-
 .home-hero__bubble {
   position: absolute;
   top: 8px;
