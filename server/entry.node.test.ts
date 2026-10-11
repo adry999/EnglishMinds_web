@@ -5,6 +5,21 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
+const TEST_ENV = {
+  DB_HOST: '127.0.0.1',
+  DB_PORT: '1',
+  DB_USER: 'test',
+  DB_PASSWORD: 'test',
+  DB_NAME: 'test',
+  SMTP_HOST: '127.0.0.1',
+  SMTP_PORT: '1',
+  SMTP_USER: 'test',
+  SMTP_PASSWORD: 'test',
+  MAIL_FROM: 'site@example.test',
+  MAIL_TO: 'office@example.test',
+  IP_HASH_SALT: 'x'.repeat(32),
+};
+
 const port = 39000 + Math.floor(Math.random() * 1000);
 const base = `http://127.0.0.1:${port}`;
 let dir: string;
@@ -14,7 +29,7 @@ beforeAll(async () => {
   dir = mkdtempSync(join(tmpdir(), 'em-server-'));
   const outfile = join(dir, 'app.cjs');
   execFileSync(process.execPath, ['scripts/build-server.mjs', '--outfile', outfile], { stdio: 'inherit' });
-  child = spawn(process.execPath, [outfile], { env: { ...process.env, PORT: String(port) } });
+  child = spawn(process.execPath, [outfile], { env: { ...process.env, ...TEST_ENV, PORT: String(port) } });
   await new Promise<void>((resolve, reject) => {
     child.stdout?.on('data', (chunk: Buffer) => {
       if (chunk.toString().includes('listening')) resolve();
