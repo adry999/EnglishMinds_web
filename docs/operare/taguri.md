@@ -11,7 +11,7 @@ Site-ul încarcă Google Analytics 4, Google Ads și Meta Pixel doar după acord
 | Marketing | Meta | `_fbp`, `_fbc` | 90 de zile |
 | Marketing | Google Ads | `_gcl_*` | 90 de zile |
 
-Duratile furnizorilor sunt orientative și pot varia (conform furnizorului).
+Duratele furnizorilor sunt orientative și pot varia (conform furnizorului).
 
 Tabelul e baza pentru politica de cookies din etapa 6.
 
