@@ -3,7 +3,7 @@ import { join, resolve } from 'node:path';
 import { beforeAll, describe, expect, it } from 'vitest';
 
 const dist = resolve(import.meta.dirname, '../../dist');
-const PAGES = ['index.html', 'grupe/index.html', 'metoda-cambridge/index.html', 'tabere/index.html', 'blog/index.html', '404.html'];
+const PAGES = ['index.html', 'grupe/index.html', 'metoda-cambridge/index.html', 'tabere/index.html', 'test-de-nivel/index.html', 'blog/index.html', '404.html'];
 
 const read = (page: string) => readFileSync(join(dist, page), 'utf8');
 
