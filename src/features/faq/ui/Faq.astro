@@ -1,0 +1,29 @@
+---
+import type { FaqEntry } from '@shared/content/site';
+import './faq.css';
+
+interface Props {
+  items: readonly FaqEntry[];
+  heading?: string;
+}
+
+const { items, heading = 'Întrebări frecvente' } = Astro.props;
+---
+<section class="faq" aria-labelledby="faq-heading">
+  <h2 id="faq-heading" class="faq__heading">{heading}</h2>
+  <faq-list>
+    {items.map((item, index) => (
+      <div class="faq__item">
+        <h3 class="faq__question">{item.question}</h3>
+        <div class="faq__answer" id={`faq-answer-${index}`}>
+          <p>{item.answer}</p>
+        </div>
+      </div>
+    ))}
+  </faq-list>
+</section>
+
+<script>
+  import { defineFaqList } from './faq.element';
+  defineFaqList();
+</script>
