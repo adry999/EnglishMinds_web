@@ -1,0 +1,11 @@
+---
+import { site } from '@shared/content/site';
+import 'vanilla-cookieconsent/dist/cookieconsent.css';
+import './cookie-consent.css';
+---
+<cookie-consent data-tracking={JSON.stringify(site.tracking)}></cookie-consent>
+
+<script>
+  import { defineCookieConsent } from './cookie-consent.element';
+  defineCookieConsent();
+</script>

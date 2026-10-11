@@ -1,0 +1,140 @@
+// @vitest-environment happy-dom
+// @vitest-environment-options { "settings": { "disableJavaScriptFileLoading": true, "handleDisabledFileLoadingAsSuccess": true } }
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type * as CookieConsentApi from 'vanilla-cookieconsent';
+import { createLeadSubmitted } from '@shared/contracts/domain-events';
+import { FBEVENTS_SRC, GTAG_URL } from '../model/tag-plan';
+
+const lib = vi.hoisted(() => ({
+  config: null as CookieConsentApi.CookieConsentConfig | null,
+  accepted: new Set<string>(),
+}));
+
+vi.mock('vanilla-cookieconsent', () => ({
+  run: vi.fn(async (config: CookieConsentApi.CookieConsentConfig) => {
+    lib.config = config;
+  }),
+  acceptedCategory: vi.fn((name: string) => lib.accepted.has(name)),
+}));
+
+const { run } = await import('vanilla-cookieconsent');
+const { defineCookieConsent } = await import('./cookie-consent.element');
+const { COOKIE_REVISION } = await import('./consent-config');
+
+const TRACKING = {
+  ga4MeasurementId: 'G-ABC123XYZ',
+  metaPixelId: '123456789012345',
+  googleAdsId: 'AW-1234567890',
+  googleAdsLeadLabel: 'AbC-dEf_123',
+};
+
+type TestWindow = Window & { dataLayer: unknown[]; gtag: (...args: unknown[]) => void; fbq?: unknown; _fbq?: unknown };
+const win = window as unknown as TestWindow;
+
+function mount(): HTMLElement {
+  const el = document.createElement('cookie-consent');
+  el.dataset.tracking = JSON.stringify(TRACKING);
+  document.body.append(el);
+  return el;
+}
+
+const commands = () => win.dataLayer.map((entry) => Array.from(entry as ArrayLike<unknown>));
+const scriptSrcs = () => Array.from(document.head.querySelectorAll('script')).map((s) => s.getAttribute('src'));
+const consent = () => lib.config?.onConsent?.({ cookie: {} as CookieConsentApi.CookieValue });
+const change = () =>
+  lib.config?.onChange?.({ cookie: {} as CookieConsentApi.CookieValue, changedCategories: [], changedServices: {} });
+
+beforeEach(() => {
+  defineCookieConsent();
+  lib.config = null;
+  lib.accepted.clear();
+  vi.mocked(run).mockClear();
+  win.dataLayer = [];
+  win.gtag = (...args: unknown[]) => {
+    win.dataLayer.push(args);
+  };
+  delete win.fbq;
+  delete win._fbq;
+});
+
+afterEach(() => {
+  document.body.innerHTML = '';
+  document.head.innerHTML = '';
+});
+
+describe('<cookie-consent>', () => {
+  it('starts the library once, in Romanian, with equal Accept/Refuz buttons', () => {
+    const el = mount();
+    el.remove();
+    document.body.append(el);
+    expect(run).toHaveBeenCalledTimes(1);
+    const config = lib.config;
+    expect(config?.language.default).toBe('ro');
+    expect(config?.revision).toBe(COOKIE_REVISION);
+    expect(config?.categories.necessary).toMatchObject({ enabled: true, readOnly: true });
+    expect(Object.keys(config?.categories ?? {})).toEqual(['necessary', 'analytics', 'marketing']);
+    expect(config?.guiOptions?.consentModal?.equalWeightButtons).toBe(true);
+    expect(config?.guiOptions?.preferencesModal?.equalWeightButtons).toBe(true);
+  });
+
+  it('loads nothing and calls nothing after a refusal', () => {
+    mount();
+    consent();
+    expect(scriptSrcs()).toEqual([]);
+    expect(commands()).toEqual([]);
+  });
+
+  it('loads gtag.js and the pixel once on accept all, even if onChange repeats the choice', () => {
+    mount();
+    lib.accepted = new Set(['analytics', 'marketing']);
+    consent();
+    change();
+    expect(scriptSrcs()).toEqual([`${GTAG_URL}?id=G-ABC123XYZ`, FBEVENTS_SRC]);
+    const configs = commands().filter((c) => c[0] === 'config');
+    expect(configs).toEqual([
+      ['config', 'G-ABC123XYZ'],
+      ['config', 'AW-1234567890'],
+    ]);
+    const queue = (win.fbq as { queue: unknown[][] }).queue;
+    expect(queue).toContainEqual(['init', '123456789012345']);
+  });
+
+  it('turns lead.submitted into GA4, Ads and Meta Lead events when everything is accepted', () => {
+    const el = mount();
+    lib.accepted = new Set(['analytics', 'marketing']);
+    consent();
+    const form = document.createElement('div');
+    el.after(form);
+    form.dispatchEvent(createLeadSubmitted({ source: 'landing', ageGroup: null }));
+    expect(commands()).toContainEqual(['event', 'generate_lead', { send_to: 'G-ABC123XYZ', lead_source: 'landing' }]);
+    expect(commands()).toContainEqual(['event', 'conversion', { send_to: 'AW-1234567890/AbC-dEf_123' }]);
+    expect((win.fbq as { queue: unknown[][] }).queue).toContainEqual(['track', 'Lead', { content_name: 'landing' }]);
+  });
+
+  it('sends no Lead anywhere after a refusal', () => {
+    mount();
+    consent();
+    document.body.dispatchEvent(createLeadSubmitted({ source: 'home', ageGroup: null }));
+    expect(commands()).toEqual([]);
+    expect(win.fbq).toBeUndefined();
+  });
+
+  it('stops listening once removed', () => {
+    const el = mount();
+    lib.accepted = new Set(['analytics']);
+    consent();
+    el.remove();
+    win.dataLayer = [];
+    document.body.dispatchEvent(createLeadSubmitted({ source: 'home', ageGroup: null }));
+    expect(commands()).toEqual([]);
+  });
+
+  it('treats a missing or broken data-tracking as no ids', () => {
+    const el = document.createElement('cookie-consent');
+    el.dataset.tracking = '{not json';
+    document.body.append(el);
+    lib.accepted = new Set(['analytics', 'marketing']);
+    consent();
+    expect(scriptSrcs()).toEqual([]);
+  });
+});
