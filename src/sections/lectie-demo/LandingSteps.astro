@@ -1,0 +1,23 @@
+---
+import './lectie-demo.css';
+
+const STEPS = [
+  { title: 'Completezi formularul', text: 'Durează 30 de secunde.' },
+  { title: 'Te sunăm', text: 'Stabilim împreună ziua și ora potrivită.' },
+  { title: 'Copilul vine la lecție', text: 'La final îți spunem nivelul și grupa recomandată.' },
+];
+---
+<section class="landing-steps" aria-labelledby="landing-steps-heading">
+  <div class="landing-steps__inner">
+    <h2 id="landing-steps-heading" class="visually-hidden">Cum se desfășoară</h2>
+    <ol class="landing-steps__list">
+      {STEPS.map((step, index) => (
+        <li class="landing-steps__card">
+          <span class="landing-steps__number" aria-hidden="true">{index + 1}</span>
+          <h3>{step.title}</h3>
+          <p>{step.text}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>

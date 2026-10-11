@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
+import { LeadForm } from '@features/lead-capture';
 import { LevelTest } from '@features/level-test';
 import Footer from '@shared/ui/Footer.astro';
 import Header from '@shared/ui/Header.astro';
@@ -12,6 +13,9 @@ import Header from '@shared/ui/Header.astro';
   <main id="continut" class="level-test-page">
     <h1 class="visually-hidden">Test de nivel la engleză pentru copii</h1>
     <LevelTest />
+    <section class="level-test-page__lead" aria-label="Rezervare lecție demo">
+      <LeadForm source="test" tone="cream" title="Rezervă lecția demo gratuită" headingLevel={2} showAgeGroups={false} hidden />
+    </section>
   </main>
   <Footer />
 </BaseLayout>
@@ -20,5 +24,18 @@ import Header from '@shared/ui/Header.astro';
   .level-test-page {
     padding: 40px var(--gutter) 80px;
     background: var(--gradient-hero);
+  }
+
+  .level-test-page__lead {
+    max-width: 720px;
+    margin: 32px auto 0;
+  }
+
+  .level-test-page__lead lead-form:not([hidden]) {
+    display: block;
+    padding: clamp(24px, 3vw, 40px);
+    border-radius: 32px;
+    background: var(--color-cream);
+    box-shadow: 0 24px 48px rgb(120 40 0 / 0.25);
   }
 </style>

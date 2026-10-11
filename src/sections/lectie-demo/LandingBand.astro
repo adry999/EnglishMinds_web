@@ -1,0 +1,14 @@
+---
+import { site } from '@shared/content/site';
+import WhatsAppButton from '@shared/ui/WhatsAppButton.astro';
+import './lectie-demo.css';
+---
+<section class="landing-band">
+  <div class="landing-band__inner">
+    <div class="landing-band__text">
+      <p class="landing-band__offer">{`${site.offer.label}: ${site.offer.headline}`}</p>
+      <p class="landing-band__address">{`${site.contact.street}, ${site.contact.city}`}</p>
+    </div>
+    <WhatsAppButton label="Scrie-ne pe WhatsApp" />
+  </div>
+</section>

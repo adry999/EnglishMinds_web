@@ -1,0 +1,11 @@
+---
+import { site } from '@shared/content/site';
+import Logo from '@shared/ui/Logo.astro';
+import './lectie-demo.css';
+---
+<header class="landing-header">
+  <div class="landing-header__inner">
+    <Logo />
+    <a class="landing-header__phone" href={`tel:${site.contact.phoneE164}`}>{site.contact.phoneDisplay}</a>
+  </div>
+</header>

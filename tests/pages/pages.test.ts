@@ -3,7 +3,7 @@ import { join, resolve } from 'node:path';
 import { beforeAll, describe, expect, it } from 'vitest';
 
 const dist = resolve(import.meta.dirname, '../../dist');
-const PAGES = ['index.html', 'grupe/index.html', 'metoda-cambridge/index.html', 'tabere/index.html', 'test-de-nivel/index.html', 'blog/index.html', '404.html'];
+const PAGES = ['index.html', 'grupe/index.html', 'metoda-cambridge/index.html', 'tabere/index.html', 'test-de-nivel/index.html', 'lectie-demo/index.html', 'blog/index.html', '404.html'];
 
 const read = (page: string) => readFileSync(join(dist, page), 'utf8');
 
@@ -39,6 +39,19 @@ describe('built pages', () => {
     expect(html).toContain('<level-test');
     expect(html).toContain('href="https://wa.me/40775630680"');
     expect(html).toMatch(/<a[^>]*href="\/test-de-nivel\/"[^>]*aria-current="page"|<a[^>]*aria-current="page"[^>]*href="\/test-de-nivel\/"/);
+  });
+
+  it('every lead form page ships its form with the right source', () => {
+    expect(read('index.html')).toMatch(/<lead-form[^>]*data-source="home"/);
+    expect(read('lectie-demo/index.html')).toMatch(/<lead-form[^>]*data-source="landing"/);
+    expect(read('test-de-nivel/index.html')).toMatch(/<lead-form[^>]*data-source="test"[^>]*hidden|<lead-form[^>]*hidden[^>]*data-source="test"/);
+  });
+
+  it('the landing page has no main navigation and keeps the phone and WhatsApp', () => {
+    const html = read('lectie-demo/index.html');
+    expect(html).not.toContain('site-header__nav');
+    expect(html).toContain('href="tel:+40775630680"');
+    expect(html).toContain('href="https://wa.me/40775630680"');
   });
 
   it('blog shows the empty state and publishes no draft posts', () => {

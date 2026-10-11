@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
 import { Faq } from '@features/faq';
+import { LeadForm } from '@features/lead-capture';
 import HomeContact from '@sections/home/HomeContact.astro';
 import HomeHero from '@sections/home/HomeHero.astro';
 import LevelsOverview from '@sections/home/LevelsOverview.astro';
@@ -26,7 +27,9 @@ import StickyContact from '@shared/ui/StickyContact.astro';
     <Faq items={site.faq} heading="Ce ne întreabă părinții" eyebrow="Întrebări frecvente">
       <p>Nu găsești răspunsul? Sună-ne la <a href={`tel:${site.contact.phoneE164}`}>{site.contact.phoneDisplay}</a>.</p>
     </Faq>
-    <HomeContact />
+    <HomeContact>
+      <LeadForm source="home" tone="navy" />
+    </HomeContact>
   </main>
   <Footer showCta={false} />
   <StickyContact demoHref="#contact" />
