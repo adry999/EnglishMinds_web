@@ -12,7 +12,7 @@
   gap: 12px;
 }
 
-.faq__intro p {
+.faq__intro > p:not(.eyebrow) {
   margin: 0;
   font-size: 1.125rem;
 }

@@ -1,7 +1,7 @@
 .home-hero {
   position: relative;
   overflow: hidden;
-  padding: 16px 0 72px;
+  padding: 16px 0 144px;
   background: var(--gradient-hero);
   color: var(--color-white);
 }
@@ -93,7 +93,7 @@
   color: var(--color-white);
 }
 
-.home-hero a:focus-visible {
+.home-hero__secondary:focus-visible {
   outline-color: var(--color-white);
 }
 
@@ -122,7 +122,7 @@
 
 @media (min-width: 768px) {
   .home-hero {
-    padding-block: 24px 96px;
+    padding-block: 24px 152px;
   }
 
   .home-hero__lead {
@@ -170,4 +170,8 @@
   .home-hero__ema {
     justify-self: end;
   }
+}
+
+.home-hero__primary:focus-visible {
+  outline-color: var(--color-navy);
 }

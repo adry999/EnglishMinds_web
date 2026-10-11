@@ -3,7 +3,8 @@ import { site } from '@shared/content/site';
 import Star from '@shared/ui/Star.astro';
 import './ValueCards.css';
 ---
-<section class="value-cards" aria-label="De ce English Minds">
+<section class="value-cards" aria-labelledby="valori-heading">
+  <h2 id="valori-heading" class="visually-hidden">De ce English Minds</h2>
   <ul>
     {site.values.map((value) => (
       <li class={`value-card value-card--${value.tone}`}>
