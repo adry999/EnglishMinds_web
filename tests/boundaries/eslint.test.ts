@@ -1,0 +1,54 @@
+import { ESLint } from 'eslint';
+import { describe, expect, it, vi } from 'vitest';
+
+// The first lint of a typescript-eslint + astro config loads the whole plugin set; allow for a cold start.
+vi.setConfig({ testTimeout: 60_000 });
+
+const eslint = new ESLint();
+
+async function ruleIds(code: string, filePath: string): Promise<string[]> {
+  const [result] = await eslint.lintText(code, { filePath });
+  return result.messages.map((message) => message.ruleId ?? `fatal: ${message.message}`);
+}
+
+const astroImport = (specifier: string) => `---\nimport X from '${specifier}';\n---\n<p>{X}</p>\n`;
+
+describe('eslint boundaries', () => {
+  it('rejects deep feature imports from an .astro page', async () => {
+    expect(await ruleIds(astroImport('@features/faq/ui/Faq.astro'), 'src/pages/x.astro')).toContain(
+      'no-restricted-imports',
+    );
+  });
+
+  it('allows a page to import a feature index', async () => {
+    expect(await ruleIds(astroImport('@features/faq'), 'src/pages/x.astro')).toEqual([]);
+  });
+
+  it('rejects a feature importing another feature', async () => {
+    expect(await ruleIds(astroImport('@features/faq'), 'src/features/blog/ui/A.astro')).toContain(
+      'no-restricted-imports',
+    );
+  });
+
+  it('rejects ../../ imports', async () => {
+    expect(
+      await ruleIds("import { a } from '../../features/x';\nexport const b = a;\n", 'src/shared/ui/x.ts'),
+    ).toContain('no-restricted-imports');
+  });
+
+  it('rejects export *', async () => {
+    expect(await ruleIds("export * from './a';\n", 'src/shared/x.ts')).toContain('no-restricted-syntax');
+  });
+
+  it('rejects DOM globals in model/', async () => {
+    expect(
+      await ruleIds('export const w = window.innerWidth;\n', 'src/features/level-test/model/m.ts'),
+    ).toContain('no-restricted-globals');
+  });
+
+  it('rejects an empty catch', async () => {
+    expect(
+      await ruleIds('export function f(g: () => void) {\n  try { g(); } catch {}\n}\n', 'src/shared/x.ts'),
+    ).toContain('no-empty');
+  });
+});
