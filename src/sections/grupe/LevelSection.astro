@@ -1,0 +1,35 @@
+---
+import type { Level } from '@shared/content/site';
+import Eyebrow from '@shared/ui/Eyebrow.astro';
+import Photo from '@shared/ui/Photo.astro';
+import Star from '@shared/ui/Star.astro';
+import './LevelSection.css';
+
+interface Props {
+  level: Level;
+}
+
+const { level } = Astro.props;
+---
+<section class="level-section" id={level.slug} aria-labelledby={`${level.slug}-heading`}>
+  <div class="level-section__intro">
+    <Eyebrow>{`Nivelul ${level.name} · ${level.ageGroup}`}</Eyebrow>
+    <h2 id={`${level.slug}-heading`}>{level.name}</h2>
+    <p class="level-section__description">{level.description}</p>
+    <div class="level-section__actions">
+      <a class="level-section__primary" href={`/lectie-demo/?grupa=${level.slug}`}>Rezervă lecția demo gratuită</a>
+      <a class="level-section__secondary" href="/test-de-nivel/">Nu știi nivelul? Fă testul</a>
+    </div>
+  </div>
+  <div class="level-section__photo">
+    <Photo photo={level.photo} alt="Copii la cursurile English Minds" sizes="(min-width: 1100px) 480px, 100vw" />
+  </div>
+  <div class="level-section__outcomes">
+    <h3>La finalul anului, copilul:</h3>
+    <ul>
+      {level.outcomes.map((outcome) => (
+        <li><Star size={30} /> <span>{outcome}</span></li>
+      ))}
+    </ul>
+  </div>
+</section>

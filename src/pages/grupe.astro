@@ -1,0 +1,23 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import CourseDetails from '@sections/grupe/CourseDetails.astro';
+import GrupeHero from '@sections/grupe/GrupeHero.astro';
+import LevelSection from '@sections/grupe/LevelSection.astro';
+import TestBand from '@sections/grupe/TestBand.astro';
+import { site } from '@shared/content/site';
+import Footer from '@shared/ui/Footer.astro';
+import Header from '@shared/ui/Header.astro';
+---
+<BaseLayout
+  title="Grupe"
+  description="Cinci grupe de engleză pe vârste, de la 5 la 14 ani: Starters, Pre A1, Movers, Flyers și A2 Key. Ce învață copilul la fiecare nivel."
+>
+  <Header active="grupe" />
+  <main id="continut">
+    <GrupeHero />
+    <CourseDetails />
+    {site.levels.map((level) => <LevelSection level={level} />)}
+    <TestBand />
+  </main>
+  <Footer />
+</BaseLayout>

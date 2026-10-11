@@ -1,0 +1,30 @@
+---
+import { site } from '@shared/content/site';
+import Eyebrow from '@shared/ui/Eyebrow.astro';
+import './CourseDetails.css';
+
+const { courseFacts, offer } = site;
+const FACTS = [
+  { label: 'Durată', value: courseFacts.duration },
+  { label: 'Zile', value: courseFacts.days },
+  { label: 'Mărimea grupei', value: courseFacts.groupSize },
+  { label: 'Manual', value: courseFacts.textbook },
+  { label: 'Preț', value: courseFacts.monthlyPrice },
+];
+---
+<section class="course-details" aria-labelledby="detalii-heading">
+  <Eyebrow tone="sun">Detalii curs</Eyebrow>
+  <h2 id="detalii-heading" class="visually-hidden">Detalii curs</h2>
+  <dl>
+    {FACTS.map((fact) => (
+      <div class="course-details__row">
+        <dt>{fact.label}</dt>
+        <dd>{fact.value}</dd>
+      </div>
+    ))}
+  </dl>
+  <div class="course-details__offer">
+    <p class="course-details__offer-label">{offer.label}</p>
+    <p class="course-details__offer-headline">{offer.headline}</p>
+  </div>
+</section>
