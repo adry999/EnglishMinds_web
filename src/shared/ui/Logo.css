@@ -1,0 +1,29 @@
+.logo {
+  display: inline-flex;
+  flex-direction: column;
+  line-height: 0.84;
+  font-weight: 900;
+  color: inherit;
+  text-decoration: none;
+}
+
+.logo__line {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 1.75rem;
+  letter-spacing: -0.02em;
+}
+
+.logo__star {
+  width: 21px;
+  height: 21px;
+  background: var(--color-sun);
+  clip-path: polygon(50% 0, 64.5% 24.9%, 93.3% 25%, 79% 50%, 93.3% 75%, 64.5% 75.1%, 50% 100%, 35.5% 75.1%, 6.7% 75%, 21% 50%, 6.7% 25%, 35.5% 24.9%);
+}
+
+.logo__academy {
+  margin: 4px 0 0 21px;
+  font-size: 0.875rem;
+  letter-spacing: 0.03em;
+}

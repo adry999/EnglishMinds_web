@@ -1,7 +1,14 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
 import { site } from '@shared/content/site';
+import Footer from '@shared/ui/Footer.astro';
+import Header from '@shared/ui/Header.astro';
 ---
-<html lang="ro">
-  <head><meta charset="utf-8" /><title>{site.name}</title></head>
-  <body><h1>{site.name}</h1></body>
-</html>
+<BaseLayout
+  title={site.name}
+  description="Cursuri de engleză după metoda Cambridge pentru copii de 5–14 ani, în Cluj-Napoca. Lecție demo gratuită."
+>
+  <Header active="acasa" />
+  <main id="continut" class="container"></main>
+  <Footer />
+</BaseLayout>

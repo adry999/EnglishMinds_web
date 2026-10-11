@@ -1,0 +1,11 @@
+---
+import { site } from '@shared/content/site';
+import Button from './Button.astro';
+
+interface Props {
+  label?: string;
+}
+
+const { label = 'WhatsApp' } = Astro.props;
+---
+<Button href={site.contact.whatsappUrl} variant="whatsapp">{label}</Button>
