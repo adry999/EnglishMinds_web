@@ -25,6 +25,23 @@ describe('createSpeech', () => {
     expect(spoken).toEqual([{ text: 'cat', lang: 'en-GB', rate: 0.85 }]);
   });
 
+  it('calls back when the utterance errors and cancels on demand', () => {
+    const cancel = vi.fn();
+    const utterances: { onerror?: () => void }[] = [];
+    const win = {
+      speechSynthesis: { cancel, speak: (u: { onerror?: () => void }) => utterances.push(u) },
+      SpeechSynthesisUtterance: class {},
+    } as unknown as Window;
+    const onError = vi.fn();
+    const speech = createSpeech(win);
+    speech.speak('cat', onError);
+    utterances[0]!.onerror!();
+    expect(onError).toHaveBeenCalledTimes(1);
+    cancel.mockClear();
+    speech.cancel();
+    expect(cancel).toHaveBeenCalledTimes(1);
+  });
+
   it('reports a failure instead of swallowing it', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
     const win = {

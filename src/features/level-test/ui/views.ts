@@ -110,7 +110,16 @@ function mediaView(question: Question, speechAvailable: boolean, on: Handlers): 
   }
 }
 
+let renderCount = 0;
+
 export function questionView(question: Question, index: number, total: number, speechAvailable: boolean, on: Handlers): Node {
+  renderCount += 1;
+  const instructionId = `level-test-instruction-${renderCount}`;
+  const mediaId = `level-test-media-${renderCount}`;
+  const media = mediaView(question, speechAvailable, on);
+  if (media instanceof HTMLElement) media.id = mediaId;
+  const title = heading(question.prompt, 'level-test__question');
+  title.setAttribute('aria-describedby', media ? `${instructionId} ${mediaId}` : instructionId);
   const options = question.options.map((option, optionIndex) => {
     const item = h(
       'button',
@@ -139,12 +148,13 @@ export function questionView(question: Question, index: number, total: number, s
         'aria-valuemin': 1,
         'aria-valuemax': total,
         'aria-valuenow': index + 1,
+        'aria-valuetext': `Întrebarea ${index + 1} din ${total}`,
       },
       h('span', { class: 'level-test__progress-fill', style: `width: ${((index + 1) / total) * 100}%` }),
     ),
-    h('p', { class: 'level-test__eyebrow' }, question.instruction),
-    mediaView(question, speechAvailable, on),
-    heading(question.prompt, 'level-test__question'),
+    h('p', { class: 'level-test__eyebrow', id: instructionId }, question.instruction),
+    media,
+    title,
     h('div', { class: 'level-test__options' }, ...options),
   );
 }
@@ -236,6 +246,7 @@ export function resultView(input: ResultViewInput, on: Handlers): Node {
         download,
         print,
         h('p', { class: 'level-test__diploma-error', role: 'alert' }),
+        h('p', { class: 'level-test__diploma-note', role: 'status' }),
       ),
     ),
     h(

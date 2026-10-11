@@ -2,7 +2,17 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { LEVEL_TEST_COMPLETED } from '@shared/contracts/domain-events';
 import { MID, YOUNG } from '../data/questions';
+import { createDiplomaCanvas, downloadDiploma, printDiploma } from '../diploma/render-diploma';
 import { defineLevelTest } from './level-test.element';
+
+vi.mock('../diploma/render-diploma', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../diploma/render-diploma')>();
+  return {
+    createDiplomaCanvas: vi.fn(actual.createDiplomaCanvas),
+    downloadDiploma: vi.fn(),
+    printDiploma: vi.fn(),
+  };
+});
 
 const MARKUP = `
   <level-test>
@@ -26,19 +36,56 @@ function answerAll(bank: typeof YOUNG, pick: (index: number) => number) {
   bank.forEach((_question, index) => optionButtons()[pick(index)]!.click());
 }
 
+const cleanups: (() => void)[] = [];
+
+function collectCompleted(): CustomEvent[] {
+  const events: CustomEvent[] = [];
+  const listener = (event: Event) => events.push(event as CustomEvent);
+  document.addEventListener(LEVEL_TEST_COMPLETED, listener);
+  cleanups.push(() => document.removeEventListener(LEVEL_TEST_COMPLETED, listener));
+  return events;
+}
+
+function finishWithName(name: string) {
+  button('Test de nivel').click();
+  button('5–6 ani').click();
+  button('Începe testul').click();
+  answerAll(YOUNG, () => 0);
+  const input = card().querySelector<HTMLInputElement>('input[name="childName"]')!;
+  input.value = name;
+  input.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
+function stubSpeech(speak: () => void, cancel = vi.fn()) {
+  vi.stubGlobal('speechSynthesis', { cancel, speak });
+  vi.stubGlobal(
+    'SpeechSynthesisUtterance',
+    class {
+      lang = '';
+      rate = 1;
+      constructor(public text: string) {}
+    },
+  );
+  mount();
+}
+
 describe('<level-test>', () => {
   beforeEach(() => {
+    vi.mocked(createDiplomaCanvas).mockClear();
+    vi.mocked(downloadDiploma).mockReset();
+    vi.mocked(printDiploma).mockReset();
     vi.stubGlobal('speechSynthesis', undefined);
     defineLevelTest();
     mount();
   });
 
   afterEach(() => {
+    cleanups.splice(0).forEach((cleanup) => cleanup());
     vi.unstubAllGlobals();
     vi.restoreAllMocks();
   });
 
-  it('replaces the no-JS fallback with the mode choice and focuses the heading', () => {
+  it('replaces the no-JS fallback with the mode choice without stealing focus on load', () => {
     expect(card().textContent).not.toContain('Fără JS');
     const heading = card().querySelector('h2')!;
     expect(heading.textContent).toBe('Ce fel de test vrei să facă copilul?');
@@ -86,16 +133,7 @@ describe('<level-test>', () => {
 
   it('speaks listening questions when speech is available', () => {
     const speak = vi.fn();
-    vi.stubGlobal('speechSynthesis', { cancel: vi.fn(), speak });
-    vi.stubGlobal(
-      'SpeechSynthesisUtterance',
-      class {
-        lang = '';
-        rate = 1;
-        constructor(public text: string) {}
-      },
-    );
-    mount();
+    stubSpeech(speak);
     button('Test de nivel').click();
     button('9–10 ani').click();
     button('Începe testul').click();
@@ -106,9 +144,37 @@ describe('<level-test>', () => {
     expect(speak).toHaveBeenCalledTimes(2);
   });
 
+  it('switches to the text fallback when speaking throws', () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    stubSpeech(() => {
+      throw new Error('no voice');
+    });
+    button('Test de nivel').click();
+    button('9–10 ani').click();
+    button('Începe testul').click();
+    optionButtons()[0]!.click();
+    optionButtons()[0]!.click();
+    expect(card().textContent).toContain('Browserul tău nu poate reda sunetul. Citește propoziția:');
+    expect(card().textContent).toContain('My brother is twelve years old.');
+    expect(button('Ascultă din nou')).toBeUndefined();
+  });
+
+  it('cancels speech when leaving a question and when disconnected', () => {
+    const cancel = vi.fn();
+    stubSpeech(vi.fn(), cancel);
+    button('Test de nivel').click();
+    button('9–10 ani').click();
+    button('Începe testul').click();
+    cancel.mockClear();
+    optionButtons()[0]!.click();
+    expect(cancel).toHaveBeenCalled();
+    cancel.mockClear();
+    document.querySelector('level-test')!.remove();
+    expect(cancel).toHaveBeenCalled();
+  });
+
   it('shows the result, emits level-test.completed once and asks for the name', () => {
-    const events: CustomEvent[] = [];
-    document.addEventListener(LEVEL_TEST_COMPLETED, (event) => events.push(event as CustomEvent));
+    const events = collectCompleted();
     button('Test de nivel').click();
     button('9–10 ani').click();
     button('Începe testul').click();
@@ -120,6 +186,17 @@ describe('<level-test>', () => {
     expect(events[0]!.detail).toEqual({ mode: 'level', level: 'a2-key', score: 12, total: 12 });
     expect(bubble()).toBe('Bravo! Scrie numele tău ca să-ți pregătesc diploma.');
     expect(button('Scrie numele ca să descarci').disabled).toBe(true);
+  });
+
+  it('emits a second completed event after restarting and finishing again', () => {
+    const events = collectCompleted();
+    finishWithName('Ana');
+    button('Fă un alt test').click();
+    button('Test de nivel').click();
+    button('5–6 ani').click();
+    button('Începe testul').click();
+    answerAll(YOUNG, () => 0);
+    expect(events).toHaveLength(2);
   });
 
   it('updates the diploma preview, Ema and WhatsApp link as the name is typed, as text only', () => {
@@ -143,13 +220,7 @@ describe('<level-test>', () => {
   it('shows a clear message when the diploma cannot be drawn', async () => {
     const error = vi.spyOn(console, 'error').mockImplementation(() => undefined);
     vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null);
-    button('Test de nivel').click();
-    button('5–6 ani').click();
-    button('Începe testul').click();
-    answerAll(YOUNG, () => 0);
-    const input = card().querySelector<HTMLInputElement>('input[name="childName"]')!;
-    input.value = 'Ana';
-    input.dispatchEvent(new Event('input', { bubbles: true }));
+    finishWithName('Ana');
     button('Descarcă diploma (PNG)').click();
     await vi.waitFor(() =>
       expect(card().querySelector('[role="alert"]')?.textContent).toBe(
@@ -160,14 +231,55 @@ describe('<level-test>', () => {
     error.mockRestore();
   });
 
+  describe('diploma export', () => {
+    const canvas = () => document.createElement('canvas');
+
+    it('downloads the diploma with the cleaned name', async () => {
+      const made = canvas();
+      vi.mocked(createDiplomaCanvas).mockResolvedValueOnce(made);
+      finishWithName('  Ana   Maria ');
+      button('Descarcă diploma (PNG)').click();
+      await vi.waitFor(() => expect(downloadDiploma).toHaveBeenCalledWith(document, made, 'Ana Maria'));
+      expect(vi.mocked(createDiplomaCanvas).mock.calls[0]![1].childName).toBe('Ana Maria');
+    });
+
+    it('prints without downloading when the print window opens', async () => {
+      const made = canvas();
+      vi.mocked(createDiplomaCanvas).mockResolvedValueOnce(made);
+      vi.mocked(printDiploma).mockReturnValue(true);
+      finishWithName('Ana');
+      button('Tipărește').click();
+      await vi.waitFor(() => expect(printDiploma).toHaveBeenCalledWith(window, made, 'Ana'));
+      expect(downloadDiploma).not.toHaveBeenCalled();
+    });
+
+    it('downloads and explains when the print popup is blocked', async () => {
+      const made = canvas();
+      vi.mocked(createDiplomaCanvas).mockResolvedValueOnce(made);
+      vi.mocked(printDiploma).mockReturnValue(false);
+      finishWithName('Ana');
+      button('Tipărește').click();
+      await vi.waitFor(() => expect(downloadDiploma).toHaveBeenCalledWith(document, made, 'Ana'));
+      expect(card().querySelector('[role="status"]')!.textContent).toBe(
+        'Fereastra de tipărire a fost blocată, am descărcat diploma ca imagine.',
+      );
+    });
+
+    it('disables the buttons while an export is pending', async () => {
+      let finish: (value: HTMLCanvasElement) => void = () => undefined;
+      vi.mocked(createDiplomaCanvas).mockReturnValueOnce(new Promise((resolve) => (finish = resolve)));
+      finishWithName('Ana');
+      button('Descarcă diploma (PNG)').click();
+      expect(button('Descarcă diploma (PNG)').disabled).toBe(true);
+      expect(button('Tipărește').disabled).toBe(true);
+      finish(canvas());
+      await vi.waitFor(() => expect(button('Descarcă diploma (PNG)').disabled).toBe(false));
+      expect(createDiplomaCanvas).toHaveBeenCalledTimes(1);
+    });
+  });
+
   it('restarts and keeps the typed name', () => {
-    button('Test de nivel').click();
-    button('5–6 ani').click();
-    button('Începe testul').click();
-    answerAll(YOUNG, () => 1);
-    const input = card().querySelector<HTMLInputElement>('input[name="childName"]')!;
-    input.value = 'Ana';
-    input.dispatchEvent(new Event('input', { bubbles: true }));
+    finishWithName('Ana');
     button('Fă un alt test').click();
     expect(card().querySelector('h2')!.textContent).toBe('Ce fel de test vrei să facă copilul?');
     button('Test de nivel').click();
@@ -180,8 +292,39 @@ describe('<level-test>', () => {
   it('does not enhance twice when reconnected', () => {
     const element = document.querySelector('level-test')!;
     button('Test de nivel').click();
+    const title = card().querySelector('h2')!;
+    const replace = vi.spyOn(card(), 'replaceChildren');
     element.remove();
     document.body.append(element);
-    expect(card().querySelector('h2')!.textContent).toBe('Câți ani are copilul?');
+    expect(card().querySelector('h2')).toBe(title);
+    expect(replace).not.toHaveBeenCalled();
+  });
+
+  it('advances the progress bar and names the question for screen readers', () => {
+    button('Test de nivel').click();
+    button('5–6 ani').click();
+    button('Începe testul').click();
+    const progress = () => card().querySelector('[role="progressbar"]')!;
+    expect(progress().getAttribute('aria-valuenow')).toBe('1');
+    expect(progress().getAttribute('aria-valuetext')).toBe(`Întrebarea 1 din ${YOUNG.length}`);
+    optionButtons()[0]!.click();
+    expect(progress().getAttribute('aria-valuenow')).toBe('2');
+    expect(progress().getAttribute('aria-valuetext')).toBe(`Întrebarea 2 din ${YOUNG.length}`);
+  });
+
+  it('describes the question heading by its instruction and passage', () => {
+    button('Test de nivel').click();
+    button('9–10 ani').click();
+    button('Începe testul').click();
+    optionButtons()[0]!.click();
+    optionButtons()[0]!.click();
+    const title = card().querySelector('h2')!;
+    const described = title
+      .getAttribute('aria-describedby')!
+      .split(' ')
+      .map((id) => document.getElementById(id)?.textContent ?? '');
+    expect(described).toHaveLength(2);
+    expect(described[0]).toBe(MID[2]!.instruction);
+    expect(described[1]).toContain('My brother is twelve years old.');
   });
 });

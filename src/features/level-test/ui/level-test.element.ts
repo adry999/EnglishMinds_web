@@ -10,11 +10,14 @@ import { currentQuestion, INITIAL_STATE, reduceTest, type TestAction, type TestS
 import { createSpeech, type Speech } from './speech';
 import { modeView, questionView, resultView, setupView, type Handlers } from './views';
 
+const PRINT_BLOCKED = 'Fereastra de tipărire a fost blocată, am descărcat diploma ca imagine.';
 const DIPLOMA_ERROR = 'Nu am putut pregăti diploma. Încearcă din nou sau fă o captură de ecran.';
 
 export class LevelTest extends HTMLElement {
   private state: TestState = INITIAL_STATE;
   private childName = '';
+  private speechFailed = false;
+  private exporting = false;
   private speech: Speech = createSpeech(window);
   private readonly handlers: Handlers = {
     chooseMode: (mode) => this.dispatch({ type: 'chooseMode', mode }),
@@ -42,6 +45,10 @@ export class LevelTest extends HTMLElement {
     this.render({ focus: false });
   }
 
+  disconnectedCallback(): void {
+    this.speech.cancel();
+  }
+
   private cardRegion(): HTMLElement | null {
     return this.querySelector<HTMLElement>(':scope > .level-test__card');
   }
@@ -50,6 +57,7 @@ export class LevelTest extends HTMLElement {
     const previous = this.state;
     this.state = reduceTest(this.state, action);
     if (this.state === previous) return;
+    if (previous.step === 'question' || action.type === 'restart') this.speech.cancel();
     const stepChanged = previous.step !== this.state.step;
     const isOptionChange = action.type === 'chooseOption';
     this.render({ focus: !isOptionChange || stepChanged, focusChoice: isOptionChange });
@@ -59,7 +67,14 @@ export class LevelTest extends HTMLElement {
 
   private speakCurrent(): void {
     const question = currentQuestion(this.state);
-    if (question?.kind === 'audio') this.speech.speak(question.say);
+    if (question?.kind !== 'audio') return;
+    if (!this.speech.speak(question.say, () => this.speechBroke())) this.speechBroke();
+  }
+
+  private speechBroke(): void {
+    if (this.speechFailed) return;
+    this.speechFailed = true;
+    if (this.state.step === 'question') this.render({ focus: false });
   }
 
   private resultData() {
@@ -92,7 +107,7 @@ export class LevelTest extends HTMLElement {
       const bank = selectBank(state.mode, state.choice);
       const question = bank[state.answers.length];
       if (!question) return;
-      view = questionView(question, state.answers.length, bank.length, this.speech.available, this.handlers);
+      view = questionView(question, state.answers.length, bank.length, this.speech.available && !this.speechFailed, this.handlers);
     } else {
       const data = this.resultData();
       if (!data) return;
@@ -100,7 +115,7 @@ export class LevelTest extends HTMLElement {
         {
           ...data,
           childName: this.childName,
-          whatsappUrl: resultWhatsappUrl(data.summary, data.score.score, data.score.total, this.childName),
+          whatsappUrl: resultWhatsappUrl(data.summary, data.score.score, data.score.total, cleanChildName(this.childName)),
           date: new Date(),
         },
         this.handlers,
@@ -135,11 +150,14 @@ export class LevelTest extends HTMLElement {
     }
     const download = region.querySelector<HTMLButtonElement>('.level-test__download');
     if (download) {
-      download.disabled = !hasName;
+      download.disabled = !hasName || this.exporting;
       download.textContent = hasName ? 'Descarcă diploma (PNG)' : 'Scrie numele ca să descarci';
     }
     const print = region.querySelector<HTMLButtonElement>('.level-test__print');
-    if (print) print.hidden = !hasName;
+    if (print) {
+      print.hidden = !hasName;
+      print.disabled = this.exporting;
+    }
     const whatsapp = region.querySelector<HTMLAnchorElement>('a.button--whatsapp');
     if (whatsapp) whatsapp.href = resultWhatsappUrl(data.summary, data.score.score, data.score.total, cleanName);
   }
@@ -148,9 +166,13 @@ export class LevelTest extends HTMLElement {
     const data = this.resultData();
     const region = this.cardRegion();
     const cleanName = cleanChildName(this.childName);
-    if (!data || !region || !cleanName) return;
+    if (!data || !region || !cleanName || this.exporting) return;
     const error = region.querySelector('.level-test__diploma-error');
+    const note = region.querySelector('.level-test__diploma-note');
     if (error) error.textContent = '';
+    if (note) note.textContent = '';
+    this.exporting = true;
+    this.refreshDiploma();
     try {
       const canvas = await createDiplomaCanvas(document, {
         childName: cleanName,
@@ -160,11 +182,17 @@ export class LevelTest extends HTMLElement {
         total: data.score.total,
         date: new Date(),
       });
-      if (kind === 'print' && printDiploma(window, canvas, cleanName)) return;
+      if (kind === 'print') {
+        if (printDiploma(window, canvas, cleanName)) return;
+        if (note) note.textContent = PRINT_BLOCKED;
+      }
       downloadDiploma(document, canvas, cleanName);
     } catch (cause) {
       console.error('[level-test] diploma nu a putut fi generată', cause);
       if (error) error.textContent = DIPLOMA_ERROR;
+    } finally {
+      this.exporting = false;
+      this.refreshDiploma();
     }
   }
 }
