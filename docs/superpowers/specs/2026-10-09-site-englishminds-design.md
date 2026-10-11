@@ -1,6 +1,6 @@
 # Site English Minds Academy — Design
 
-Data: 2026-10-09 · Status: în review · Audit de pornire: `docs/audit-2026-10-09.md`
+Data: 2026-10-09 · Status: aprobat (2026-10-11) · Audit de pornire: `docs/audit-2026-10-09.md`
 
 ## 1. Scop și criterii de succes
 
