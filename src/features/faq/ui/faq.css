@@ -59,12 +59,12 @@ faq-list[data-enhanced] .faq__question {
 }
 
 .faq__toggle::after {
-  content: '+';
+  content: '+' / '';
   font-weight: 900;
 }
 
 .faq__toggle[aria-expanded='true']::after {
-  content: '–';
+  content: '–' / '';
 }
 
 .faq__answer {

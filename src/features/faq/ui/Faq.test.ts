@@ -18,6 +18,14 @@ describe('Faq.astro', () => {
     expect(html).not.toMatch(/\shidden(?=[\s>=])/);
   });
 
+  it('derives ids from the id prop', async () => {
+    const container = await AstroContainer.create();
+    const html = await container.renderToString(Faq, { props: { items, id: 'intrebari' } });
+    expect(html).toContain('id="intrebari-answer-0"');
+    expect(html).toContain('aria-labelledby="intrebari-heading"');
+    expect(html).toContain('id="intrebari-heading"');
+  });
+
   it('uses the default heading', async () => {
     const container = await AstroContainer.create();
     expect(await container.renderToString(Faq, { props: { items } })).toContain('Întrebări frecvente');

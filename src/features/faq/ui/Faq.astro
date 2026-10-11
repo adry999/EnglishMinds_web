@@ -5,17 +5,18 @@ import './faq.css';
 interface Props {
   items: readonly FaqEntry[];
   heading?: string;
+  id?: string;
 }
 
-const { items, heading = 'Întrebări frecvente' } = Astro.props;
+const { items, heading = 'Întrebări frecvente', id = 'faq' } = Astro.props;
 ---
-<section class="faq" aria-labelledby="faq-heading">
-  <h2 id="faq-heading" class="faq__heading">{heading}</h2>
+<section class="faq" aria-labelledby={`${id}-heading`}>
+  <h2 id={`${id}-heading`} class="faq__heading">{heading}</h2>
   <faq-list>
     {items.map((item, index) => (
       <div class="faq__item">
         <h3 class="faq__question">{item.question}</h3>
-        <div class="faq__answer" id={`faq-answer-${index}`}>
+        <div class="faq__answer" id={`${id}-answer-${index}`}>
           <p>{item.answer}</p>
         </div>
       </div>
