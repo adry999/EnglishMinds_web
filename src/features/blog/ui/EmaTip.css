@@ -1,0 +1,45 @@
+.ema-tip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px;
+  padding: 32px;
+  border-radius: 32px;
+  background: var(--color-orange);
+  color: var(--color-white);
+}
+
+.ema-tip__text {
+  flex: 1 1 260px;
+}
+
+.ema-tip__text h2 {
+  margin: 0 0 8px;
+  font-size: 1.5rem;
+  font-weight: 900;
+}
+
+.ema-tip__text p {
+  margin: 0;
+  font-size: var(--text-button);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.ema-tip__cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 12px 28px;
+  border-radius: var(--radius-pill);
+  background: var(--color-sun);
+  box-shadow: 0 5px 0 var(--color-sun-shadow);
+  color: var(--color-navy);
+  font-size: 1.0625rem;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.ema-tip__cta:focus-visible {
+  outline-color: var(--color-white);
+}

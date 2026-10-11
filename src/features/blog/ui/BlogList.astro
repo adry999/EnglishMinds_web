@@ -1,0 +1,33 @@
+---
+import type { BlogPost } from '../data/posts';
+import { BLOG_CATEGORIES } from '../model/categories';
+import BlogCard from './BlogCard.astro';
+import './BlogList.css';
+
+interface Props {
+  posts: BlogPost[];
+}
+
+const { posts } = Astro.props;
+---
+{posts.length === 0 ? (
+  <p class="blog-list__empty">Primele articole apar în curând.</p>
+) : (
+  <blog-filter>
+    <div class="blog-filter__pills" role="group" aria-label="Filtrează după categorie">
+      <button type="button" data-category="" aria-pressed="true">Toate</button>
+      {BLOG_CATEGORIES.map((category) => (
+        <button type="button" data-category={category.id} aria-pressed="false">{category.label}</button>
+      ))}
+    </div>
+    <p class="blog-filter__status" aria-live="polite"></p>
+    <ul class="blog-filter__list" role="list">
+      {posts.map((post, index) => <BlogCard post={post} featured={index === 0} />)}
+    </ul>
+  </blog-filter>
+)}
+
+<script>
+  import { defineBlogFilter } from './blog-filter.element';
+  defineBlogFilter();
+</script>

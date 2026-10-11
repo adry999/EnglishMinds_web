@@ -14,6 +14,10 @@
   --color-white: #fff;
 
   --gradient-brand: linear-gradient(115deg, var(--color-orange) 0%, var(--color-orange-light) 100%);
+  --gradient-hero: linear-gradient(115deg, var(--color-orange) 0 55%, var(--color-orange-light) 100%);
+  --color-ema-bg: #ef8a2a;
+  --color-photo-bg: #f3e3c8;
+  --color-card-edge: var(--color-cream-border);
 
   --font-body: 'Nunito', system-ui, sans-serif;
   --font-label: 'Barlow Condensed', 'Arial Narrow', sans-serif;

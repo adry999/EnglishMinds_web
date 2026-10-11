@@ -1,0 +1,29 @@
+---
+import { site } from '@shared/content/site';
+import Eyebrow from '@shared/ui/Eyebrow.astro';
+import Star from '@shared/ui/Star.astro';
+import './LevelPath.css';
+---
+<section class="level-path" aria-labelledby="level-path-heading">
+  <div class="level-path__inner">
+    <Eyebrow>Drumul prin niveluri</Eyebrow>
+    <h2 id="level-path-heading">De la primele cuvinte la primul examen</h2>
+    <ol class="level-path__steps" role="list">
+      {site.levels.map((level, index) => (
+        <li class="level-path__step" style={`--step: ${index + 1}`}>
+          <span class="level-path__bar" aria-hidden="true"></span>
+          <span class="level-path__name">{level.name}</span>
+          <span class="level-path__age">{level.ageGroup}</span>
+        </li>
+      ))}
+      <li class="level-path__step level-path__step--next" style={`--step: ${site.levels.length + 1}`}>
+        <span class="level-path__bar" aria-hidden="true"><Star size={44} /></span>
+        <span class="level-path__name">B1 Preliminary</span>
+        <span class="level-path__age">următorul pas</span>
+      </li>
+    </ol>
+    <p class="level-path__note">
+      Examenele Cambridge sunt opționale. La final, copilul primește o diplomă recunoscută internațional, care arată exact ce știe.
+    </p>
+  </div>
+</section>

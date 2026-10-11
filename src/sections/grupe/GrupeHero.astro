@@ -1,0 +1,24 @@
+---
+import { site } from '@shared/content/site';
+import Eyebrow from '@shared/ui/Eyebrow.astro';
+import './GrupeHero.css';
+---
+<section class="grupe-hero">
+  <div class="grupe-hero__inner">
+    <Eyebrow>Grupele de vârstă</Eyebrow>
+    <h1>Ce va învăța copilul tău la cursurile noastre de limbă engleză</h1>
+    <p class="grupe-hero__lead">Cinci grupe, de la 5 la 14 ani. Alege grupa după vârstă sau fă testul de nivel.</p>
+  </div>
+  <nav class="grupe-hero__nav" aria-label="Sari la grupă">
+    <ul>
+      {site.levels.map((level) => (
+        <li>
+          <a href={`#${level.slug}`}>
+            <span class="grupe-hero__name">{level.name}</span>
+            <span class="grupe-hero__age">{level.ageGroup}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</section>

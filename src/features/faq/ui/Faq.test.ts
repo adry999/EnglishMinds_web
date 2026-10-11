@@ -30,4 +30,15 @@ describe('Faq.astro', () => {
     const container = await AstroContainer.create();
     expect(await container.renderToString(Faq, { props: { items } })).toContain('Întrebări frecvente');
   });
+
+  it('renders an optional eyebrow and intro content under the heading', async () => {
+    const container = await AstroContainer.create();
+    const html = await container.renderToString(Faq, {
+      props: { items, heading: 'Ce ne întreabă părinții', eyebrow: 'Întrebări frecvente' },
+      slots: { default: '<p>Sună-ne</p>' },
+    });
+    expect(html).toContain('Întrebări frecvente');
+    expect(html).toContain('Ce ne întreabă părinții');
+    expect(html).toContain('<p>Sună-ne</p>');
+  });
 });

@@ -42,9 +42,11 @@ export default defineConfig(
           patterns: [
             noDeepRelative,
             { group: ['@features/*'], message: 'shared/ și core/ nu depind de feature-uri.' },
+            { group: ['@sections/*'], message: 'shared/ și core/ nu depind de secțiuni.' },
+            { group: ['@layouts/*'], message: 'shared/ și core/ nu depind de layout-uri.' },
             {
-              regex: '^\\.{1,2}/(.*/)?(features|pages|layouts)/',
-              message: 'shared/ și core/ nu depind de feature-uri, pagini sau layout-uri.',
+              regex: '^\\.{1,2}/(.*/)?(features|pages|layouts|sections)/',
+              message: 'shared/ și core/ nu depind de feature-uri, pagini, layout-uri sau secțiuni.',
             },
           ],
         },
@@ -52,7 +54,7 @@ export default defineConfig(
     },
   },
   {
-    files: ['src/pages/**', 'src/layouts/**'],
+    files: ['src/pages/**', 'src/layouts/**', 'src/sections/**'],
     rules: {
       'no-restricted-imports': [
         'error',
@@ -73,6 +75,58 @@ export default defineConfig(
     },
   },
   {
+    files: ['src/layouts/**'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            noDeepRelative,
+            {
+              regex: '^@features/[^/]+/.+',
+              message: 'Layout-urile importă un feature doar prin index-ul lui: @features/<nume>.',
+            },
+            {
+              regex: '^\\.{1,2}/(.*/)?features/',
+              message: 'Layout-urile importă un feature doar prin @features/<nume>.',
+            },
+            { group: ['@sections/*'], message: 'Doar paginile și alte secțiuni importă din sections/.' },
+            {
+              regex: '^\\.{1,2}/(.*/)?sections/',
+              message: 'Doar paginile și alte secțiuni importă din sections/.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    files: ['src/sections/**'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            noDeepRelative,
+            {
+              regex: '^@features/[^/]+/.+',
+              message: 'Paginile importă un feature doar prin index-ul lui: @features/<nume>.',
+            },
+            {
+              regex: '^\\.{1,2}/(.*/)?features/',
+              message: 'Paginile importă un feature doar prin @features/<nume>.',
+            },
+            { group: ['@layouts/*'], message: 'Secțiunile nu importă layout-uri.' },
+            {
+              regex: '^\\.{1,2}/(.*/)?layouts/',
+              message: 'Secțiunile nu importă layout-uri.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     files: ['src/features/**'],
     rules: {
       'no-restricted-imports': [
@@ -84,6 +138,8 @@ export default defineConfig(
               group: ['@features/*'],
               message: 'Un feature nu importă alt feature; folosește un CustomEvent din @shared/contracts.',
             },
+            { group: ['@sections/*'], message: 'Un feature nu depinde de secțiunile paginilor.' },
+            { group: ['@layouts/*'], message: 'Un feature nu depinde de layout-uri.' },
           ],
         },
       ],
@@ -101,6 +157,8 @@ export default defineConfig(
               group: ['@features/*'],
               message: 'Un feature nu importă alt feature; folosește un CustomEvent din @shared/contracts.',
             },
+            { group: ['@sections/*'], message: 'Un feature nu depinde de secțiunile paginilor.' },
+            { group: ['@layouts/*'], message: 'Un feature nu depinde de layout-uri.' },
             {
               group: ['../*'],
               message: 'Un fișier din rădăcina unui feature nu iese din feature cu ../; folosește @shared/ sau @core/.',

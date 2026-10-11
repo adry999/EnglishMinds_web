@@ -1,6 +1,9 @@
 import { spawnSync } from 'node:child_process';
 import { join, resolve } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+// The first cruise on a cold start can exceed the default 5s.
+vi.setConfig({ testTimeout: 60_000 });
 
 const root = resolve(import.meta.dirname, '../..');
 const fixture = join(import.meta.dirname, 'fixture');
@@ -36,6 +39,10 @@ describe('dependency-cruiser boundaries', () => {
         'feature-not-to-app src/features/beta/ui/bad-to-page.ts',
         'model-must-be-pure src/features/beta/model/bad-impure.ts',
         'pages-use-feature-index src/pages/bad-deep-page.ts',
+        'pages-use-feature-index src/sections/home/bad-deep-section.ts',
+        'sections-not-to-layouts src/sections/home/bad-to-layout.ts',
+        'shared-core-are-leaves src/shared/bad-to-section.ts',
+        'sections-only-from-app src/shared/bad-to-section.ts',
         'server-only-contracts server/bad-leaky-server.ts',
         'shared-core-are-leaves src/shared/bad-leaky-shared.ts',
         'src-not-to-server src/shared/bad-to-server.ts',

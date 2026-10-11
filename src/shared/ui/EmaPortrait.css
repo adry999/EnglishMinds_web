@@ -1,0 +1,51 @@
+.ema-portrait {
+  --ema-size: 120px;
+  --ema-ring: 6px;
+  flex-shrink: 0;
+  width: var(--ema-size);
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: var(--ema-ring) solid var(--color-sun);
+  border-radius: 50%;
+  background: var(--color-ema-bg);
+}
+
+.ema-portrait picture {
+  display: block;
+}
+
+.ema-portrait__img {
+  display: block;
+  width: 161%;
+  max-width: none;
+  height: auto;
+  margin-top: -19.1%;
+  margin-left: -61%;
+}
+
+.ema-portrait--sm {
+  --ema-size: 60px;
+  --ema-ring: 4px;
+}
+
+.ema-portrait--md,
+.ema-portrait--lg {
+  --ema-size: 250px;
+  --ema-ring: 8px;
+  box-shadow: 0 16px 30px rgb(150 50 0 / 0.3);
+}
+
+@media (min-width: 768px) {
+  .ema-portrait--sm {
+    --ema-size: 120px;
+    --ema-ring: 6px;
+  }
+}
+
+@media (min-width: 1100px) {
+  .ema-portrait--lg {
+    --ema-size: 500px;
+    --ema-ring: 12px;
+    box-shadow: 0 24px 50px rgb(150 50 0 / 0.3);
+  }
+}

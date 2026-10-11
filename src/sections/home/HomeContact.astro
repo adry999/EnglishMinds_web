@@ -1,0 +1,35 @@
+---
+import { site } from '@shared/content/site';
+import Logo from '@shared/ui/Logo.astro';
+import WhatsAppButton from '@shared/ui/WhatsAppButton.astro';
+import './HomeContact.css';
+
+const { contact } = site;
+---
+<section class="home-contact" id="contact" aria-labelledby="contact-heading">
+  <div class="home-contact__inner">
+    <div class="home-contact__main">
+      <h2 id="contact-heading">Rezervă lecția{' '}<span class="home-contact__highlight">demo gratuită</span></h2>
+      <p>{Astro.slots.has('default')
+        ? 'Lasă-ne un număr de telefon și te sunăm să stabilim ziua și ora.'
+        : 'Scrie-ne pe WhatsApp sau sună-ne și stabilim împreună ziua și ora.'}</p>
+      <slot />
+      <div class="home-contact__actions">
+        <WhatsAppButton />
+      </div>
+    </div>
+    <div class="home-contact__card">
+      <p class="home-contact__label">Adresă</p>
+      <p class="home-contact__value">{`${contact.street}, ${contact.city}`}</p>
+      <a class="home-contact__maps" href={contact.mapsUrl}>Deschide în Google Maps</a>
+      <p class="home-contact__label">Telefon</p>
+      <a class="home-contact__phone" href={`tel:${contact.phoneE164}`}>{contact.phoneDisplay}</a>
+      <p class="home-contact__label">Instagram</p>
+      <a class="home-contact__value" href={contact.instagramUrl}>{contact.instagramHandle}</a>
+    </div>
+  </div>
+  <div class="home-contact__bottom">
+    <Logo />
+    <p>Cursuri de engleză pentru copii după metoda Cambridge · Cluj-Napoca</p>
+  </div>
+</section>

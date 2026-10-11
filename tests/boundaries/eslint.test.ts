@@ -94,4 +94,69 @@ describe('eslint boundaries', () => {
       'no-restricted-properties',
     );
   });
+
+  it('rejects deep feature imports from a section', async () => {
+    expect(await ruleIds(astroImport('@features/faq/ui/Faq.astro'), 'src/sections/home/Hero.astro')).toContain(
+      'no-restricted-imports',
+    );
+  });
+
+  it('allows a section to import a feature index and shared UI', async () => {
+    expect(await ruleIds(astroImport('@features/faq'), 'src/sections/home/Hero.astro')).toEqual([]);
+    expect(await ruleIds(astroImport('@shared/ui/Photo.astro'), 'src/sections/home/Hero.astro')).toEqual([]);
+  });
+
+  it('rejects shared UI importing a section', async () => {
+    expect(await ruleIds(astroImport('../../sections/home/Hero.astro'), 'src/shared/ui/X.astro')).toContain(
+      'no-restricted-imports',
+    );
+    expect(await ruleIds(astroImport('@sections/home/Hero.astro'), 'src/shared/ui/X.astro')).toContain(
+      'no-restricted-imports',
+    );
+  });
+
+  it('rejects a feature importing a section', async () => {
+    expect(await ruleIds(astroImport('@sections/home/Hero.astro'), 'src/features/blog/ui/A.astro')).toContain(
+      'no-restricted-imports',
+    );
+  });
+
+  it('rejects a layout importing a section', async () => {
+    expect(await ruleIds(astroImport('@sections/home/Hero.astro'), 'src/layouts/BaseLayout.astro')).toContain(
+      'no-restricted-imports',
+    );
+    expect(await ruleIds(astroImport('../sections/home/Hero.astro'), 'src/layouts/BaseLayout.astro')).toContain(
+      'no-restricted-imports',
+    );
+  });
+
+  it('rejects a section importing a layout', async () => {
+    expect(await ruleIds(astroImport('@layouts/BaseLayout.astro'), 'src/sections/home/Hero.astro')).toContain(
+      'no-restricted-imports',
+    );
+    expect(await ruleIds(astroImport('../../layouts/BaseLayout.astro'), 'src/sections/home/Hero.astro')).toContain(
+      'no-restricted-imports',
+    );
+  });
+
+  it('still rejects deep feature imports from a layout', async () => {
+    expect(await ruleIds(astroImport('@features/faq/ui/Faq.astro'), 'src/layouts/BaseLayout.astro')).toContain(
+      'no-restricted-imports',
+    );
+  });
+
+  it('allows pages and sections to import sections', async () => {
+    expect(await ruleIds(astroImport('@sections/home/Hero.astro'), 'src/pages/x.astro')).toEqual([]);
+    expect(await ruleIds(astroImport('@sections/home/Hero.astro'), 'src/sections/home/Other.astro')).toEqual([]);
+  });
+
+  it('rejects shared UI and features importing a layout, allows pages', async () => {
+    expect(await ruleIds(astroImport('@layouts/BaseLayout.astro'), 'src/shared/ui/X.astro')).toContain(
+      'no-restricted-imports',
+    );
+    expect(await ruleIds(astroImport('@layouts/BaseLayout.astro'), 'src/features/blog/ui/A.astro')).toContain(
+      'no-restricted-imports',
+    );
+    expect(await ruleIds(astroImport('@layouts/BaseLayout.astro'), 'src/pages/x.astro')).toEqual([]);
+  });
 });

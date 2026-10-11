@@ -1,0 +1,29 @@
+---
+import Badge from '@shared/ui/Badge.astro';
+import EmaPortrait from '@shared/ui/EmaPortrait.astro';
+import './HomeHero.css';
+---
+<section class="home-hero">
+  <div class="home-hero__inner">
+    <div class="home-hero__text">
+      <Badge>Start înscrieri pentru noul an școlar</Badge>
+      <h1 class="home-hero__title">
+        Engleză de la 5 ani, după metoda{' '}<span class="home-hero__accent">Cambridge</span>.
+      </h1>
+      <p class="home-hero__lead">
+        Grupe pe vârste, de la 5 la 14 ani, în Cluj-Napoca. Copiii învață pas cu pas, într-un mod adaptat vârstei lor.
+      </p>
+      <div class="home-hero__actions">
+        <a class="home-hero__primary" href="/test-de-nivel/">Descoperă nivelul copilului</a>
+        <a class="home-hero__secondary" href="#contact">Lecție demo gratuită</a>
+      </div>
+    </div>
+    <div class="home-hero__ema">
+      <EmaPortrait size="lg" eager />
+      <p class="home-hero__bubble">
+        Hei, eu sunt Ema!
+        <span class="home-hero__bubble-sub">Hai să învățăm împreună.</span>
+      </p>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,79 @@
+.three-things {
+  max-width: var(--container);
+  margin-inline: auto;
+  padding: 64px var(--gutter);
+}
+
+.three-things h2 {
+  margin: 0 0 32px;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.1;
+}
+
+.three-things ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.three-things__card {
+  padding: 32px;
+  border-radius: 28px;
+}
+
+.three-things__number {
+  display: block;
+  font-family: var(--font-label);
+  font-size: 2.75rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.three-things__card h3 {
+  margin: 12px 0;
+  font-size: 1.5rem;
+  line-height: 1.15;
+}
+
+.three-things__card p {
+  margin: 0;
+  font-size: var(--text-button);
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+.three-things__card--navy {
+  background: var(--color-navy);
+  color: var(--color-white);
+}
+
+.three-things__card--navy .three-things__number {
+  color: var(--color-sun);
+}
+
+.three-things__card--orange {
+  background: var(--color-orange);
+  color: var(--color-white);
+}
+
+.three-things__card--orange .three-things__number {
+  color: var(--color-cream);
+}
+
+.three-things__card--sun {
+  background: var(--color-sun);
+  color: var(--color-navy);
+}
+
+.three-things__card--sun .three-things__number {
+  color: var(--color-text-accent);
+}
+
+@media (min-width: 768px) {
+  .three-things {
+    padding-block: 88px;
+  }
+}

@@ -27,6 +27,7 @@ Design complet: `docs/superpowers/specs/2026-10-09-site-englishminds-design.md`.
 | Conținut editabil (contact, prețuri, niveluri, program) | `src/shared/content/site.ts` (singura sursă) |
 | Contracte (schema, evenimente) | `src/shared/contracts/` |
 | Componente UI comune | `src/shared/ui/` |
+| Secțiune a unei singure pagini | `src/sections/<pagină>/` (`.astro` + `.css`) |
 | Infrastructură fără domeniu | `src/core/` |
 | Articole, texte legale | `src/content/blog/`, `src/content/legal/` |
 | Backend | `server/` |
@@ -35,10 +36,11 @@ Design complet: `docs/superpowers/specs/2026-10-09-site-englishminds-design.md`.
 ## Granițe (verificate de dependency-cruiser)
 
 - `pages/`, `layouts/` → `features/*` (prin `index.ts`), `shared/`, `core/`, `styles/`.
+- `sections/` → `features/*` (prin `index.ts`), `shared/`, `core/`, `styles/`. Doar `pages/` și alte `sections/` importă din `sections/`.
 - Un feature nu importă alt feature. Comunică prin `CustomEvent`-uri definite în `shared/contracts/domain-events.ts`.
 - `model/` nu importă DOM, Astro sau rețea.
 - `server/` importă din `src/` doar `shared/contracts/`. `src/` nu importă din `server/`.
-- Fără `../../`; aliasuri `@features/`, `@shared/`, `@core/`. Un singur `../` e permis doar în interiorul aceluiași feature.
+- Fără `../../`; aliasuri `@features/`, `@shared/`, `@core/`, `@sections/`, `@layouts/`, `@assets/`. Un singur `../` e permis doar în interiorul aceluiași feature.
 - Fără barrel-uri în subfoldere și fără `export *`.
 - dependency-cruiser nu citește fișierele `.astro`; pentru `.astro` granițele sunt verificate de ESLint (`no-restricted-imports`) — orice regulă nouă se adaugă în ambele.
 
@@ -65,3 +67,4 @@ Design complet: `docs/superpowers/specs/2026-10-09-site-englishminds-design.md`.
 | 2026-10-09 | MySQL de la hosting, nu Supabase | Un singur furnizor în UE |
 | 2026-10-09 | Fără pagină `/admin` | Contactele vin pe email; GDPR prin phpMyAdmin |
 | 2026-10-09 | Plăți online în pauză | Etapă viitoare |
+| 2026-10-11 | Strat `src/sections/` pentru secțiunile unei pagini | Pagini subțiri fără a umfla `shared/ui` cu piese folosite o singură dată |

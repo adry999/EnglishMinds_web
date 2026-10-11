@@ -1,0 +1,10 @@
+---
+import './Eyebrow.css';
+
+interface Props {
+  tone?: 'accent' | 'sun' | 'white';
+}
+
+const { tone = 'accent' } = Astro.props;
+---
+<p class={`eyebrow eyebrow--${tone}`}><slot /></p>

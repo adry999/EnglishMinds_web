@@ -1,0 +1,21 @@
+---
+import Photo from './Photo.astro';
+import './EmaPortrait.css';
+
+interface Props {
+  size: 'sm' | 'md' | 'lg';
+  alt?: string;
+  eager?: boolean;
+}
+
+const SIZES = {
+  sm: '194px',
+  md: '403px',
+  lg: '(min-width: 1100px) 805px, 403px',
+} as const;
+
+const { size, alt = 'Ema, mascota English Minds Academy', eager = false } = Astro.props;
+---
+<div class={`ema-portrait ema-portrait--${size}`}>
+  <Photo photo="emaReading" alt={alt} sizes={SIZES[size]} eager={eager} class="ema-portrait__img" />
+</div>

@@ -1,0 +1,26 @@
+---
+import { site } from '@shared/content/site';
+import '@shared/ui/Eyebrow.css';
+import './LevelsOverview.css';
+---
+<section class="levels-overview" id="cursuri" aria-labelledby="cursuri-heading">
+  <div class="levels-overview__head">
+    <div>
+      <h2 id="cursuri-heading"><span class="eyebrow eyebrow--accent levels-overview__eyebrow">Grupele de vârstă</span> și structura cursurilor</h2>
+    </div>
+    <p>{site.courseFacts.duration}, într-o investiție în viitorul lui.</p>
+  </div>
+  <ul class="levels-overview__list">
+    {site.levels.map((level) => (
+      <li class="level-card">
+        <p class="level-card__age">{level.ageGroup}</p>
+        <h3 class="level-card__name">{level.name}</h3>
+        <p class="level-card__summary">{level.summary}</p>
+        <a class="level-card__link" href={`/grupe/#${level.slug}`}>
+          Detalii grupă <span aria-hidden="true">→</span>
+          <span class="visually-hidden"> {level.name}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</section>

@@ -1,0 +1,11 @@
+---
+import './Star.css';
+
+interface Props {
+  tone?: 'sun' | 'orange';
+  size?: number;
+}
+
+const { tone = 'sun', size = 28 } = Astro.props;
+---
+<span class={`star star--${tone}`} style={`--star-size: ${size}px`} aria-hidden="true"></span>

@@ -1,0 +1,65 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import EmaPortrait from '@shared/ui/EmaPortrait.astro';
+import Footer from '@shared/ui/Footer.astro';
+import Header from '@shared/ui/Header.astro';
+---
+<BaseLayout title="Pagina nu există" description="Pagina căutată nu există pe site-ul English Minds Academy.">
+  <Header />
+  <main id="continut" class="container not-found">
+    <EmaPortrait size="md" alt="" />
+    <h1>Ups, pagina asta nu există.</h1>
+    <p>Poate a fost mutată. Te ajutăm să ajungi unde voiai.</p>
+    <div class="not-found__actions">
+      <a class="not-found__primary" href="/">Mergi la pagina principală</a>
+      <a class="not-found__secondary" href="/test-de-nivel/">Fă testul de nivel</a>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  .not-found {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding-block: 64px 96px;
+    text-align: center;
+  }
+
+  .not-found h1 {
+    font-size: clamp(2rem, 5vw, 3.25rem);
+  }
+
+  .not-found p {
+    margin: 0;
+    font-size: 1.1875rem;
+  }
+
+  .not-found__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .not-found__actions a {
+    padding: 14px 26px;
+    border-radius: var(--radius-pill);
+    font-weight: 900;
+    font-size: var(--text-button);
+    text-decoration: none;
+  }
+
+  .not-found__primary {
+    background: var(--color-orange);
+    color: var(--color-white);
+    box-shadow: 0 5px 0 var(--color-orange-shadow);
+  }
+
+  .not-found__secondary {
+    border: 3px solid var(--color-navy);
+    color: var(--color-navy);
+  }
+</style>

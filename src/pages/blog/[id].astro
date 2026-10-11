@@ -1,0 +1,24 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { getPublishedPosts, PostArticle, type BlogPost } from '@features/blog';
+import Footer from '@shared/ui/Footer.astro';
+import Header from '@shared/ui/Header.astro';
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+  return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
+}
+
+interface Props {
+  post: BlogPost;
+}
+
+const { post } = Astro.props;
+---
+<BaseLayout title={post.data.title} description={post.data.description}>
+  <Header active="blog" />
+  <main id="continut">
+    <PostArticle post={post} />
+  </main>
+  <Footer />
+</BaseLayout>

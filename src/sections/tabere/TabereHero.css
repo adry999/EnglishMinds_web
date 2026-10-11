@@ -1,0 +1,69 @@
+.tabere-hero {
+  background: var(--color-sun);
+  color: var(--color-navy);
+}
+
+.tabere-hero__inner {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: 40px;
+  align-items: center;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding: 48px var(--gutter) 88px;
+}
+
+.tabere-hero__text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.tabere-hero h1 {
+  font-size: clamp(2.75rem, 6.5vw, 5rem);
+  line-height: 0.98;
+}
+
+.tabere-hero p:not(.badge) {
+  max-width: 520px;
+  margin: 0;
+  font-size: clamp(1.125rem, 2vw, 1.3125rem);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.tabere-hero__cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 56px;
+  padding: 14px 28px;
+  border-radius: var(--radius-pill);
+  background: var(--color-navy);
+  color: var(--color-white);
+  font-size: var(--text-button);
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.tabere-hero__cta:focus-visible {
+  outline-offset: 4px;
+}
+
+.tabere-hero__photo {
+  justify-self: center;
+  width: min(440px, 100%);
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 12px solid var(--color-white);
+  border-radius: 50%;
+  background: var(--color-photo-bg);
+}
+
+.tabere-hero__photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 60%;
+}

@@ -1,0 +1,36 @@
+---
+import './ThreeThings.css';
+
+const ITEMS = [
+  {
+    number: '01',
+    tone: 'navy',
+    title: 'Engleza se vorbește din prima lecție',
+    text: 'Copiii folosesc limba în jocuri, dialoguri și proiecte, nu doar memorează reguli.',
+  },
+  {
+    number: '02',
+    tone: 'orange',
+    title: 'Niveluri recunoscute internațional',
+    text: 'Fiecare nivel corespunde Cadrului European Comun de Referință (Pre A1, A1, A2, B1).',
+  },
+  {
+    number: '03',
+    tone: 'sun',
+    title: 'Adaptată vârstei',
+    text: 'Manuale și activități gândite separat pentru preșcolari, școlari și adolescenți.',
+  },
+] as const;
+---
+<section class="three-things" aria-labelledby="three-things-heading">
+  <h2 id="three-things-heading">Trei lucruri care contează</h2>
+  <ul role="list">
+    {ITEMS.map((item) => (
+      <li class={`three-things__card three-things__card--${item.tone}`}>
+        <span class="three-things__number" aria-hidden="true">{item.number}</span>
+        <h3>{item.title}</h3>
+        <p>{item.text}</p>
+      </li>
+    ))}
+  </ul>
+</section>

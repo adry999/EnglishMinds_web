@@ -14,7 +14,8 @@
     "test": "vitest run",
     "lint": "eslint .",
     "deps": "depcruise src server --config .dependency-cruiser.cjs --ts-config tsconfig.json",
-    "verify": "npm run lint && npm run check && npm run test && npm run deps && npm run build && npm run build:server"
+    "test:dist": "vitest run --config vitest.dist.config.ts",
+    "verify": "npm run lint && npm run check && npm run test && npm run deps && npm run build && npm run test:dist && npm run build:server"
   },
   "dependencies": {
     "@fontsource/barlow-condensed": "^5.3.0",

@@ -1,0 +1,22 @@
+.badge {
+  display: inline-block;
+  margin: 0;
+  padding: 6px 14px;
+  font-family: var(--font-label);
+  font-weight: 700;
+  font-size: 1.25rem;
+  line-height: 1.2;
+  text-transform: uppercase;
+  transform: rotate(-2deg);
+}
+
+.badge--white {
+  background: var(--color-white);
+  color: var(--color-text-accent);
+}
+
+.badge--orange {
+  background: var(--color-orange);
+  color: var(--color-white);
+  font-size: 1.375rem;
+}

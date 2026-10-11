@@ -1,0 +1,112 @@
+.levels-overview {
+  max-width: var(--container);
+  margin-inline: auto;
+  padding: 48px var(--gutter);
+}
+
+.levels-overview__head {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.levels-overview__head h2 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+}
+
+.levels-overview__eyebrow {
+  display: block;
+  margin-bottom: 12px;
+}
+
+.levels-overview__head p {
+  max-width: 380px;
+  margin: 0;
+  font-size: 1.1875rem;
+}
+
+.levels-overview__list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.level-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 20px;
+  border-radius: 20px;
+  background: var(--color-white);
+  box-shadow: 0 2px 0 var(--color-card-edge);
+}
+
+.level-card__age {
+  align-self: flex-start;
+  margin: 0;
+  padding: 4px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--color-peach);
+  color: var(--color-text-accent);
+  font-size: 0.9375rem;
+  font-weight: 900;
+}
+
+.level-card__name {
+  font-size: 1.5rem;
+}
+
+.level-card__summary {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.level-card__link {
+  margin-top: auto;
+  color: var(--color-text-accent);
+  font-size: 1rem;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.level-card__link:hover {
+  text-decoration: underline;
+}
+
+@media (min-width: 768px) {
+  .levels-overview {
+    padding-block: 72px;
+  }
+
+  .levels-overview__head {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 32px;
+  }
+
+  .levels-overview__list {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .level-card {
+    min-height: 260px;
+    padding: 28px 22px;
+    border-radius: var(--radius-card);
+  }
+
+  .level-card__name {
+    font-size: 1.875rem;
+  }
+}
+
+@media (min-width: 1100px) {
+  .levels-overview__list {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
