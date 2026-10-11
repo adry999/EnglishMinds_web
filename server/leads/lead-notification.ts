@@ -48,6 +48,7 @@ export function createSmtpNotifier(env: Pick<Environment, 'smtp' | 'mail'>, send
       host: env.smtp.host,
       port: env.smtp.port,
       secure: env.smtp.port === 465,
+      requireTLS: env.smtp.port !== 465,
       auth: { user: env.smtp.user, pass: env.smtp.password },
       connectionTimeout: 10_000,
       greetingTimeout: 10_000,
