@@ -1,4 +1,5 @@
 import { execFileSync, spawn, type ChildProcess } from 'node:child_process';
+import { connect } from 'node:net';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -44,8 +45,23 @@ describe('server bundle', () => {
     expect(await response.json()).toEqual({ ok: false, error: 'not_found' });
   });
 
-  it('answers HEAD without a body', async () => {
+  it('answers HEAD /api/health with 200', async () => {
     const response = await fetch(`${base}/api/health`, { method: 'HEAD' });
-    expect(response.status).toBe(404);
+    expect(response.status).toBe(200);
+  });
+
+  it('answers an unparsable request target with 500 and keeps serving', async () => {
+    const raw = await new Promise<string>((resolve, reject) => {
+      const socket = connect(port, '127.0.0.1', () => {
+        socket.write('GET // HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n');
+      });
+      let data = '';
+      socket.on('data', (chunk) => (data += chunk.toString()));
+      socket.on('end', () => resolve(data));
+      socket.on('error', reject);
+    });
+    expect(raw.startsWith('HTTP/1.1 500')).toBe(true);
+    const health = await fetch(`${base}/api/health`);
+    expect(health.status).toBe(200);
   });
 });

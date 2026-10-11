@@ -25,6 +25,11 @@ describe('handleRequest', () => {
     expect(response.status).toBe(404);
   });
 
+  it('answers HEAD /api/health with 200', async () => {
+    const response = await handleRequest(new Request(`${BASE}/api/health`, { method: 'HEAD' }));
+    expect(response.status).toBe(200);
+  });
+
   it('ignores the query string when routing', async () => {
     const response = await handleRequest(new Request(`${BASE}/api/health?x=1`));
     expect(response.status).toBe(200);

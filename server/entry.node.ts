@@ -28,10 +28,15 @@ async function sendWebResponse(response: Response, res: ServerResponse): Promise
 const { port } = readEnvironment();
 
 createServer((req, res) => {
-  handleRequest(toWebRequest(req))
+  Promise.resolve()
+    .then(() => handleRequest(toWebRequest(req)))
     .then((response) => sendWebResponse(response, res))
     .catch((error: unknown) => {
       console.error('[server] unhandled request error', { method: req.method, url: req.url, error });
+      if (res.headersSent) {
+        res.end();
+        return;
+      }
       res.statusCode = 500;
       res.setHeader('content-type', 'application/json; charset=utf-8');
       res.end(JSON.stringify({ ok: false, error: 'internal' }));
