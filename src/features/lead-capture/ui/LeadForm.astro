@@ -1,0 +1,97 @@
+---
+import { AGE_GROUPS } from '@shared/contracts/age-groups';
+import type { LeadSource } from '@shared/contracts/lead.schema';
+import { site } from '@shared/content/site';
+import WhatsAppButton from '@shared/ui/WhatsAppButton.astro';
+import '@shared/ui/Button.css';
+import './lead-form.css';
+
+interface Props {
+  source: LeadSource;
+  tone?: 'navy' | 'cream';
+  title?: string;
+  headingLevel?: 2 | 3;
+  subtitle?: string;
+  submitLabel?: string;
+  showAgeGroups?: boolean;
+  hidden?: boolean;
+}
+
+const {
+  source,
+  tone = 'cream',
+  title,
+  headingLevel = 2,
+  subtitle,
+  submitLabel = 'Rezervă locul acum',
+  showAgeGroups = true,
+  hidden = false,
+} = Astro.props;
+const Heading = headingLevel === 2 ? 'h2' : 'h3';
+const id = (part: string): string => `lead-${source}-${part}`;
+const { contact } = site;
+const submitVariant = tone === 'navy' ? 'button--sun' : 'button--primary';
+const callVariant = tone === 'navy' ? 'button--outline-light' : 'button--outline';
+---
+<lead-form class:list={['lead-form', `lead-form--${tone}`]} data-source={source} data-phone-display={contact.phoneDisplay} hidden={hidden}>
+  <div class="lead-form__fallback">
+    <p>Formularul are nevoie de JavaScript. Scrie-ne pe WhatsApp sau sună-ne la <a href={`tel:${contact.phoneE164}`}>{contact.phoneDisplay}</a>.</p>
+    <WhatsAppButton label="Scrie-ne pe WhatsApp" />
+  </div>
+  <form class="lead-form__form" novalidate hidden aria-labelledby={title ? id('title') : undefined}>
+    {title && <Heading class="lead-form__title" id={id('title')}>{title}</Heading>}
+    {subtitle && <p class="lead-form__subtitle">{subtitle}</p>}
+    <div class="lead-form__row">
+      <div class="lead-form__field">
+        <label for={id('parentName')}>Numele părintelui</label>
+        <input id={id('parentName')} name="parentName" type="text" autocomplete="name" maxlength="100" placeholder="ex. Ana Pop" aria-describedby={id('parentName-error')} />
+        <p class="lead-form__error" id={id('parentName-error')} data-error-for="parentName"></p>
+      </div>
+      <div class="lead-form__field">
+        <label for={id('phone')}>Telefon</label>
+        <input id={id('phone')} name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="30" placeholder="ex. 0722 123 456" aria-describedby={id('phone-error')} />
+        <p class="lead-form__error" id={id('phone-error')} data-error-for="phone"></p>
+      </div>
+    </div>
+    {showAgeGroups && (
+      <fieldset class="lead-form__ages" aria-describedby={id('childAgeGroup-error')}>
+        <legend>Vârsta copilului <span class="lead-form__optional">(opțional)</span></legend>
+        <div class="lead-form__pills">
+          {AGE_GROUPS.map((age) => (
+            <label class="lead-form__pill">
+              <input type="radio" name="childAgeGroup" value={age} />
+              <span>{age}</span>
+            </label>
+          ))}
+        </div>
+        <p class="lead-form__error" id={id('childAgeGroup-error')} data-error-for="childAgeGroup"></p>
+      </fieldset>
+    )}
+    <div class="lead-form__trap" aria-hidden="true">
+      <label for={id('website')}>Nu completa acest câmp</label>
+      <input id={id('website')} name="website" type="text" tabindex="-1" autocomplete="off" />
+    </div>
+    <div class="lead-form__consent">
+      <input id={id('consent')} name="consent" type="checkbox" aria-describedby={id('consent-error')} />
+      <label for={id('consent')}>Sunt de acord ca English Minds Academy să mă contacteze telefonic sau pe WhatsApp pentru lecția demo, conform <a href="/confidentialitate/">politicii de confidențialitate</a>.</label>
+      <p class="lead-form__error" id={id('consent-error')} data-error-for="consent"></p>
+    </div>
+    <button class:list={['button', submitVariant, 'lead-form__submit']} type="submit">{submitLabel}</button>
+    <p class="lead-form__alert" role="alert"></p>
+    <p class="lead-form__status" role="status"></p>
+    <p class="lead-form__note">Nu plătești nimic. Te contactăm doar pentru lecția demo.</p>
+  </form>
+  <div class="lead-form__done" hidden tabindex="-1">
+    <p class="lead-form__done-title">Mulțumim, <span data-name></span>!</p>
+    <p class="lead-form__done-text" data-done-text></p>
+    <div class="lead-form__done-actions">
+      <a class="button button--whatsapp" data-whatsapp href={contact.whatsappUrl} target="_blank" rel="noopener">Trimite pe WhatsApp</a>
+      <a class:list={['button', callVariant]} href={`tel:${contact.phoneE164}`}>Sună-ne</a>
+    </div>
+  </div>
+</lead-form>
+
+<script>
+  import { defineLeadForm } from './lead-form.element';
+  defineLeadForm();
+</script>
