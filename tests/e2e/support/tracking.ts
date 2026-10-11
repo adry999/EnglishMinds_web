@@ -7,7 +7,11 @@ export const TEST_TRACKING = {
   googleAdsLeadLabel: 'TestLabel_1',
 };
 
-export const TAG_HOSTS = /googletagmanager\.com|google-analytics\.com|googleadservices\.com|doubleclick\.net|facebook\.net|facebook\.com/;
+const TAG_DOMAINS = ['googletagmanager.com', 'google-analytics.com', 'googleadservices.com', 'doubleclick.net', 'facebook.net', 'facebook.com'];
+
+/** True for an exact tag domain or any of its subdomains (hostname match, not substring). */
+export const TAG_HOSTS = (url: URL): boolean =>
+  TAG_DOMAINS.some((domain) => url.hostname === domain || url.hostname.endsWith(`.${domain}`));
 
 /** The cookie library hides its banner from automated browsers; real visitors are not webdriver-driven. */
 export async function showBannerToTests(page: Page): Promise<void> {

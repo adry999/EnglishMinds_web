@@ -46,6 +46,13 @@ test('refuse: no tags, banner stays gone after reload, cookie stored', async ({ 
   await page.waitForLoadState('networkidle');
   await expect(main(page).getByRole('button', { name: 'Accept toate' })).toBeHidden();
   expect(requested).toEqual([]);
+  const granted = (await dataLayer(page)).filter(
+    (entry) =>
+      entry[0] === 'consent' &&
+      entry[1] === 'update' &&
+      Object.values(entry[2] as Record<string, string>).includes('granted'),
+  );
+  expect(granted).toEqual([]);
   const cookies = await page.context().cookies();
   expect(cookies.some((cookie) => cookie.name === 'em_consent')).toBe(true);
 });
@@ -55,8 +62,9 @@ test('accept all: loads gtag and fbevents and grants consent', async ({ page }) 
   await main(page).getByRole('button', { name: 'Accept toate' }).click();
   await expect.poll(() => requested.some((url) => url.includes(GTAG))).toBe(true);
   await expect.poll(() => requested.some((url) => url.includes(FBEVENTS))).toBe(true);
-  const update = (await dataLayer(page)).find((entry) => entry[0] === 'consent' && entry[1] === 'update');
-  expect(update?.[2]).toMatchObject({ analytics_storage: 'granted', ad_storage: 'granted' });
+  await expect
+    .poll(async () => (await dataLayer(page)).find((entry) => entry[0] === 'consent' && entry[1] === 'update')?.[2])
+    .toMatchObject({ analytics_storage: 'granted', ad_storage: 'granted' });
 });
 
 test('custom choice: statistics only loads gtag but not fbevents', async ({ page }) => {
@@ -78,13 +86,12 @@ test('footer settings: reopens preferences and refuse-all reloads without new ta
   await page.getByRole('button', { name: 'Setări cookies' }).click();
   const refuseAll = main(page).getByRole('button', { name: 'Refuz toate' });
   await expect(refuseAll).toBeVisible();
+  const before = requested.length;
   const reloaded = page.waitForEvent('load');
   await refuseAll.click();
   await reloaded;
   await page.waitForLoadState('networkidle');
-  requested.length = 0;
-  await page.waitForTimeout(500);
-  expect(requested).toEqual([]);
+  expect(requested.slice(before)).toEqual([]);
 });
 
 test('keyboard: Tab reaches the banner buttons and Enter on Refuz closes it', async ({ page }) => {
