@@ -45,7 +45,7 @@ Emailul se trimite după ce răspunsul a plecat către vizitator, pe principiul 
 node /calea/aplicatiei/purge-expired-leads.cjs
 ```
 
-Jobul are nevoie de aceleași variabile de mediu ca aplicația (cel puțin cele `DB_*`). Șterge contactele mai vechi de 12 luni și limitele de trimitere mai vechi de 24 de ore.
+Jobul are nevoie de exactamente aceleași variabile de mediu ca aplicația, toate (nu doar cele `DB_*`): configurarea se validează integral la pornire, iar dacă lipsește ceva jobul se oprește fără să șteargă nimic. Rulează-l cu același fișier de mediu (`node --env-file=/cale/.env /cale/purge-expired-leads.cjs`) sau cu variabilele setate în panou. Șterge contactele mai vechi de 12 luni și limitele de trimitere mai vechi de 24 de ore.
 
 ## 5. Local
 
@@ -57,4 +57,5 @@ Jobul are nevoie de aceleași variabile de mediu ca aplicația (cel puțin cele 
 
 - Ruta `/api/lead` este servită pe același domeniu ca site-ul (spec §13.1).
 - Adresa IP din `X-Forwarded-For` este a vizitatorului, nu a proxy-ului (trimite un formular și verifică în logul/baza de date că limitarea diferențiază vizitatorii).
+- Tabela `rate_limits` arată valori `ip_hash` diferite pentru două rețele diferite (de exemplu Wi-Fi și date mobile).
 - Un email de test ajunge la `MAIL_TO`, iar pe portul 587 conexiunea folosește TLS.

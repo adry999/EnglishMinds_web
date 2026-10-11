@@ -20,7 +20,7 @@ SELECT * FROM leads WHERE phone = '+407XXXXXXXX';
 DELETE FROM leads WHERE phone = '+407XXXXXXXX';
 ```
 
-Rulează mai întâi `SELECT`-ul de mai sus ca să vezi ce se șterge. Confirmă persoanei că datele au fost șterse.
+Rulează mai întâi `SELECT`-ul de mai sus ca să vezi ce se șterge. Șterge și emailurile de notificare pentru acel număr din căsuța `MAIL_TO`: jobul de 12 luni nu le acoperă. Confirmă persoanei că datele au fost șterse.
 
 ## Păstrare
 

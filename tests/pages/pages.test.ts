@@ -47,11 +47,18 @@ describe('built pages', () => {
     expect(read('test-de-nivel/index.html')).toMatch(/<lead-form[^>]*data-source="test"[^>]*hidden|<lead-form[^>]*hidden[^>]*data-source="test"/);
   });
 
-  it('the landing page has no main navigation and keeps the phone and WhatsApp', () => {
+  it('the landing page has no main navigation and keeps the header phone and the band WhatsApp', () => {
     const html = read('lectie-demo/index.html');
     expect(html).not.toContain('site-header__nav');
-    expect(html).toContain('href="tel:+40775630680"');
-    expect(html).toContain('href="https://wa.me/40775630680"');
+    expect(html).toMatch(/<a[^>]*class="landing-header__phone"[^>]*href="tel:\+40775630680"|<a[^>]*href="tel:\+40775630680"[^>]*class="landing-header__phone"/);
+    const band = html.slice(html.indexOf('landing-band'));
+    expect(band).toContain('href="https://wa.me/40775630680"');
+  });
+
+  it('the home and landing forms are visible from the start', () => {
+    for (const page of ['index.html', 'lectie-demo/index.html']) {
+      expect(read(page).match(/<lead-form[^>]*>/)?.[0]).not.toMatch(/\shidden/);
+    }
   });
 
   it('blog shows the empty state and publishes no draft posts', () => {

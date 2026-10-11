@@ -33,7 +33,7 @@ const { contact } = site;
 const submitVariant = tone === 'navy' ? 'button--sun' : 'button--primary';
 const callVariant = tone === 'navy' ? 'button--outline-light' : 'button--outline';
 ---
-<lead-form class:list={['lead-form', `lead-form--${tone}`]} data-source={source} data-phone-display={contact.phoneDisplay} hidden={hidden}>
+<lead-form class:list={['lead-form', `lead-form--${tone}`]} data-source={source} data-phone-display={contact.phoneDisplay} {...(hidden ? { hidden: "" } : {})}>
   <div class="lead-form__fallback">
     <p>Formularul are nevoie de JavaScript. Scrie-ne pe WhatsApp sau sună-ne la <a href={`tel:${contact.phoneE164}`}>{contact.phoneDisplay}</a>.</p>
     <WhatsAppButton label="Scrie-ne pe WhatsApp" />

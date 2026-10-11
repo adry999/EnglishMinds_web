@@ -13,9 +13,9 @@ import Header from '@shared/ui/Header.astro';
   <main id="continut" class="level-test-page">
     <h1 class="visually-hidden">Test de nivel la engleză pentru copii</h1>
     <LevelTest />
-    <section class="level-test-page__lead" aria-label="Rezervare lecție demo">
+    <div class="level-test-page__lead">
       <LeadForm source="test" tone="cream" title="Rezervă lecția demo gratuită" headingLevel={2} showAgeGroups={false} hidden />
-    </section>
+    </div>
   </main>
   <Footer />
 </BaseLayout>
@@ -28,11 +28,12 @@ import Header from '@shared/ui/Header.astro';
 
   .level-test-page__lead {
     max-width: 720px;
-    margin: 32px auto 0;
+    margin-inline: auto;
   }
 
   .level-test-page__lead lead-form:not([hidden]) {
     display: block;
+    margin-top: 32px;
     padding: clamp(24px, 3vw, 40px);
     border-radius: 32px;
     background: var(--color-cream);
