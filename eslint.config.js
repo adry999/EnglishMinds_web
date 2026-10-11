@@ -23,6 +23,32 @@ export default defineConfig(
         { selector: 'ExportAllDeclaration', message: 'Fără export *; exportă explicit.' },
       ],
       'no-empty': ['error', { allowEmptyCatch: false }],
+      'no-restricted-properties': [
+        'error',
+        { object: 'process', property: 'env', message: 'Doar server/config/environment.ts citește process.env.' },
+      ],
+    },
+  },
+  {
+    files: ['server/config/environment.ts', 'astro.config.ts', 'server/**/*.test.ts'],
+    rules: { 'no-restricted-properties': 'off' },
+  },
+  {
+    files: ['src/shared/**', 'src/core/**'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            noDeepRelative,
+            { group: ['@features/*'], message: 'shared/ și core/ nu depind de feature-uri.' },
+            {
+              regex: '^\\.{1,2}/(.*/)?(features|pages|layouts)/',
+              message: 'shared/ și core/ nu depind de feature-uri, pagini sau layout-uri.',
+            },
+          ],
+        },
+      ],
     },
   },
   {

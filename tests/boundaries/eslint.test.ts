@@ -71,4 +71,27 @@ describe('eslint boundaries', () => {
   it('allows a feature subfolder file importing a sibling folder', async () => {
     expect(await ruleIds(astroImport('../model/m'), 'src/features/alpha/ui/A.astro')).toEqual([]);
   });
+
+  it('rejects shared/ importing a feature', async () => {
+    expect(await ruleIds(astroImport('@features/faq'), 'src/shared/ui/Y.astro')).toContain(
+      'no-restricted-imports',
+    );
+  });
+
+  it('rejects core/ importing a feature relatively', async () => {
+    expect(
+      await ruleIds("import { a } from '../features/faq/index';\nexport const b = a;\n", 'src/core/x.ts'),
+    ).toContain('no-restricted-imports');
+  });
+
+  it('allows shared/ importing a sibling and shared content', async () => {
+    expect(await ruleIds(astroImport('./Logo.astro'), 'src/shared/ui/Y.astro')).toEqual([]);
+    expect(await ruleIds(astroImport('@shared/content/site'), 'src/shared/ui/Y.astro')).toEqual([]);
+  });
+
+  it('rejects process.env outside the environment module', async () => {
+    expect(await ruleIds('export const p = process.env.X;\n', 'src/shared/x.ts')).toContain(
+      'no-restricted-properties',
+    );
+  });
 });
