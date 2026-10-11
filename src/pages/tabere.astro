@@ -1,0 +1,22 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import CampDay from '@sections/tabere/CampDay.astro';
+import CampIncludes from '@sections/tabere/CampIncludes.astro';
+import CampSummary from '@sections/tabere/CampSummary.astro';
+import TabereHero from '@sections/tabere/TabereHero.astro';
+import Footer from '@shared/ui/Footer.astro';
+import Header from '@shared/ui/Header.astro';
+---
+<BaseLayout
+  title="Tabere de vară"
+  description="Tabără de vară în engleză la English Minds Academy, Cluj-Napoca: jocuri, proiecte și ieșiri, toate în engleză."
+>
+  <Header active="tabere" />
+  <main id="continut">
+    <TabereHero />
+    <CampSummary />
+    <CampDay />
+    <CampIncludes />
+  </main>
+  <Footer />
+</BaseLayout>

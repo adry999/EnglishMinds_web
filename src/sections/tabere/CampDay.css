@@ -1,0 +1,58 @@
+.camp-day {
+  background: var(--color-white);
+}
+
+.camp-day__inner {
+  max-width: var(--container);
+  margin-inline: auto;
+  padding: 64px var(--gutter);
+}
+
+.camp-day h2 {
+  margin: 0 0 28px;
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.camp-day ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.camp-day__slot {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 20px;
+  padding: 22px 0;
+  border-top: 2px solid #f0e4d2;
+}
+
+.camp-day__slot:last-child {
+  border-bottom: 2px solid #f0e4d2;
+}
+
+.camp-day__time {
+  font-family: var(--font-label);
+  font-size: 1.75rem;
+  line-height: 1.1;
+  color: var(--color-text-accent);
+  overflow-wrap: anywhere;
+}
+
+.camp-day h3 {
+  margin: 0 0 4px;
+  font-size: 1.3125rem;
+}
+
+.camp-day p {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+@media (min-width: 768px) {
+  .camp-day__slot {
+    grid-template-columns: 120px 1fr;
+  }
+}

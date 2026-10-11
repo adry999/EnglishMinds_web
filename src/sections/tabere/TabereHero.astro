@@ -1,0 +1,20 @@
+---
+import { site } from '@shared/content/site';
+import Badge from '@shared/ui/Badge.astro';
+import Photo from '@shared/ui/Photo.astro';
+import { CAMP_WHATSAPP_URL } from './camp-whatsapp';
+import './TabereHero.css';
+---
+<section class="tabere-hero">
+  <div class="tabere-hero__inner">
+    <div class="tabere-hero__text">
+      <Badge tone="orange">{`Vara ${site.camps.year} · ${site.camps.ageRange}`}</Badge>
+      <h1>O vară întreagă în engleză, cu Ema</h1>
+      <p>Jocuri, proiecte și ieșiri, toate în engleză. Copiii nu pierd ritmul peste vară și se întorc la școală mai încrezători.</p>
+      <a class="tabere-hero__cta" href={CAMP_WHATSAPP_URL}>Anunță-mă când încep înscrierile</a>
+    </div>
+    <div class="tabere-hero__photo">
+      <Photo photo="group" alt="Copii bucuroși la English Minds" sizes="(min-width: 768px) 440px, 80vw" eager />
+    </div>
+  </div>
+</section>

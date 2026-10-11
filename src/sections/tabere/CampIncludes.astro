@@ -1,0 +1,18 @@
+---
+import { site } from '@shared/content/site';
+import { CAMP_WHATSAPP_URL } from './camp-whatsapp';
+import './CampIncludes.css';
+---
+<section class="camp-includes">
+  <div class="camp-includes__card camp-includes__card--orange">
+    <h2>Ce include</h2>
+    <ul role="list">
+      {site.camps.includes.map((item) => <li>{item}</li>)}
+    </ul>
+  </div>
+  <div class="camp-includes__card camp-includes__card--navy">
+    <h2>Locurile sunt limitate</h2>
+    <p>Scrie-ne pe WhatsApp și te anunțăm primul când se deschid înscrierile.</p>
+    <a class="camp-includes__cta" href={CAMP_WHATSAPP_URL}>Scrie-ne pe WhatsApp</a>
+  </div>
+</section>

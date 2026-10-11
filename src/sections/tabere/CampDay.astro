@@ -1,0 +1,20 @@
+---
+import { site } from '@shared/content/site';
+import './CampDay.css';
+---
+<section class="camp-day" aria-labelledby="camp-day-heading">
+  <div class="camp-day__inner">
+    <h2 id="camp-day-heading">O zi în tabără</h2>
+    <ol role="list">
+      {site.camps.day.map((slot) => (
+        <li class="camp-day__slot">
+          <span class="camp-day__time">{slot.time}</span>
+          <div>
+            <h3>{slot.title}</h3>
+            <p>{slot.text}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>

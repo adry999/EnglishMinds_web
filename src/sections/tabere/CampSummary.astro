@@ -1,0 +1,22 @@
+---
+import { site } from '@shared/content/site';
+import './CampSummary.css';
+
+const ITEMS = [
+  { label: 'Perioada', value: site.camps.period },
+  { label: 'Program', value: site.camps.schedule },
+  { label: 'Locație', value: site.contact.street },
+  { label: 'Preț', value: site.camps.price },
+];
+---
+<section class="camp-summary" aria-labelledby="camp-summary-heading">
+  <h2 id="camp-summary-heading">Pe scurt</h2>
+  <dl>
+    {ITEMS.map((item) => (
+      <div class="camp-summary__card">
+        <dt>{item.label}</dt>
+        <dd>{item.value}</dd>
+      </div>
+    ))}
+  </dl>
+</section>
