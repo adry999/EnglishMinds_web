@@ -82,6 +82,15 @@ blog-filter:not([data-enhanced]) .blog-filter__pills {
   box-shadow: 0 2px 0 var(--color-cream-border);
 }
 
+.blog-card:has(.blog-card__link:focus-visible) {
+  outline: 3px solid var(--color-navy);
+  outline-offset: 3px;
+}
+
+.blog-card__link:focus-visible {
+  outline: none;
+}
+
 .blog-card[data-featured] {
   grid-column: 1 / -1;
   border-radius: 32px;

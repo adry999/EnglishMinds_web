@@ -39,8 +39,8 @@
   display: none;
 }
 
-body:has(.sticky-contact) {
-  padding-bottom: 84px;
+body:has(.sticky-contact) .site-footer__inner {
+  padding-bottom: calc(32px + 84px);
 }
 
 @media (min-width: 768px) {
@@ -68,7 +68,7 @@ body:has(.sticky-contact) {
     display: none !important;
   }
 
-  body:has(.sticky-contact) {
-    padding-bottom: 0;
+  body:has(.sticky-contact) .site-footer__inner {
+    padding-bottom: 32px;
   }
 }

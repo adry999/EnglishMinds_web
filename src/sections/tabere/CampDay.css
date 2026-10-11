@@ -24,11 +24,11 @@
   grid-template-columns: 80px 1fr;
   gap: 20px;
   padding: 22px 0;
-  border-top: 2px solid #f0e4d2;
+  border-top: 2px solid var(--color-cream-border);
 }
 
 .camp-day__slot:last-child {
-  border-bottom: 2px solid #f0e4d2;
+  border-bottom: 2px solid var(--color-cream-border);
 }
 
 .camp-day__time {

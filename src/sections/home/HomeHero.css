@@ -2,7 +2,7 @@
   position: relative;
   overflow: hidden;
   padding: 16px 0 144px;
-  background: var(--gradient-hero);
+  background: var(--color-orange);
   color: var(--color-white);
 }
 
@@ -48,6 +48,7 @@
 }
 
 .home-hero__lead {
+  order: 3;
   display: none;
   max-width: 500px;
   margin: 0;
@@ -58,12 +59,12 @@
 
 .home-hero__ema {
   position: relative;
-  order: 3;
+  order: 4;
   justify-self: center;
 }
 
 .home-hero__actions {
-  order: 4;
+  order: 5;
   display: grid;
   gap: 12px;
 }
@@ -147,6 +148,10 @@
 }
 
 @media (min-width: 1100px) {
+  .home-hero {
+    background: var(--gradient-hero);
+  }
+
   .home-hero__inner {
     grid-template-columns: 1.1fr 1fr;
     align-items: center;
@@ -162,6 +167,7 @@
 
   .home-hero__text > .badge,
   .home-hero__title,
+  .home-hero__lead,
   .home-hero__actions,
   .home-hero__ema {
     order: 0;

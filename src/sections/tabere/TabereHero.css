@@ -52,7 +52,7 @@
 
 .tabere-hero__photo {
   justify-self: center;
-  width: min(440px, 80vw);
+  width: min(440px, 100%);
   aspect-ratio: 1;
   overflow: hidden;
   border: 12px solid var(--color-white);
