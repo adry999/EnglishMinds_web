@@ -44,7 +44,10 @@
   display: none;
 }
 
-.level-path__step:nth-child(1) .level-path__bar { background: var(--color-peach); }
+.level-path__step:nth-child(1) .level-path__bar {
+  border: 1px solid var(--color-cream-border);
+  background: var(--color-peach);
+}
 .level-path__step:nth-child(2) .level-path__bar { background: var(--color-sun); }
 .level-path__step:nth-child(3) .level-path__bar { background: var(--color-orange-light); }
 .level-path__step:nth-child(4) .level-path__bar { background: var(--color-orange); }
@@ -54,6 +57,7 @@
 .level-path__name {
   font-size: 1.375rem;
   font-weight: 900;
+  overflow-wrap: anywhere;
 }
 
 .level-path__age {
@@ -74,9 +78,12 @@
   .level-path__inner {
     padding-block: 88px;
   }
+}
 
+@media (min-width: 1100px) {
   .level-path__steps {
-    grid-template-columns: repeat(auto-fit, minmax(min(120px, 100%), 1fr));
+    grid-template-columns: repeat(6, 1fr);
+    gap: 14px;
     align-items: end;
   }
 
@@ -90,5 +97,9 @@
 
   .level-path__bar .star {
     display: inline-block;
+  }
+
+  .level-path__name {
+    font-size: clamp(1.125rem, 1.7vw, 1.375rem);
   }
 }

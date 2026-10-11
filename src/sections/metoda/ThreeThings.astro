@@ -24,7 +24,7 @@ const ITEMS = [
 ---
 <section class="three-things" aria-labelledby="three-things-heading">
   <h2 id="three-things-heading">Trei lucruri care contează</h2>
-  <ul>
+  <ul role="list">
     {ITEMS.map((item) => (
       <li class={`three-things__card three-things__card--${item.tone}`}>
         <span class="three-things__number" aria-hidden="true">{item.number}</span>
