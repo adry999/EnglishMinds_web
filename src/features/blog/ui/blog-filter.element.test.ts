@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { defineBlogFilter } from './blog-filter.element';
 
 const MARKUP = `
@@ -59,9 +59,30 @@ describe('<blog-filter>', () => {
 
   it('does not enhance twice when reconnected', () => {
     const element = document.querySelector('blog-filter')!;
+    const spy = vi.spyOn(pill('scoala'), 'addEventListener');
     element.remove();
     document.body.append(element);
+    expect(spy).not.toHaveBeenCalled();
     pill('scoala').click();
     expect(items().filter((item) => !item.hidden)).toHaveLength(1);
+  });
+
+  it('marks the empty message so it can be styled as normal text', () => {
+    pill('motivatie').click();
+    expect(document.querySelector('.blog-filter__status')!.hasAttribute('data-empty')).toBe(true);
+    pill('').click();
+    expect(document.querySelector('.blog-filter__status')!.hasAttribute('data-empty')).toBe(false);
+  });
+
+  it('waits for DOMContentLoaded when connected before its items are parsed', () => {
+    const readyState = vi.spyOn(document, 'readyState', 'get').mockReturnValue('loading');
+    const element = document.createElement('blog-filter');
+    document.body.replaceChildren(element);
+    expect(element.hasAttribute('data-enhanced')).toBe(false);
+    element.innerHTML = '<ul class="blog-filter__list"><li data-category="acasa">A1</li></ul>';
+    document.dispatchEvent(new Event('DOMContentLoaded'));
+    readyState.mockRestore();
+    expect(element.hasAttribute('data-enhanced')).toBe(true);
+    expect(element.querySelector('li')!.hasAttribute('data-featured')).toBe(true);
   });
 });

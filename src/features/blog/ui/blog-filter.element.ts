@@ -24,15 +24,19 @@ export class BlogFilter extends HTMLElement {
     for (const pill of this.pills()) {
       pill.setAttribute('aria-pressed', String((pill.dataset.category ?? '') === category));
     }
-    let visible = 0;
+    // 'shown' counts visible items so far; the first one becomes the featured card.
+    let shown = 0;
     for (const item of this.items()) {
       const show = category === '' || item.dataset.category === category;
       item.hidden = !show;
-      item.toggleAttribute('data-featured', show && visible === 0);
-      if (show) visible += 1;
+      item.toggleAttribute('data-featured', show && shown === 0);
+      if (show) shown += 1;
     }
     const status = this.querySelector('.blog-filter__status');
-    if (status) status.textContent = announce ? describeCount(visible) : '';
+    if (status instanceof HTMLElement) {
+      status.textContent = announce ? describeCount(shown) : '';
+      status.toggleAttribute('data-empty', announce && shown === 0);
+    }
   }
 }
 

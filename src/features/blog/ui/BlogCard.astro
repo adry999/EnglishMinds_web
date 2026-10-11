@@ -6,12 +6,13 @@ import { readingMinutes } from '../model/reading-minutes';
 
 interface Props {
   post: BlogPost;
+  featured?: boolean;
 }
 
-const { post } = Astro.props;
+const { post, featured = false } = Astro.props;
 const href = `/blog/${post.id}/`;
 ---
-<li class="blog-card" data-category={post.data.category}>
+<li class="blog-card" data-category={post.data.category} data-featured={featured ? '' : undefined}>
   <a href={href} class="blog-card__link">
     <div class="blog-card__image">
       <Photo photo={post.data.cover} alt={post.data.coverAlt} sizes="(min-width: 1100px) 560px, 100vw" />

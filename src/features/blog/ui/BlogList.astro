@@ -22,7 +22,7 @@ const { posts } = Astro.props;
     </div>
     <p class="blog-filter__status" aria-live="polite"></p>
     <ul class="blog-filter__list" role="list">
-      {posts.map((post) => <BlogCard post={post} />)}
+      {posts.map((post, index) => <BlogCard post={post} featured={index === 0} />)}
     </ul>
   </blog-filter>
 )}
