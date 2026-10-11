@@ -20,7 +20,6 @@
 }
 
 .test-band__cta:focus-visible {
-  outline-color: var(--color-navy);
   outline-offset: 4px;
 }
 

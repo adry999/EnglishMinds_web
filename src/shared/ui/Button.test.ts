@@ -13,7 +13,7 @@ describe('Button', () => {
   });
 
   it.each(['sun', 'navy', 'outline', 'outline-light', 'whatsapp'])('supports the %s variant', async (variant) => {
-    expect(await render({ href: '/', variant })).toContain(`button--${variant}`);
+    expect(await render({ href: '/', variant })).toContain(`class="button button--${variant}"`);
   });
 
   it('passes an extra class through for layout', async () => {
