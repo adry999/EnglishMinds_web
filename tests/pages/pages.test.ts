@@ -128,6 +128,13 @@ describe('built pages', () => {
     expect(types).toContain('FAQPage');
   });
 
+  // TODO(task 4): activate once the legal pages (confidentialitate, cookies, termeni) are built.
+  it.todo('the sitemap lists every built page except the 404, and every published article');
+
+  it('robots.txt points to the sitemap', () => {
+    expect(read('robots.txt')).toContain('Sitemap: https://englishminds.ro/sitemap.xml');
+  });
+
   it('every published article has a valid BlogPosting', () => {
     // Zero posts is allowed while every article is still a draft.
     const posts = readdirSync(join(dist, 'blog')).filter((entry) => statSync(join(dist, 'blog', entry)).isDirectory());
