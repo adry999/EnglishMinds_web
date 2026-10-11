@@ -37,6 +37,8 @@ describe('LegalDocument', () => {
     const html = await render({ showCookies: true });
     expect(html).toContain('<table');
     expect(html).toContain('Cookie-urile folosite');
+    expect(html).toContain('<div class="legal__table-wrap" tabindex="0" role="region" aria-labelledby="tabel-cookies-titlu"');
+    expect(html).toContain('<caption id="tabel-cookies-titlu"');
     for (const cookie of COOKIE_INVENTORY) expect(html).toContain(cookie.names);
   });
 

@@ -1,5 +1,6 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+import sharp from 'sharp';
 import { beforeAll, describe, expect, it } from 'vitest';
 
 const dist = resolve(import.meta.dirname, '../../dist');
@@ -98,7 +99,7 @@ describe('built pages', () => {
     'termeni/index.html': '/termeni/',
   };
 
-  it.each(Object.entries(ROUTE))('%s has an absolute canonical and Open Graph tags', (page, route) => {
+  it.each(Object.entries(ROUTE))('%s has an absolute canonical and Open Graph tags', async (page, route) => {
     const html = read(page);
     const url = `https://englishminds.ro${route}`;
     expect(html).toContain(`<link rel="canonical" href="${url}"`);
@@ -109,6 +110,10 @@ describe('built pages', () => {
     const image = html.match(/<meta property="og:image" content="([^"]+)"/)?.[1] ?? '';
     expect(image).toMatch(/^https:\/\/englishminds\.ro\/_astro\/.+\.jpg$/);
     expect(existsSync(join(dist, image.replace('https://englishminds.ro/', '')))).toBe(true);
+    const file = join(dist, image.replace('https://englishminds.ro/', ''));
+    const { width, height } = await sharp(file).metadata();
+    expect(html).toContain(`<meta property="og:image:width" content="${width}"`);
+    expect(html).toContain(`<meta property="og:image:height" content="${height}"`);
   });
 
   it('keeps the 404 page out of search results', () => {

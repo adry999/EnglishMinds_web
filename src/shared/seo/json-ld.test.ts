@@ -71,7 +71,7 @@ describe('blogPostingJsonLd', () => {
       image: 'https://englishminds.ro/_astro/cover.jpg',
       datePublished: '2026-09-01T00:00:00.000Z',
       inLanguage: 'ro-RO',
-      author: { '@id': 'https://englishminds.ro/#organizatie' },
+      author: { '@type': 'Organization', '@id': 'https://englishminds.ro/#organizatie', name: 'English Minds Academy' },
       publisher: { '@id': 'https://englishminds.ro/#organizatie', name: 'English Minds Academy' },
     });
   });

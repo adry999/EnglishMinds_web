@@ -32,5 +32,5 @@ Jobul nu atinge emailurile de notificare din căsuța `MAIL_TO`. Șterge manual,
 
 - Numele copilului.
 - Răspunsurile la testul de nivel (se salvează doar nivelul recomandat, dacă există).
-- Adresa IP în clar (doar o amprentă SHA-256 cu sare, în tabela `rate_limits`, ștearsă automat în cel mult 2 zile).
+- Adresa IP în clar în baza de date (serverul o primește la cerere, iar jurnalele furnizorului de găzduire o pot păstra; aplicația stochează doar o amprentă SHA-256 cu sare, în tabela `rate_limits`, ștearsă automat în cel mult 2 zile).
 - User-agent-ul.

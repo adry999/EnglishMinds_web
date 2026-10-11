@@ -16,10 +16,6 @@ Cookie-urile sunt fișiere mici pe care site-ul le păstrează în browserul tă
 
 Înainte să alegi, nu pleacă nicio cerere către Google sau Meta.
 
-## Tabelul cookie-urilor
-
-Mai jos găsești lista completă, cu durata fiecărui cookie.
-
 ## Cum îți schimbi alegerea
 
 Apasă butonul „Setări cookies" din subsolul oricărei pagini. Poți accepta sau refuza fiecare categorie, oricând.
@@ -36,3 +32,7 @@ Statisticile și reclamele vin de la Google și Meta. Ele își stabilesc propri
 - [Politica de cookies Meta](https://www.facebook.com/privacy/policies/cookies/)
 
 Mai multe despre datele tale personale găsești în [Politica de confidențialitate](/confidentialitate/).
+
+## Tabelul cookie-urilor
+
+Mai jos găsești lista completă a cookie-urilor, cu durata fiecărui cookie.

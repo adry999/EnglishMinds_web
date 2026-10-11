@@ -50,9 +50,9 @@ const categoryLabel = { necessary: 'Necesare', analytics: 'Statistici', marketin
   {
     showCookies && (
       <div class="legal__cookies">
-        <div class="legal__table-wrap">
+        <div class="legal__table-wrap" tabindex="0" role="region" aria-labelledby="tabel-cookies-titlu">
           <table>
-            <caption>Cookie-urile folosite</caption>
+            <caption id="tabel-cookies-titlu">Cookie-urile folosite</caption>
             <thead>
               <tr>
                 <th scope="col">Categorie</th>

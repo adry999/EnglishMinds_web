@@ -7,3 +7,12 @@ export function canonicalUrl(pathname: string, base: string): string {
 export function fullTitle(title: string, siteName: string): string {
   return title === siteName ? title : `${title} · ${siteName}`;
 }
+
+const OG_WIDTH = 1200;
+const OG_HEIGHT = 630;
+
+/** Largest 1.91:1 crop that fits the source; Astro never upscales, so a small cover must not claim 1200x630. */
+export function ogImageSize(source: { width: number; height: number }): { width: number; height: number } {
+  const width = Math.min(OG_WIDTH, source.width, Math.floor((source.height * OG_WIDTH) / OG_HEIGHT));
+  return { width, height: Math.round((width * OG_HEIGHT) / OG_WIDTH) };
+}

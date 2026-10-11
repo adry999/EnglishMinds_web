@@ -25,12 +25,15 @@ Când ceri o lecție demo, ne trimiți:
 
 - Numele copilului. Diploma de la testul de nivel se face doar în browserul tău și nu ajunge la noi.
 - Răspunsurile copilului la test.
-- Adresa IP în clar. Păstrăm doar o amprentă (hash cu sare), folosită ca să limităm abuzurile, care se șterge automat în cel mult 2 zile.
 - User-agent-ul (datele despre browserul tău).
 
 ## De ce folosim datele
 
 Doar ca să te contactăm pentru lecția demo și să stabilim împreună ziua și ora potrivită. Temeiul este consimțământul tău, conform art. 6 alin. (1) lit. a din GDPR.
+
+## Adresa IP
+
+Serverul îți vede adresa IP când trimiți formularul, ca orice site. În baza noastră de date păstrăm doar o amprentă (hash cu sare), folosită ca să limităm abuzurile, care se șterge automat în cel mult 2 zile. Temeiul pentru această amprentă și pentru jurnalele serverului este interesul nostru legitim de a proteja site-ul și formularul împotriva abuzurilor, conform art. 6 alin. (1) lit. f din GDPR. Jurnalele de acces ale furnizorului de găzduire pot păstra adresa IP, conform setărilor acestuia.
 
 ## Cât timp le păstrăm
 

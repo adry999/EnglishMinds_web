@@ -66,7 +66,7 @@ export function blogPostingJsonLd(input: BlogPostingInput): object {
     image: input.image,
     datePublished: input.datePublished.toISOString(),
     inLanguage: 'ro-RO',
-    author: { '@id': org },
+    author: { '@type': 'Organization', '@id': org, name: input.organizationName },
     publisher: { '@id': org, name: input.organizationName },
   };
 }

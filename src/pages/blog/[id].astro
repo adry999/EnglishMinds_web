@@ -4,7 +4,7 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 import { getPublishedPosts, PostArticle, type BlogPost } from '@features/blog';
 import { site } from '@shared/content/site';
 import { blogPostingJsonLd } from '@shared/seo/json-ld';
-import { canonicalUrl } from '@shared/seo/page-meta';
+import { canonicalUrl, ogImageSize } from '@shared/seo/page-meta';
 import Footer from '@shared/ui/Footer.astro';
 import Header from '@shared/ui/Header.astro';
 
@@ -18,7 +18,7 @@ interface Props {
 }
 
 const { post } = Astro.props;
-const cover = await getImage({ src: post.data.cover, width: 1200, height: 630, fit: 'cover', format: 'jpg' });
+const cover = await getImage({ src: post.data.cover, ...ogImageSize(post.data.cover), fit: 'cover', format: 'jpg' });
 ---
 <BaseLayout
   title={post.data.title}

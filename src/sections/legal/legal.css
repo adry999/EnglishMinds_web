@@ -71,6 +71,11 @@
   overflow-x: auto;
 }
 
+.legal__table-wrap:focus-visible {
+  outline: 3px solid var(--color-navy);
+  outline-offset: 2px;
+}
+
 .legal table {
   width: 100%;
   min-width: 36rem;
