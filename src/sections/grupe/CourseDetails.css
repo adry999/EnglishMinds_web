@@ -40,9 +40,11 @@
 
 .course-details__offer-label {
   margin: 0 0 4px;
-  color: var(--color-orange-shadow);
-  font-family: Barlow, sans-serif;
+  color: var(--color-navy);
+  font-family: var(--font-label);
   font-size: 1.125rem;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
 .course-details__offer-headline {

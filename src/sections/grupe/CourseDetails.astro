@@ -1,6 +1,6 @@
 ---
 import { site } from '@shared/content/site';
-import Eyebrow from '@shared/ui/Eyebrow.astro';
+import '@shared/ui/Eyebrow.css';
 import './CourseDetails.css';
 
 const { courseFacts, offer } = site;
@@ -13,8 +13,7 @@ const FACTS = [
 ];
 ---
 <section class="course-details" aria-labelledby="detalii-heading">
-  <Eyebrow tone="sun">Detalii curs</Eyebrow>
-  <h2 id="detalii-heading" class="visually-hidden">Detalii curs</h2>
+  <h2 id="detalii-heading" class="eyebrow eyebrow--sun">Detalii curs</h2>
   <dl>
     {FACTS.map((fact) => (
       <div class="course-details__row">
