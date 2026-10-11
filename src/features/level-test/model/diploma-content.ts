@@ -27,18 +27,24 @@ const ACCENT = '#c4501a';
 const FONT = 'Nunito, sans-serif';
 const CENTER = DIPLOMA_SIZE.width / 2;
 
-const cleanName = (name: string) => name.trim().replace(/\s+/g, ' ');
+const SLUG_MAX = 60;
+
+export function cleanChildName(name: string): string {
+  return name.normalize('NFC').trim().replace(/\s+/g, ' ');
+}
 
 export function diplomaLine(mode: Mode): string {
   return mode === 'level' ? 'a finalizat testul de nivel' : 'a finalizat testul de pregătire Cambridge';
 }
 
 export function diplomaFileName(name: string): string {
-  const safe = cleanName(name)
-    .replace(/[^\p{L}\p{N} ]/gu, '')
+  const slug = Array.from(cleanChildName(name).replace(/[^\p{L}\p{N} ]/gu, ''))
+    .slice(0, SLUG_MAX)
+    .join('')
     .trim()
-    .replace(/ +/g, '-');
-  return safe ? `diploma-${safe}.png` : 'diploma.png';
+    .replace(/ +/g, '-')
+    .replace(/-+$/, '');
+  return slug ? `diploma-${slug}.png` : 'diploma.png';
 }
 
 const dateFormatter = new Intl.DateTimeFormat('ro-RO', {
@@ -69,7 +75,7 @@ export function starPoints(cx: number, cy: number, radius: number): { x: number;
 }
 
 export function diplomaTexts(data: DiplomaData, measure: Measure): DiplomaText[] {
-  const name = cleanName(data.childName);
+  const name = cleanChildName(data.childName);
   const text = (value: string, font: string, color: string, y: number, x = CENTER): DiplomaText => ({
     text: value,
     font: `${font} ${FONT}`,

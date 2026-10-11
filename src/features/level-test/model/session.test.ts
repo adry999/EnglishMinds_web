@@ -42,6 +42,42 @@ describe('reduceTest', () => {
   });
 });
 
+describe('reduceTest no-ops keep the same reference', () => {
+  const resultState = () => {
+    let state = play(INITIAL_STATE, { type: 'chooseMode', mode: 'level' }, { type: 'chooseOption', choice: 0 }, { type: 'start' });
+    for (let index = 0; index < 12; index++) state = reduceTest(state, { type: 'answer', option: 0 });
+    return state;
+  };
+
+  it('answer on a result state changes nothing and never grows past 12 answers', () => {
+    const result = resultState();
+    expect(result.step).toBe('result');
+    expect(reduceTest(result, { type: 'answer', option: 0 })).toBe(result);
+  });
+
+  it('restart on mode returns INITIAL_STATE by reference', () => {
+    expect(reduceTest(INITIAL_STATE, { type: 'restart' })).toBe(INITIAL_STATE);
+  });
+
+  it('restart from result returns to mode', () => {
+    expect(reduceTest(resultState(), { type: 'restart' })).toBe(INITIAL_STATE);
+  });
+
+  it('back is a no-op in question and result', () => {
+    const question = play(INITIAL_STATE, { type: 'chooseMode', mode: 'level' }, { type: 'chooseOption', choice: 0 }, { type: 'start' });
+    expect(reduceTest(question, { type: 'back' })).toBe(question);
+    const result = resultState();
+    expect(reduceTest(result, { type: 'back' })).toBe(result);
+  });
+
+  it('chooseMode outside the mode step is ignored', () => {
+    const setup = play(INITIAL_STATE, { type: 'chooseMode', mode: 'level' });
+    expect(reduceTest(setup, { type: 'chooseMode', mode: 'exam' })).toBe(setup);
+    const question = play(setup, { type: 'chooseOption', choice: 0 }, { type: 'start' });
+    expect(reduceTest(question, { type: 'chooseMode', mode: 'exam' })).toBe(question);
+  });
+});
+
 describe('emaLine', () => {
   it('follows the design per step', () => {
     expect(emaLine(INITIAL_STATE, '')).toBe('Hei, eu sunt Ema! Alege testul și începem.');
