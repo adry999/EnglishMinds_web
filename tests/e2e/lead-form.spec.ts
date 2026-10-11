@@ -4,9 +4,16 @@ import { blockWhatsApp, mockLeadApi } from './support/lead-api';
 const WA = 'https://wa.me/40775630680?text=';
 const PARENT = 'Ana Pop';
 
+let whatsapp: { hits: string[] };
+
 test.beforeEach(async ({ context }) => {
-  await blockWhatsApp(context);
+  whatsapp = await blockWhatsApp(context);
 });
+
+/** The client waits about 3.2 s before posting, so look past that window. */
+async function expectNoLeadRequest(page: Page): Promise<void> {
+  await expect(page.waitForRequest('**/api/lead', { timeout: 4500 })).rejects.toThrow(/Timeout/);
+}
 
 async function open(page: Page, path = '/') {
   await page.goto(path);
@@ -23,7 +30,8 @@ async function open(page: Page, path = '/') {
 async function fillValid(f: Awaited<ReturnType<typeof open>>, page: Page) {
   await f.name.fill(PARENT);
   await f.phone.fill('0722 123 456');
-  await page.getByRole('radio', { name: '9–10 ani' }).check({ force: true });
+  await page.locator('lead-form').getByText('9–10 ani', { exact: true }).click();
+  await expect(page.getByRole('radio', { name: '9–10 ani' })).toBeChecked();
   await f.consent.check();
 }
 
@@ -38,7 +46,9 @@ test('empty submit: Romanian errors, first invalid field focused, aria-invalid, 
   await expect(f.name).toHaveAttribute('aria-invalid', 'true');
   await expect(f.phone).toHaveAttribute('aria-invalid', 'true');
   await expect(f.consent).toHaveAttribute('aria-invalid', 'true');
+  await expectNoLeadRequest(page);
   expect(api.requests).toEqual([]);
+  expect(whatsapp.hits).toEqual([]);
 });
 
 test('invalid phone: phone error only, no request', async ({ page }) => {
@@ -52,7 +62,9 @@ test('invalid phone: phone error only, no request', async ({ page }) => {
   await expect(f.phone).toHaveAttribute('aria-invalid', 'true');
   await expect(f.phone).toBeFocused();
   await expect(f.name).not.toHaveAttribute('aria-invalid', 'true');
+  await expectNoLeadRequest(page);
   expect(api.requests).toEqual([]);
+  expect(whatsapp.hits).toEqual([]);
 });
 
 test('success (201): request payload, WhatsApp popup with the parent name, thank-you state', async ({ page }) => {
@@ -66,6 +78,8 @@ test('success (201): request payload, WhatsApp popup with the parent name, thank
   const url = popup.url();
   expect(url.startsWith(WA)).toBe(true);
   expect(decodeURIComponent(url.slice(WA.length))).toContain(PARENT);
+  expect(whatsapp.hits).toHaveLength(1);
+  expect(whatsapp.hits[0]).toBe(url);
   await expect(page.getByText(`Mulțumim, ${PARENT}!`)).toBeVisible();
   await expect(page.getByText('Ți-am deschis WhatsApp cu mesajul completat.')).toBeVisible();
   expect(api.requests).toHaveLength(1);
@@ -101,19 +115,19 @@ test('rate limited (429): alert with contact links, popup never reaches WhatsApp
   const api = await mockLeadApi(page, { status: 429, body: { ok: false, error: 'rate_limited' } });
   const f = await open(page);
   await fillValid(f, page);
-  const closedUrls: string[] = [];
-  const closed: Promise<void>[] = [];
+  const closed: Promise<unknown>[] = [];
   page.on('popup', (popup) => {
     // The tab opens synchronously with the click (popup blockers) and is closed on 429.
-    closed.push(popup.waitForEvent('close').then(() => void closedUrls.push(popup.url())));
+    closed.push(popup.waitForEvent('close'));
   });
   await f.submit.click();
   const alert = page.getByRole('alert').filter({ hasText: 'Ai trimis deja mai multe cereri' });
   await expect(alert).toBeVisible();
   await expect(page.getByRole('link', { name: 'Scrie pe WhatsApp' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Sună-ne' }).first()).toBeVisible();
-  await Promise.all(closed);
-  expect(closedUrls.every((url) => !url.includes('wa.me'))).toBe(true);
+  expect(closed).toHaveLength(1);
+  await closed[0];
+  expect(whatsapp.hits).toEqual([]);
   await expect(page.getByText(/^Mulțumim/)).toBeHidden();
   expect(api.requests).toHaveLength(1);
 });

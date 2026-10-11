@@ -18,8 +18,11 @@ export async function mockLeadApi(page: Page, reply: Reply): Promise<{ requests:
 }
 
 /** The WhatsApp tab must open with the right URL but never load wa.me. */
-export async function blockWhatsApp(context: BrowserContext): Promise<void> {
-  await context.route(/wa\.me|api\.whatsapp\.com|web\.whatsapp\.com/, (route) =>
-    route.fulfill({ status: 200, contentType: 'text/html', body: '<title>WhatsApp (test)</title>' }),
-  );
+export async function blockWhatsApp(context: BrowserContext): Promise<{ hits: string[] }> {
+  const hits: string[] = [];
+  await context.route(/wa\.me|api\.whatsapp\.com|web\.whatsapp\.com/, (route) => {
+    hits.push(route.request().url());
+    return route.fulfill({ status: 200, contentType: 'text/html', body: '<title>WhatsApp (test)</title>' });
+  });
+  return { hits };
 }
