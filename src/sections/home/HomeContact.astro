@@ -10,7 +10,9 @@ const { contact } = site;
   <div class="home-contact__inner">
     <div class="home-contact__main">
       <h2 id="contact-heading">Rezervă lecția{' '}<span class="home-contact__highlight">demo gratuită</span></h2>
-      <p>Lasă-ne un număr de telefon și te sunăm să stabilim ziua și ora.</p>
+      <p>{Astro.slots.has('default')
+        ? 'Lasă-ne un număr de telefon și te sunăm să stabilim ziua și ora.'
+        : 'Scrie-ne pe WhatsApp sau sună-ne și stabilim împreună ziua și ora.'}</p>
       <slot />
       <div class="home-contact__actions">
         <WhatsAppButton />

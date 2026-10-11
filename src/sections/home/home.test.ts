@@ -60,5 +60,12 @@ describe('home sections', () => {
     expect(html).toContain('href="https://wa.me/40775630680"');
     expect(html).toContain('href="https://www.google.com/maps/search/?api=1&amp;query=');
     expect(html).toContain('<form id="viitor"></form>');
+    expect(html).toContain('Lasă-ne un număr de telefon');
+  });
+
+  it('contact section does not promise a phone form when no form is slotted', async () => {
+    const html = await render(HomeContact);
+    expect(html).not.toContain('Lasă-ne un număr de telefon');
+    expect(html).toContain('Scrie-ne pe WhatsApp sau sună-ne și stabilim împreună ziua și ora.');
   });
 });

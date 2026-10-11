@@ -62,4 +62,10 @@ describe('shared visuals', () => {
     expect(html).toContain('href="/lectie-demo/"');
     expect(html).toContain('aria-label="Contact rapid"');
   });
+
+  it('lets the page override the demo link', async () => {
+    const html = await render(StickyContact, { props: { demoHref: '#contact' } });
+    expect(html).toContain('href="#contact"');
+    expect(html).not.toContain('href="/lectie-demo/"');
+  });
 });
