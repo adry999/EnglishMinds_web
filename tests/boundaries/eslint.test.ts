@@ -94,4 +94,30 @@ describe('eslint boundaries', () => {
       'no-restricted-properties',
     );
   });
+
+  it('rejects deep feature imports from a section', async () => {
+    expect(await ruleIds(astroImport('@features/faq/ui/Faq.astro'), 'src/sections/home/Hero.astro')).toContain(
+      'no-restricted-imports',
+    );
+  });
+
+  it('allows a section to import a feature index and shared UI', async () => {
+    expect(await ruleIds(astroImport('@features/faq'), 'src/sections/home/Hero.astro')).toEqual([]);
+    expect(await ruleIds(astroImport('@shared/ui/Photo.astro'), 'src/sections/home/Hero.astro')).toEqual([]);
+  });
+
+  it('rejects shared UI importing a section', async () => {
+    expect(await ruleIds(astroImport('../../sections/home/Hero.astro'), 'src/shared/ui/X.astro')).toContain(
+      'no-restricted-imports',
+    );
+    expect(await ruleIds(astroImport('@sections/home/Hero.astro'), 'src/shared/ui/X.astro')).toContain(
+      'no-restricted-imports',
+    );
+  });
+
+  it('rejects a feature importing a section', async () => {
+    expect(await ruleIds(astroImport('@sections/home/Hero.astro'), 'src/features/blog/ui/A.astro')).toContain(
+      'no-restricted-imports',
+    );
+  });
 });

@@ -42,9 +42,11 @@ export default defineConfig(
           patterns: [
             noDeepRelative,
             { group: ['@features/*'], message: 'shared/ și core/ nu depind de feature-uri.' },
+            { group: ['@sections/*'], message: 'shared/ și core/ nu depind de secțiuni.' },
+            { group: ['@layouts/*'], message: 'shared/ și core/ nu depind de layout-uri.' },
             {
-              regex: '^\\.{1,2}/(.*/)?(features|pages|layouts)/',
-              message: 'shared/ și core/ nu depind de feature-uri, pagini sau layout-uri.',
+              regex: '^\\.{1,2}/(.*/)?(features|pages|layouts|sections)/',
+              message: 'shared/ și core/ nu depind de feature-uri, pagini, layout-uri sau secțiuni.',
             },
           ],
         },
@@ -52,7 +54,7 @@ export default defineConfig(
     },
   },
   {
-    files: ['src/pages/**', 'src/layouts/**'],
+    files: ['src/pages/**', 'src/layouts/**', 'src/sections/**'],
     rules: {
       'no-restricted-imports': [
         'error',
@@ -84,6 +86,8 @@ export default defineConfig(
               group: ['@features/*'],
               message: 'Un feature nu importă alt feature; folosește un CustomEvent din @shared/contracts.',
             },
+            { group: ['@sections/*'], message: 'Un feature nu depinde de secțiunile paginilor.' },
+            { group: ['@layouts/*'], message: 'Un feature nu depinde de layout-uri.' },
           ],
         },
       ],
@@ -101,6 +105,8 @@ export default defineConfig(
               group: ['@features/*'],
               message: 'Un feature nu importă alt feature; folosește un CustomEvent din @shared/contracts.',
             },
+            { group: ['@sections/*'], message: 'Un feature nu depinde de secțiunile paginilor.' },
+            { group: ['@layouts/*'], message: 'Un feature nu depinde de layout-uri.' },
             {
               group: ['../*'],
               message: 'Un fișier din rădăcina unui feature nu iese din feature cu ../; folosește @shared/ sau @core/.',
