@@ -1,0 +1,14 @@
+---
+import './Logo.css';
+
+interface Props {
+  href?: string;
+}
+
+const { href = '/' } = Astro.props;
+---
+<a class="logo" href={href} aria-label="English Minds Academy – Acasă">
+  <span class="logo__line" aria-hidden="true">english</span>
+  <span class="logo__line" aria-hidden="true"><span class="logo__star"></span>minds</span>
+  <span class="logo__academy" aria-hidden="true">ACADEMY</span>
+</a>

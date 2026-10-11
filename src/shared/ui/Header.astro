@@ -1,0 +1,36 @@
+---
+import Logo from './Logo.astro';
+import './Header.css';
+
+export type NavKey = 'acasa' | 'grupe' | 'metoda' | 'test' | 'tabere' | 'blog';
+
+interface Props {
+  active?: NavKey;
+}
+
+const NAV: readonly { key: NavKey; label: string; href: string }[] = [
+  { key: 'acasa', label: 'Acasă', href: '/' },
+  { key: 'grupe', label: 'Grupe', href: '/grupe/' },
+  { key: 'metoda', label: 'Metoda Cambridge', href: '/metoda-cambridge/' },
+  { key: 'test', label: 'Test de nivel', href: '/test-de-nivel/' },
+  { key: 'tabere', label: 'Tabere de vară', href: '/tabere/' },
+  { key: 'blog', label: 'Blog', href: '/blog/' },
+];
+
+const { active } = Astro.props;
+---
+<header class="site-header">
+  <div class="site-header__inner">
+    <Logo />
+    <nav class="site-header__nav" aria-label="Principal">
+      <ul>
+        {NAV.map((item) => (
+          <li>
+            <a href={item.href} aria-current={item.key === active ? 'page' : undefined}>{item.label}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+    <a class="site-header__cta" href="/lectie-demo/">Rezervă locul acum</a>
+  </div>
+</header>

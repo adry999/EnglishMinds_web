@@ -1,0 +1,33 @@
+:root {
+  --color-orange: #ec6423;
+  --color-orange-light: #f39a2e;
+  --color-orange-shadow: #b8461a;
+  --color-sun: #ffc41f;
+  --color-sun-shadow: #c98f00;
+  --color-navy: #14224a;
+  --color-cream: #fff5e6;
+  --color-cream-border: #f0dcc0;
+  --color-peach: #fff0d6;
+  --color-rust: #c4501a;
+  --color-text-accent: #b8461a;
+  --color-whatsapp: #25d366;
+  --color-white: #fff;
+
+  --gradient-brand: linear-gradient(115deg, var(--color-orange) 0%, var(--color-orange-light) 100%);
+
+  --font-body: 'Nunito', system-ui, sans-serif;
+  --font-label: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --text-button: 1.1875rem;
+
+  --radius-pill: 999px;
+  --radius-card: 24px;
+
+  --container: 1200px;
+  --gutter: 16px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --gutter: 24px;
+  }
+}

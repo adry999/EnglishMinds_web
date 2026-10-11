@@ -1,0 +1,37 @@
+---
+import { site } from '@shared/content/site';
+import Button from './Button.astro';
+import Logo from './Logo.astro';
+import WhatsAppButton from './WhatsAppButton.astro';
+import './Footer.css';
+
+const { contact } = site;
+const LEGAL = [
+  { label: 'Confidențialitate', href: '/confidentialitate/' },
+  { label: 'Cookies', href: '/cookies/' },
+  { label: 'Termeni', href: '/termeni/' },
+];
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <div class="site-footer__cta">
+      <p class="site-footer__title">Rezervă lecția{' '}<span class="site-footer__highlight">demo gratuită</span></p>
+      <div class="site-footer__actions">
+        <WhatsAppButton />
+        <Button href={`tel:${contact.phoneE164}`} variant="sun">{contact.phoneDisplay}</Button>
+      </div>
+    </div>
+    <div class="site-footer__meta">
+      <Logo />
+      <address>{`${contact.street}, ${contact.city}`}</address>
+      <a href={contact.instagramUrl}>{contact.instagramHandle}</a>
+      <nav class="site-footer__legal" aria-label="Informații legale">
+        <ul>
+          {LEGAL.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+        </ul>
+      </nav>
+      <p class="site-footer__copy">© {year} {site.name}</p>
+    </div>
+  </div>
+</footer>
