@@ -1,0 +1,23 @@
+---
+import Photo from '@shared/ui/Photo.astro';
+import Star from '@shared/ui/Star.astro';
+import './ParentBenefits.css';
+
+const BENEFITS = [
+  'Un nivel clar de pornire, stabilit la lecția demo',
+  'Progres pas cu pas, cu rezultate vizibile după prima lună',
+  'Un obiectiv concret: următorul nivel sau o diplomă Cambridge',
+];
+---
+<section class="parent-benefits" aria-labelledby="parent-benefits-heading">
+  <div class="parent-benefits__photo">
+    <Photo photo="class" alt="Lecție la English Minds" sizes="(min-width: 768px) 560px, 100vw" />
+  </div>
+  <div class="parent-benefits__text">
+    <h2 id="parent-benefits-heading">Ce primești tu, ca părinte</h2>
+    <ul>
+      {BENEFITS.map((benefit) => <li><Star size={28} /> <span>{benefit}</span></li>)}
+    </ul>
+    <a class="parent-benefits__cta" href="/test-de-nivel/">Află nivelul copilului</a>
+  </div>
+</section>

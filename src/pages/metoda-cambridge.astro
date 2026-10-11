@@ -1,0 +1,22 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import LevelPath from '@sections/metoda/LevelPath.astro';
+import MetodaHero from '@sections/metoda/MetodaHero.astro';
+import ParentBenefits from '@sections/metoda/ParentBenefits.astro';
+import ThreeThings from '@sections/metoda/ThreeThings.astro';
+import Footer from '@shared/ui/Footer.astro';
+import Header from '@shared/ui/Header.astro';
+---
+<BaseLayout
+  title="Metoda Cambridge"
+  description="De ce predăm după metoda Cambridge: niveluri recunoscute internațional, engleză vorbită din prima lecție și progres pe care îl vezi."
+>
+  <Header active="metoda" />
+  <main id="continut">
+    <MetodaHero />
+    <ThreeThings />
+    <LevelPath />
+    <ParentBenefits />
+  </main>
+  <Footer />
+</BaseLayout>
