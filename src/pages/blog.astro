@@ -1,0 +1,42 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { BlogList, EmaTip, getPublishedPosts } from '@features/blog';
+import Eyebrow from '@shared/ui/Eyebrow.astro';
+import Footer from '@shared/ui/Footer.astro';
+import Header from '@shared/ui/Header.astro';
+
+const posts = await getPublishedPosts();
+---
+<BaseLayout
+  title="Blog"
+  description="Sfaturi scurte pentru părinți: cum îți ajuți copilul cu engleza acasă, fără teme în plus."
+>
+  <Header active="blog" />
+  <main id="continut" class="container blog-page">
+    <Eyebrow>Blog</Eyebrow>
+    <h1>Sfaturi pentru părinți</h1>
+    <p class="blog-page__lead">Idei scurte despre cum îți ajuți copilul cu engleza acasă, fără teme în plus.</p>
+    <BlogList posts={posts} />
+    <EmaTip />
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  .blog-page {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    padding-block: 64px 96px;
+  }
+
+  .blog-page h1 {
+    font-size: clamp(2.5rem, 6vw, 4.25rem);
+  }
+
+  .blog-page__lead {
+    max-width: 600px;
+    margin: 0;
+    font-size: 1.1875rem;
+  }
+</style>

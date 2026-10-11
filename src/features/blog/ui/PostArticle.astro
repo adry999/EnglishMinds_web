@@ -1,0 +1,36 @@
+---
+import { render } from 'astro:content';
+import Eyebrow from '@shared/ui/Eyebrow.astro';
+import Photo from '@shared/ui/Photo.astro';
+import type { BlogPost } from '../data/posts';
+import { categoryLabel } from '../model/categories';
+import { formatPostDate } from '../model/format-post-date';
+import { readingMinutes } from '../model/reading-minutes';
+import EmaTip from './EmaTip.astro';
+import './PostArticle.css';
+
+interface Props {
+  post: BlogPost;
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+<article class="post">
+  <header class="post__header">
+    <Eyebrow>{categoryLabel(post.data.category)}</Eyebrow>
+    <h1>{post.data.title}</h1>
+    <p class="post__meta">
+      <time datetime={post.data.publishedAt.toISOString()}>{formatPostDate(post.data.publishedAt)}</time>
+      {' · '}{readingMinutes(post.body ?? '')} min de citit
+    </p>
+  </header>
+  <div class="post__cover">
+    <Photo photo={post.data.cover} alt={post.data.coverAlt} sizes="(min-width: 960px) 900px, 100vw" eager />
+  </div>
+  <div class="post__body">
+    <Content />
+  </div>
+  <EmaTip />
+  <a class="post__back" href="/blog/">← Toate articolele</a>
+</article>
