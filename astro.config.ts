@@ -3,6 +3,7 @@ import { requireCompleteContent } from './src/core/build/require-complete-conten
 import { site } from './src/shared/content/site';
 
 export default defineConfig({
+  site: site.url,
   output: 'static',
   trailingSlash: 'always',
   build: { format: 'directory' },

@@ -85,6 +85,33 @@ describe('built pages', () => {
     expect(html).not.toMatch(/<script[^>]*src="https:\/\/connect\.facebook\.net/);
   });
 
+  const ROUTE: Record<string, string> = {
+    'index.html': '/',
+    'grupe/index.html': '/grupe/',
+    'metoda-cambridge/index.html': '/metoda-cambridge/',
+    'tabere/index.html': '/tabere/',
+    'test-de-nivel/index.html': '/test-de-nivel/',
+    'lectie-demo/index.html': '/lectie-demo/',
+    'blog/index.html': '/blog/',
+  };
+
+  it.each(Object.entries(ROUTE))('%s has an absolute canonical and Open Graph tags', (page, route) => {
+    const html = read(page);
+    const url = `https://englishminds.ro${route}`;
+    expect(html).toContain(`<link rel="canonical" href="${url}"`);
+    expect(html).toContain(`<meta property="og:url" content="${url}"`);
+    expect(html).toMatch(/<meta property="og:title" content="[^"]+"/);
+    expect(html).toMatch(/<meta property="og:description" content="[^"]+"/);
+    expect(html).not.toContain('name="robots"');
+    const image = html.match(/<meta property="og:image" content="([^"]+)"/)?.[1] ?? '';
+    expect(image).toMatch(/^https:\/\/englishminds\.ro\/_astro\/.+\.jpg$/);
+    expect(existsSync(join(dist, image.replace('https://englishminds.ro/', '')))).toBe(true);
+  });
+
+  it('keeps the 404 page out of search results', () => {
+    expect(read('404.html')).toContain('<meta name="robots" content="noindex"');
+  });
+
   it('ships optimized images, not the original jpgs', () => {
     const home = read('index.html');
     expect(home).toMatch(/type="image\/avif"/);

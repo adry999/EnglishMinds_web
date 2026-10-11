@@ -15,7 +15,13 @@ interface Props {
 
 const { post } = Astro.props;
 ---
-<BaseLayout title={post.data.title} description={post.data.description}>
+<BaseLayout
+  title={post.data.title}
+  description={post.data.description}
+  type="article"
+  image={post.data.cover}
+  imageAlt={post.data.coverAlt}
+>
   <Header active="blog" />
   <main id="continut">
     <PostArticle post={post} />
