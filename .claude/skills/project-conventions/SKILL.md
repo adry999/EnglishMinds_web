@@ -40,6 +40,7 @@ Design complet: `docs/superpowers/specs/2026-10-09-site-englishminds-design.md`.
 - `server/` importă din `src/` doar `shared/contracts/`. `src/` nu importă din `server/`.
 - Fără `../../`; aliasuri `@features/`, `@shared/`, `@core/`. Un singur `../` e permis doar în interiorul aceluiași feature.
 - Fără barrel-uri în subfoldere și fără `export *`.
+- dependency-cruiser nu citește fișierele `.astro`; pentru `.astro` granițele sunt verificate de ESLint (`no-restricted-imports`) — orice regulă nouă se adaugă în ambele.
 
 ## Erori
 
