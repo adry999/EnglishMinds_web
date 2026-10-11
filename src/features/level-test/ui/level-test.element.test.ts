@@ -56,7 +56,7 @@ function finishWithName(name: string) {
   input.dispatchEvent(new Event('input', { bubbles: true }));
 }
 
-function stubSpeech(speak: () => void, cancel = vi.fn()) {
+function stubSpeech(speak: (utterance: { onerror?: (event: { error: string }) => void }) => void, cancel = vi.fn()) {
   vi.stubGlobal('speechSynthesis', { cancel, speak });
   vi.stubGlobal(
     'SpeechSynthesisUtterance',
@@ -157,6 +157,24 @@ describe('<level-test>', () => {
     expect(card().textContent).toContain('Browserul tău nu poate reda sunetul. Citește propoziția:');
     expect(card().textContent).toContain('My brother is twelve years old.');
     expect(button('Ascultă din nou')).toBeUndefined();
+    expect(document.activeElement).toBe(card().querySelector('h2'));
+  });
+
+  it('switches to the text fallback when the utterance errors later', () => {
+    let fail: (() => void) | undefined;
+    stubSpeech((utterance) => {
+      fail = () => utterance.onerror!({ error: 'synthesis-failed' });
+    });
+    button('Test de nivel').click();
+    button('9–10 ani').click();
+    button('Începe testul').click();
+    optionButtons()[0]!.click();
+    optionButtons()[0]!.click();
+    expect(button('Ascultă din nou')).toBeTruthy();
+    fail!();
+    expect(card().textContent).toContain('My brother is twelve years old.');
+    expect(button('Ascultă din nou')).toBeUndefined();
+    expect(document.activeElement).toBe(card().querySelector('h2'));
   });
 
   it('cancels speech when leaving a question and when disconnected', () => {
@@ -276,6 +294,16 @@ describe('<level-test>', () => {
       await vi.waitFor(() => expect(button('Descarcă diploma (PNG)').disabled).toBe(false));
       expect(createDiplomaCanvas).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it('re-enables the export buttons after a canvas failure', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    vi.mocked(createDiplomaCanvas).mockRejectedValueOnce(new Error('boom'));
+    finishWithName('Ana');
+    button('Descarcă diploma (PNG)').click();
+    await vi.waitFor(() => expect(card().querySelector('[role="alert"]')?.textContent).not.toBe(''));
+    expect(button('Descarcă diploma (PNG)').disabled).toBe(false);
+    expect(button('Tipărește').disabled).toBe(false);
   });
 
   it('restarts and keeps the typed name', () => {

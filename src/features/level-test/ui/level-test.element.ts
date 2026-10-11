@@ -74,7 +74,7 @@ export class LevelTest extends HTMLElement {
   private speechBroke(): void {
     if (this.speechFailed) return;
     this.speechFailed = true;
-    if (this.state.step === 'question') this.render({ focus: false });
+    if (this.state.step === 'question') this.render({ focus: this.contains(document.activeElement) });
   }
 
   private resultData() {

@@ -27,15 +27,18 @@ describe('createSpeech', () => {
 
   it('calls back when the utterance errors and cancels on demand', () => {
     const cancel = vi.fn();
-    const utterances: { onerror?: () => void }[] = [];
+    const utterances: { onerror?: (event: { error: string }) => void }[] = [];
     const win = {
-      speechSynthesis: { cancel, speak: (u: { onerror?: () => void }) => utterances.push(u) },
+      speechSynthesis: { cancel, speak: (u: { onerror?: (event: { error: string }) => void }) => utterances.push(u) },
       SpeechSynthesisUtterance: class {},
     } as unknown as Window;
     const onError = vi.fn();
     const speech = createSpeech(win);
     speech.speak('cat', onError);
-    utterances[0]!.onerror!();
+    utterances[0]!.onerror!({ error: 'interrupted' });
+    utterances[0]!.onerror!({ error: 'canceled' });
+    expect(onError).not.toHaveBeenCalled();
+    utterances[0]!.onerror!({ error: 'synthesis-failed' });
     expect(onError).toHaveBeenCalledTimes(1);
     cancel.mockClear();
     speech.cancel();

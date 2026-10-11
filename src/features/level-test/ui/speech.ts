@@ -19,7 +19,11 @@ export function createSpeech(win: Window): Speech {
         const utterance = new Utterance(text);
         utterance.lang = 'en-GB';
         utterance.rate = 0.85;
-        if (onError) utterance.onerror = () => onError();
+        if (onError) {
+          utterance.onerror = (event) => {
+            if (event.error !== 'interrupted' && event.error !== 'canceled') onError();
+          };
+        }
         synth.cancel();
         synth.speak(utterance);
         return true;
