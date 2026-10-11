@@ -1,0 +1,74 @@
+.sticky-contact {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  left: 12px;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--color-white);
+  box-shadow: 0 10px 24px rgb(0 0 0 / 0.2);
+}
+
+.sticky-contact a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 12px 8px;
+  border-radius: var(--radius-pill);
+  font-weight: 900;
+  font-size: var(--text-button);
+  text-decoration: none;
+}
+
+.sticky-contact__whatsapp {
+  background: var(--color-whatsapp);
+  color: var(--color-navy);
+}
+
+.sticky-contact__demo {
+  background: var(--color-orange);
+  color: var(--color-white);
+}
+
+.sticky-contact__long {
+  display: none;
+}
+
+body:has(.sticky-contact) {
+  padding-bottom: 84px;
+}
+
+@media (min-width: 768px) {
+  .sticky-contact {
+    right: 28px;
+    bottom: 28px;
+    left: auto;
+    display: block;
+    padding: 0;
+    background: none;
+    box-shadow: none;
+  }
+
+  .sticky-contact__whatsapp {
+    padding: 14px 22px;
+    box-shadow: 0 10px 24px rgb(0 0 0 / 0.2);
+  }
+
+  .sticky-contact__long {
+    display: inline;
+  }
+
+  .sticky-contact__short,
+  .sticky-contact__demo {
+    display: none !important;
+  }
+
+  body:has(.sticky-contact) {
+    padding-bottom: 0;
+  }
+}

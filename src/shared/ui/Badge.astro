@@ -1,0 +1,10 @@
+---
+import './Badge.css';
+
+interface Props {
+  tone?: 'white' | 'orange';
+}
+
+const { tone = 'white' } = Astro.props;
+---
+<p class={`badge badge--${tone}`}><slot /></p>

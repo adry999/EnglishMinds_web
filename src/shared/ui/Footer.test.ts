@@ -31,4 +31,11 @@ describe('Footer', () => {
   it('keeps a space before the highlighted words', async () => {
     expect(await render()).toMatch(/lecția <span class="site-footer__highlight">demo gratuită<\/span>/);
   });
+
+  it('can hide the call to action block', async () => {
+    const container = await AstroContainer.create();
+    const html = await container.renderToString(Footer, { props: { showCta: false } });
+    expect(html).not.toContain('site-footer__cta');
+    expect(html).toContain('href="/confidentialitate/"');
+  });
 });
