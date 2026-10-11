@@ -30,8 +30,18 @@ describe('question banks', () => {
     expect(EXAMS.map((exam) => exam.bank)).toEqual([YOUNG, MID, MID, TEEN]);
   });
 
-  it('keeps typographic apostrophes', () => {
-    const texts = [...MID, ...TEEN].flatMap((q) => [q.prompt, ...q.options, 'passage' in q ? (q.passage ?? '') : '']);
-    expect(texts.join(' ')).not.toContain("'");
+  it('keeps typographic apostrophes in every text field', () => {
+    const texts = [...YOUNG, ...MID, ...TEEN].flatMap((q) => [
+      q.prompt,
+      q.instruction,
+      ...q.options,
+      'passage' in q ? (q.passage ?? '') : '',
+      'say' in q ? q.say : '',
+    ]);
+    const joined = texts.join(' ');
+    expect(joined).not.toContain("'");
+    expect(joined).toContain('’');
+    const letsMeet = TEEN.find((q) => q.kind === 'audio' && q.say.includes('Let’s meet outside the cinema'));
+    expect(letsMeet).toBeDefined();
   });
 });
