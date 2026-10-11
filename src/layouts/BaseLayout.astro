@@ -12,6 +12,7 @@ import { ConsentDefaults, CookieConsent } from '@features/consent';
 import { UtmCapture } from '@features/lead-capture';
 import { photos } from '@shared/content/photos';
 import { site } from '@shared/content/site';
+import { serializeJsonLd } from '@shared/seo/json-ld';
 import { canonicalUrl, fullTitle } from '@shared/seo/page-meta';
 
 interface Props {
@@ -31,6 +32,7 @@ const {
   imageAlt = 'Copii la o lecție de engleză la English Minds Academy',
   type = 'website',
   noindex = false,
+  jsonLd = [],
 } = Astro.props;
 const pageTitle = fullTitle(title, site.name);
 const canonical = canonicalUrl(Astro.url.pathname, site.url);
@@ -59,6 +61,7 @@ const ogImageUrl = new URL(ogImage.src, site.url).href;
     <meta property="og:image:alt" content={imageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    {jsonLd.map((data) => <script type="application/ld+json" is:inline set:html={serializeJsonLd(data)} />)}
   </head>
   <body>
     <a class="skip-link" href="#continut">Sari la conținut</a>

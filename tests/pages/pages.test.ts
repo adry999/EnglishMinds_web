@@ -118,4 +118,24 @@ describe('built pages', () => {
     expect(home).not.toMatch(/src="[^"]*ema-reading\.jpg"/);
     for (const img of home.match(/<img[^>]*>/g) ?? []) expect(img).toMatch(/srcset="[^"]*\.\w+ \d+w/);
   });
+
+  const jsonLdBlocks = (html: string): unknown[] =>
+    [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1] ?? ''));
+
+  it('home describes the organization and the FAQ', () => {
+    const types = jsonLdBlocks(read('index.html')).map((block) => (block as { '@type': unknown })['@type']);
+    expect(types).toContainEqual(['EducationalOrganization', 'LocalBusiness']);
+    expect(types).toContain('FAQPage');
+  });
+
+  it('every published article has a valid BlogPosting', () => {
+    // Zero posts is allowed while every article is still a draft.
+    const posts = readdirSync(join(dist, 'blog')).filter((entry) => statSync(join(dist, 'blog', entry)).isDirectory());
+    for (const slug of posts) {
+      const [block] = jsonLdBlocks(read(`blog/${slug}/index.html`)) as { '@type': string; url: string; image: string }[];
+      expect(block?.['@type']).toBe('BlogPosting');
+      expect(block?.url).toBe(`https://englishminds.ro/blog/${slug}/`);
+      expect(block?.image).toMatch(/^https:\/\/englishminds\.ro\/_astro\/.+\.jpg$/);
+    }
+  });
 });
