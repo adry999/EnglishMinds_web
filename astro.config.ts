@@ -6,5 +6,10 @@ export default defineConfig({
   output: 'static',
   trailingSlash: 'always',
   build: { format: 'directory' },
+  vite: {
+    server: {
+      proxy: { '/api': 'http://localhost:3000' },
+    },
+  },
   integrations: [requireCompleteContent(site, process.env.SITE_ENV === 'production')],
 });

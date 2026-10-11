@@ -3,8 +3,12 @@ import { Readable } from 'node:stream';
 import { readEnvironment } from './config/environment';
 import { clientIpOf } from './client-ip';
 import { createRequestHandler } from './handle-request';
+import { createDatabasePool } from './db/pool';
 import { hashIp } from './leads/ip-hash';
+import { createSmtpNotifier } from './leads/lead-notification';
+import { createMysqlLeadRepository } from './leads/lead.repository';
 import { consoleLogger, systemClock } from './leads/ports';
+import { createMysqlRateLimiter } from './leads/rate-limit';
 
 function toWebRequest(req: IncomingMessage): Request {
   const headers = new Headers();
@@ -29,12 +33,11 @@ async function sendWebResponse(response: Response, res: ServerResponse): Promise
 }
 
 const env = readEnvironment();
-// Temporary adapters until the MySQL and SMTP adapters land.
-const unavailable = (): Promise<never> => Promise.reject(new Error('storage not configured yet'));
+const pool = createDatabasePool(env.db);
 const handle = createRequestHandler({
-  repository: { save: unavailable, deleteCreatedBefore: unavailable },
-  rateLimiter: { hit: unavailable, deleteWindowsBefore: unavailable },
-  notifier: { notify: unavailable },
+  repository: createMysqlLeadRepository(pool),
+  rateLimiter: createMysqlRateLimiter(pool),
+  notifier: createSmtpNotifier(env),
   clock: systemClock,
   logger: consoleLogger,
   hashIp: (ip) => hashIp(ip, env.ipHashSalt),

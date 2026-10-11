@@ -1,6 +1,6 @@
 import { execFileSync, spawn, type ChildProcess } from 'node:child_process';
 import { connect } from 'node:net';
-import { mkdtempSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -28,7 +28,7 @@ let child: ChildProcess;
 beforeAll(async () => {
   dir = mkdtempSync(join(tmpdir(), 'em-server-'));
   const outfile = join(dir, 'app.cjs');
-  execFileSync(process.execPath, ['scripts/build-server.mjs', '--outfile', outfile], { stdio: 'inherit' });
+  execFileSync(process.execPath, ['scripts/build-server.mjs', '--outdir', dir], { stdio: 'inherit' });
   child = spawn(process.execPath, [outfile], { env: { ...process.env, ...TEST_ENV, PORT: String(port) } });
   await new Promise<void>((resolve, reject) => {
     child.stdout?.on('data', (chunk: Buffer) => {
@@ -78,5 +78,39 @@ describe('server bundle', () => {
     expect(raw.startsWith('HTTP/1.1 500')).toBe(true);
     const health = await fetch(`${base}/api/health`);
     expect(health.status).toBe(200);
+  });
+
+  it('answers a valid lead with a generic 500 when the database is unreachable', async () => {
+    const response = await fetch(`${base}/api/lead`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        parentName: 'Ana Pop',
+        phone: '0722 123 456',
+        childAgeGroup: null,
+        source: 'home',
+        testLevel: null,
+        consent: true,
+        policyVersion: '1',
+        utm: { source: null, medium: null, campaign: null },
+        website: '',
+        elapsedMs: 8400,
+      }),
+    });
+    expect(response.status).toBe(500);
+    expect(await response.json()).toEqual({ ok: false, error: 'internal' });
+  });
+
+  it('answers a honeypot submission with 201 without touching the database', async () => {
+    const response = await fetch(`${base}/api/lead`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ website: 'spam', elapsedMs: 9000 }),
+    });
+    expect(response.status).toBe(201);
+  });
+
+  it('bundles the purge job', () => {
+    expect(existsSync(join(dir, 'purge-expired-leads.cjs'))).toBe(true);
   });
 });
