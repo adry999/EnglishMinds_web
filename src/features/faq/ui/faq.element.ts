@@ -1,11 +1,19 @@
 export class FaqList extends HTMLElement {
   connectedCallback(): void {
     if (this.dataset.enhanced === 'true') return;
-    this.dataset.enhanced = 'true';
+    this.enhance();
+    if (this.dataset.enhanced !== 'true' && document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => this.enhance(), { once: true });
+    }
+  }
+
+  private enhance(): void {
+    if (this.dataset.enhanced === 'true') return;
+    let enhanced = 0;
     for (const item of this.items()) {
       const question = item.querySelector<HTMLElement>('.faq__question');
       const answer = item.querySelector<HTMLElement>('.faq__answer');
-      if (!question || !answer) continue;
+      if (!question || !answer || !answer.id) continue;
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'faq__toggle';
@@ -15,7 +23,9 @@ export class FaqList extends HTMLElement {
       question.append(button);
       answer.hidden = true;
       button.addEventListener('click', () => this.toggle(item));
+      enhanced++;
     }
+    if (enhanced > 0) this.dataset.enhanced = 'true';
   }
 
   private items(): HTMLElement[] {

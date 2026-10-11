@@ -15,7 +15,7 @@ describe('Faq.astro', () => {
     expect(html).toContain('Prima?');
     expect(html).toContain('Unu');
     expect(html).toContain('id="faq-answer-1"');
-    expect(html).not.toContain('hidden');
+    expect(html).not.toMatch(/\shidden(?=[\s>=])/);
   });
 
   it('uses the default heading', async () => {
