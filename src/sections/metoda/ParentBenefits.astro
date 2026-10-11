@@ -1,4 +1,5 @@
 ---
+import Button from '@shared/ui/Button.astro';
 import Photo from '@shared/ui/Photo.astro';
 import Star from '@shared/ui/Star.astro';
 import './ParentBenefits.css';
@@ -18,6 +19,6 @@ const BENEFITS = [
     <ul role="list">
       {BENEFITS.map((benefit) => <li><Star size={28} /> <span>{benefit}</span></li>)}
     </ul>
-    <a class="parent-benefits__cta" href="/test-de-nivel/">Află nivelul copilului</a>
+    <Button class="parent-benefits__cta" href="/test-de-nivel/">Află nivelul copilului</Button>
   </div>
 </section>

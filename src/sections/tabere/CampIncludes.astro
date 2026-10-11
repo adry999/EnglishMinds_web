@@ -1,5 +1,6 @@
 ---
 import { site } from '@shared/content/site';
+import Button from '@shared/ui/Button.astro';
 import { CAMP_WHATSAPP_URL } from './camp-whatsapp';
 import './CampIncludes.css';
 ---
@@ -13,6 +14,6 @@ import './CampIncludes.css';
   <div class="camp-includes__card camp-includes__card--navy">
     <h2>Locurile sunt limitate</h2>
     <p>Scrie-ne pe WhatsApp și te anunțăm primul când se deschid înscrierile.</p>
-    <a class="camp-includes__cta" href={CAMP_WHATSAPP_URL}>Scrie-ne pe WhatsApp</a>
+    <Button variant="whatsapp" class="camp-includes__cta" href={CAMP_WHATSAPP_URL}>Scrie-ne pe WhatsApp</Button>
   </div>
 </section>

@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 48px;
+  min-height: 52px;
   padding: 14px 26px;
   border-radius: var(--radius-pill);
   font-family: var(--font-body);
@@ -33,4 +33,42 @@
 .button--whatsapp {
   background: var(--color-whatsapp);
   color: var(--color-navy);
+}
+
+.button:disabled,
+.button[aria-disabled='true'] {
+  cursor: not-allowed;
+  background: var(--color-photo-bg);
+  color: var(--color-navy);
+  box-shadow: none;
+}
+
+.button--navy {
+  background: var(--color-navy);
+  color: var(--color-white);
+  box-shadow: 0 5px 0 rgb(0 0 0 / 0.25);
+}
+
+.button--navy:focus-visible {
+  outline-color: var(--color-orange);
+}
+
+.button--outline-light {
+  color: var(--color-white);
+  border: 3px solid currentColor;
+}
+
+.button--outline-light:focus-visible {
+  outline-color: var(--color-white);
+}
+
+button.button {
+  border: 0;
+  cursor: pointer;
+}
+
+button.button--outline,
+button.button--outline-light {
+  border: 3px solid currentColor;
+  background: transparent;
 }

@@ -33,31 +33,6 @@
   margin-top: 6px;
 }
 
-.level-section__primary,
-.level-section__secondary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 56px;
-  padding: 14px 28px;
-  border-radius: var(--radius-pill);
-  font-size: var(--text-button);
-  font-weight: 900;
-  text-align: center;
-  text-decoration: none;
-}
-
-.level-section__primary {
-  background: var(--color-orange);
-  color: var(--color-white);
-  box-shadow: 0 5px 0 var(--color-orange-shadow);
-}
-
-.level-section__secondary {
-  border: 3px solid var(--color-navy);
-  color: var(--color-navy);
-}
-
 .level-section__photo {
   overflow: hidden;
   border: 6px solid var(--color-sun);

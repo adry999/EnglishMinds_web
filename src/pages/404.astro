@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
+import Button from '@shared/ui/Button.astro';
 import EmaPortrait from '@shared/ui/EmaPortrait.astro';
 import Footer from '@shared/ui/Footer.astro';
 import Header from '@shared/ui/Header.astro';
@@ -11,8 +12,8 @@ import Header from '@shared/ui/Header.astro';
     <h1>Ups, pagina asta nu există.</h1>
     <p>Poate a fost mutată. Te ajutăm să ajungi unde voiai.</p>
     <div class="not-found__actions">
-      <a class="not-found__primary" href="/">Mergi la pagina principală</a>
-      <a class="not-found__secondary" href="/test-de-nivel/">Fă testul de nivel</a>
+      <Button class="not-found__primary" href="/">Mergi la pagina principală</Button>
+      <Button variant="outline" class="not-found__secondary" href="/test-de-nivel/">Fă testul de nivel</Button>
     </div>
   </main>
   <Footer />
@@ -42,24 +43,5 @@ import Header from '@shared/ui/Header.astro';
     flex-wrap: wrap;
     justify-content: center;
     gap: 12px;
-  }
-
-  .not-found__actions a {
-    padding: 14px 26px;
-    border-radius: var(--radius-pill);
-    font-weight: 900;
-    font-size: var(--text-button);
-    text-decoration: none;
-  }
-
-  .not-found__primary {
-    background: var(--color-orange);
-    color: var(--color-white);
-    box-shadow: 0 5px 0 var(--color-orange-shadow);
-  }
-
-  .not-found__secondary {
-    border: 3px solid var(--color-navy);
-    color: var(--color-navy);
   }
 </style>

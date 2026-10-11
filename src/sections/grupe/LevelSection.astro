@@ -1,5 +1,6 @@
 ---
 import type { Level } from '@shared/content/site';
+import Button from '@shared/ui/Button.astro';
 import Eyebrow from '@shared/ui/Eyebrow.astro';
 import Photo from '@shared/ui/Photo.astro';
 import Star from '@shared/ui/Star.astro';
@@ -17,8 +18,8 @@ const { level } = Astro.props;
     <h2 id={`${level.slug}-heading`}>{level.name}</h2>
     <p class="level-section__description">{level.description}</p>
     <div class="level-section__actions">
-      <a class="level-section__primary" href={`/lectie-demo/?grupa=${level.slug}`}>Rezervă lecția demo gratuită</a>
-      <a class="level-section__secondary" href="/test-de-nivel/">Nu știi nivelul? Fă testul</a>
+      <Button class="level-section__primary" href={`/lectie-demo/?grupa=${level.slug}`}>Rezervă lecția demo gratuită</Button>
+      <Button variant="outline" class="level-section__secondary" href="/test-de-nivel/">Nu știi nivelul? Fă testul</Button>
     </div>
   </div>
   <div class="level-section__photo">

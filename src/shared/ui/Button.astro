@@ -3,9 +3,10 @@ import './Button.css';
 
 interface Props {
   href: string;
-  variant?: 'primary' | 'sun' | 'outline' | 'whatsapp';
+  variant?: 'primary' | 'sun' | 'navy' | 'outline' | 'outline-light' | 'whatsapp';
+  class?: string;
 }
 
-const { href, variant = 'primary' } = Astro.props;
+const { href, variant = 'primary', class: className } = Astro.props;
 ---
-<a class={`button button--${variant}`} href={href}><slot /></a>
+<a class:list={['button', `button--${variant}`, className]} href={href}><slot /></a>

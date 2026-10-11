@@ -26,20 +26,6 @@
   line-height: 1.5;
 }
 
-.ema-tip__cta {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 12px 28px;
-  border-radius: var(--radius-pill);
-  background: var(--color-sun);
-  box-shadow: 0 5px 0 var(--color-sun-shadow);
-  color: var(--color-navy);
-  font-size: 1.0625rem;
-  font-weight: 900;
-  text-decoration: none;
-}
-
 .ema-tip__cta:focus-visible {
   outline-color: var(--color-white);
 }
