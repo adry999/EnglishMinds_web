@@ -20,6 +20,11 @@ describe('serializeJsonLd', () => {
 });
 
 describe('organizationJsonLd', () => {
+  it('keeps the base path of a site served from a sub-folder', () => {
+    const out = organizationJsonLd({ ...ORG, url: 'https://adry999.github.io/EnglishMinds_web/' });
+    expect(out).toMatchObject({ '@id': 'https://adry999.github.io/EnglishMinds_web/#organizatie', url: 'https://adry999.github.io/EnglishMinds_web/' });
+  });
+
   it('describes a local educational organization in Cluj-Napoca', () => {
     expect(organizationJsonLd(ORG)).toEqual({
       '@context': 'https://schema.org',

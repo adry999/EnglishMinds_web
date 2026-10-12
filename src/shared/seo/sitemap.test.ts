@@ -15,6 +15,10 @@ describe('renderSitemap', () => {
 });
 
 describe('renderRobots', () => {
+  it('points at the sitemap under the base path of the site', () => {
+    expect(renderRobots('https://adry999.github.io/EnglishMinds_web/', true)).toContain('Sitemap: https://adry999.github.io/EnglishMinds_web/sitemap.xml');
+  });
+
   it('allows everything and points to the sitemap', () => {
     expect(renderRobots('https://englishminds.ro', true)).toBe(
       'User-agent: *\nAllow: /\n\nSitemap: https://englishminds.ro/sitemap.xml\n',

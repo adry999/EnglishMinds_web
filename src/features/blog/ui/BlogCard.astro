@@ -1,4 +1,5 @@
 ---
+import { withBase } from '@shared/lib/with-base';
 import Photo from '@shared/ui/Photo.astro';
 import type { BlogPost } from '../data/posts';
 import { categoryLabel } from '../model/categories';
@@ -10,7 +11,7 @@ interface Props {
 }
 
 const { post, featured = false } = Astro.props;
-const href = `/blog/${post.id}/`;
+const href = withBase(`/blog/${post.id}/`);
 ---
 <li class="blog-card" data-category={post.data.category} data-featured={featured ? '' : undefined}>
   <a href={href} class="blog-card__link">

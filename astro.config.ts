@@ -1,4 +1,6 @@
+import { satteri } from '@astrojs/markdown-satteri';
 import { defineConfig, fontProviders } from 'astro/config';
+import { prefixBasePlugin } from './src/core/build/prefix-base-plugin';
 import { requireCompleteContent } from './src/core/build/require-complete-content';
 import { site } from './src/shared/content/site';
 
@@ -23,8 +25,12 @@ const variants = (pkg: string, weights: number[]): [Variant, ...Variant[]] =>
     })),
   ) as [Variant, ...Variant[]];
 
+// The client preview is served from https://adry999.github.io/EnglishMinds_web/; production has neither variable.
+const base = process.env.SITE_BASE || '/';
+
 export default defineConfig({
-  site: site.url,
+  site: process.env.SITE_URL || site.url,
+  base,
   output: 'static',
   trailingSlash: 'always',
   // Inline all CSS: a separate stylesheet is a render-blocking request that delays the LCP text on mobile.
@@ -49,6 +55,8 @@ export default defineConfig({
       options: { variants: variants('barlow-condensed', [700]) },
     },
   ],
+  // Only a base path needs a custom Markdown processor; without one the default pipeline (and the output) stays untouched.
+  ...(base === '/' ? {} : { markdown: { processor: satteri({ hastPlugins: [prefixBasePlugin(base)] }) } }),
   vite: {
     define: { 'import.meta.env.SITE_ENV': JSON.stringify(process.env.SITE_ENV ?? '') },
     server: {

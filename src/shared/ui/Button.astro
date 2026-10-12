@@ -1,4 +1,5 @@
 ---
+import { withBase } from '@shared/lib/with-base';
 import './Button.css';
 
 interface Props {
@@ -9,4 +10,4 @@ interface Props {
 
 const { href, variant = 'primary', class: className } = Astro.props;
 ---
-<a class:list={['button', `button--${variant}`, className]} href={href}><slot /></a>
+<a class:list={['button', `button--${variant}`, className]} href={withBase(href)}><slot /></a>

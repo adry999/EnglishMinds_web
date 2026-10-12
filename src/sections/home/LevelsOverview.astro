@@ -1,5 +1,6 @@
 ---
 import { site } from '@shared/content/site';
+import { withBase } from '@shared/lib/with-base';
 import '@shared/ui/Eyebrow.css';
 import './LevelsOverview.css';
 ---
@@ -16,7 +17,7 @@ import './LevelsOverview.css';
         <p class="level-card__age">{level.ageGroup}</p>
         <h3 class="level-card__name">{level.name}</h3>
         <p class="level-card__summary">{level.summary}</p>
-        <a class="level-card__link" href={`/grupe/#${level.slug}`}>
+        <a class="level-card__link" href={withBase(`/grupe/#${level.slug}`)}>
           Detalii grupă <span aria-hidden="true">→</span>
           <span class="visually-hidden"> {level.name}</span>
         </a>

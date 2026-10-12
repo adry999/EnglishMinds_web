@@ -1,5 +1,6 @@
 ---
 import { site } from '@shared/content/site';
+import { withBase } from '@shared/lib/with-base';
 import Button from './Button.astro';
 import Logo from './Logo.astro';
 import WhatsAppButton from './WhatsAppButton.astro';
@@ -35,7 +36,7 @@ const year = new Date().getFullYear();
       <a href={contact.instagramUrl}>{contact.instagramHandle}</a>
       <nav class="site-footer__legal" aria-label="Informații legale">
         <ul>
-          {LEGAL.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+          {LEGAL.map((item) => <li><a href={withBase(item.href)}>{item.label}</a></li>)}
           <li><button type="button" class="site-footer__cookie-settings" data-cc="show-preferencesModal">Setări cookies</button></li>
         </ul>
       </nav>

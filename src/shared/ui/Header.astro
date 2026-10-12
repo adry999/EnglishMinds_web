@@ -1,4 +1,5 @@
 ---
+import { withBase } from '@shared/lib/with-base';
 import Logo from './Logo.astro';
 import './Header.css';
 
@@ -26,11 +27,11 @@ const { active } = Astro.props;
       <ul>
         {NAV.map((item) => (
           <li>
-            <a href={item.href} aria-current={item.key === active ? 'page' : undefined}>{item.label}</a>
+            <a href={withBase(item.href)} aria-current={item.key === active ? 'page' : undefined}>{item.label}</a>
           </li>
         ))}
       </ul>
     </nav>
-    <a class="site-header__cta" href="/lectie-demo/">Rezervă locul acum</a>
+    <a class="site-header__cta" href={withBase('/lectie-demo/')}>Rezervă locul acum</a>
   </div>
 </header>

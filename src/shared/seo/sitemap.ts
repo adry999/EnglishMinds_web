@@ -39,5 +39,5 @@ export function renderSitemap(entries: readonly SitemapEntry[], base: string): s
 
 export function renderRobots(base: string, indexable: boolean): string {
   if (!indexable) return 'User-agent: *\nDisallow: /\n';
-  return `User-agent: *\nAllow: /\n\nSitemap: ${new URL('/sitemap.xml', base).href}\n`;
+  return `User-agent: *\nAllow: /\n\nSitemap: ${new URL('sitemap.xml', base).href}\n`;
 }

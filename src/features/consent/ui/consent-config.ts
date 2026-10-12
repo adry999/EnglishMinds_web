@@ -1,4 +1,5 @@
 import type * as CookieConsentApi from 'vanilla-cookieconsent';
+import { withBase } from '@shared/lib/with-base';
 
 /** Bump when the cookie policy changes; everyone is asked again. */
 export const COOKIE_REVISION = 1;
@@ -9,7 +10,7 @@ type Handlers = {
 };
 
 const POLICY_LINKS =
-  '<a href="/cookies/">Politica de cookies</a> <a href="/confidentialitate/">Confidențialitate</a>';
+  `<a href="${withBase('/cookies/')}">Politica de cookies</a> <a href="${withBase('/confidentialitate/')}">Confidențialitate</a>`;
 
 export function buildConsentConfig(handlers: Handlers): CookieConsentApi.CookieConsentConfig {
   return {

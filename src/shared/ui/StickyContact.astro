@@ -1,5 +1,6 @@
 ---
 import { site } from '@shared/content/site';
+import { withBase } from '@shared/lib/with-base';
 import './StickyContact.css';
 interface Props {
   demoHref?: string;
@@ -12,5 +13,5 @@ const { demoHref = '/lectie-demo/' } = Astro.props;
     <span class="sticky-contact__long">Scrie-ne pe WhatsApp</span>
     <span class="sticky-contact__short">WhatsApp</span>
   </a>
-  <a class="sticky-contact__demo" href={demoHref}>Lecție demo</a>
+  <a class="sticky-contact__demo" href={withBase(demoHref)}>Lecție demo</a>
 </nav>
