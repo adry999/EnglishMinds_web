@@ -20,6 +20,9 @@ Bifează în ordine. Fiecare punct spune unde se face.
 ## 3. Configurarea inițială
 
 - [ ] Pașii din `publicare.md` §2 (GitHub) și §3 (cPanel).
+- [ ] Staging are propria aplicație Node (Application URL `/api` pe subdomeniul de staging, alt Application root), propria bază de date MySQL și propriile variabile de mediu.
+- [ ] `DEPLOY_WEB_ROOT` și `DEPLOY_APP_ROOT` sunt diferite în `staging` față de `production`.
+- [ ] Folderul subdomeniului de staging este în afara lui `public_html` (de exemplu `/home/utilizator/staging.englishminds.ro`).
 
 ## 4. Activarea publicării
 

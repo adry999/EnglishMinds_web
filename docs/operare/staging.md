@@ -2,7 +2,7 @@
 
 Bifează fiecare punct pe URL-ul de staging înainte de lansare. Înlocuiește `<staging>` cu domeniul real. Staging-ul este protejat cu parolă, deci comenzile `curl` folosesc `-u user:parola`.
 
-Staging-ul se publică automat din branch-ul `staging` (vezi `publicare.md`). Parola se creează în cPanel, la Directory Privacy (`publicare.md` §3, pasul 6).
+Staging-ul se publică automat din branch-ul `staging` (vezi `publicare.md`). Are propria aplicație Node (Application URL `/api` pe subdomeniul de staging), propria bază de date și propriul folder, în afara lui `public_html` (`publicare.md` §3). Parola se creează în cPanel, la Directory Privacy (`publicare.md` §3, pasul 6).
 
 ## Rutare
 
@@ -60,13 +60,18 @@ Staging-ul se publică automat din branch-ul `staging` (vezi `publicare.md`). Pa
 - [ ] Rulează Lighthouse (mobil) pe URL-ul de staging; pragul este 90 la toate categoriile.
   - Verificare: Lighthouse rulat pe pagina de login ar măsura pagina de autentificare, nu site-ul. Rulează-l fie pe un URL scos temporar din protecție, fie cu autentificarea trimisă în antet: `npx lighthouse https://<staging>/ --form-factor=mobile --extra-headers "{\"Authorization\":\"Basic $(printf 'user:parola' | base64)\"}"` (sau DevTools, Lighthouse, mod Mobile, după autentificare).
 
+## Certificat SSL
+
+- [ ] Staging-ul are certificat SSL valid și se reînnoiește.
+  - Verificare: cPanel → SSL/TLS Status arată subdomeniul de staging cu certificat valid (AutoSSL), iar `curl -sI https://<staging>/` nu dă eroare de certificat. Autentificarea cu parolă exceptează `/.well-known/`, ca validarea AutoSSL să nu primească 401; verifică și `curl -I http://<staging>/.well-known/acme-challenge/test` (fără `-u`): răspunsul trebuie să fie 404 sau redirect, nu 401.
+
 ## Protecția cu parolă
 
 - [ ] Subdomeniul de staging cere parola.
   - Verificare: deschide URL-ul într-o fereastră privată.
 - [ ] După o publicare automată, staging-ul cere în continuare parola.
   - Verificare: deschide URL-ul într-o fereastră privată imediat după ce rulează workflow-ul Deploy.
-  - Parola vine din variabila `DEPLOY_HTPASSWD_FILE` (doar în mediul `staging`): creează o dată utilizatorul în cPanel, Directory Privacy, apoi setează variabila la calea fișierului passwd generat (de exemplu `/home/u/.htpasswds/staging/passwd`). Scriptul adaugă blocul de autentificare în `.htaccess` la fiecare publicare. Nu te baza pe `.htaccess`-ul scris de cPanel, pentru că publicarea îl suprascrie. Setează `DEPLOY_HTPASSWD_FILE` doar ca variabilă a mediului `staging`, niciodată la nivel de repository, altfel și producția primește parolă.
+  - Parola vine din variabila `DEPLOY_HTPASSWD_FILE` (doar în mediul `staging`): creează o dată utilizatorul în cPanel, Directory Privacy, apoi setează variabila la calea fișierului passwd generat (de exemplu `/home/u/.htpasswds/staging/passwd`). Scriptul adaugă blocul de autentificare în `.htaccess` la fiecare publicare (cu `/.well-known/` exceptat) și restaurează `dist/.htaccess` local după rulare. Nu te baza pe `.htaccess`-ul scris de cPanel, pentru că publicarea îl suprascrie. Setează `DEPLOY_HTPASSWD_FILE` doar ca variabilă a mediului `staging`, niciodată la nivel de repository, altfel și producția primește parolă.
 - [ ] Staging-ul are `noindex` sau este blocat în `robots.txt`.
   - Verificare: `curl -s -u user:parola https://<staging>/robots.txt` și antetul `X-Robots-Tag` / meta `robots` din pagină.
 
