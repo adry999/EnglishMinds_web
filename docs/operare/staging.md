@@ -2,6 +2,8 @@
 
 Bifează fiecare punct pe URL-ul de staging înainte de lansare. Înlocuiește `<staging>` cu domeniul real. Staging-ul este protejat cu parolă, deci comenzile `curl` folosesc `-u user:parola`.
 
+Staging-ul se publică automat din branch-ul `staging` (vezi `publicare.md`). Parola se creează în cPanel, la Directory Privacy (`publicare.md` §3, pasul 6).
+
 ## Rutare
 
 - [ ] `/api/lead` răspunde pe același domeniu ca site-ul.
