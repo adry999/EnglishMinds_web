@@ -4,10 +4,13 @@ import { withBase } from '@shared/lib/with-base';
 import './StickyContact.css';
 interface Props {
   demoHref?: string;
+  /** CSS selector of an element (the hero buttons); on phones the bar stays hidden while it is on screen. */
+  hideWhileVisible?: string;
 }
 
-const { demoHref = '/lectie-demo/' } = Astro.props;
+const { demoHref = '/lectie-demo/', hideWhileVisible } = Astro.props;
 ---
+<sticky-contact data-hide-while-visible={hideWhileVisible}>
 <nav class="sticky-contact" aria-label="Contact rapid">
   <a class="sticky-contact__whatsapp" href={site.contact.whatsappUrl}>
     <span class="sticky-contact__long">Scrie-ne pe WhatsApp</span>
@@ -15,3 +18,9 @@ const { demoHref = '/lectie-demo/' } = Astro.props;
   </a>
   <a class="sticky-contact__demo" href={withBase(demoHref)}>Lecție demo</a>
 </nav>
+</sticky-contact>
+
+<script>
+  import { defineStickyContact } from './sticky-contact.element';
+  defineStickyContact();
+</script>

@@ -32,6 +32,12 @@ describe('Header', () => {
     expect(html).toMatch(/<span class="visually-hidden">Meniu<\/span>/);
   });
 
+  it('puts the toggle before the navigation, so Tab from the toggle enters the opened menu', async () => {
+    const html = await render();
+    expect(html.indexOf('class="site-header__toggle"')).toBeGreaterThan(html.indexOf('class="logo"'));
+    expect(html.indexOf('class="site-header__toggle"')).toBeLessThan(html.indexOf('<nav id="site-nav"'));
+  });
+
   it('sends the main call to action to the demo lesson page', async () => {
     expect(await render()).toMatch(/href="\/lectie-demo\/"[^>]*>Rezervă locul acum</);
   });

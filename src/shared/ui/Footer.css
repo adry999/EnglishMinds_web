@@ -7,7 +7,7 @@
   outline-color: var(--color-sun);
 }
 
-.site-footer a {
+.site-footer a:not(.button) {
   color: var(--color-white);
 }
 
