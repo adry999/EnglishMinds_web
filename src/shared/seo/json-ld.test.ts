@@ -70,9 +70,24 @@ describe('blogPostingJsonLd', () => {
       mainEntityOfPage: 'https://englishminds.ro/blog/titlu/',
       image: 'https://englishminds.ro/_astro/cover.jpg',
       datePublished: '2026-09-01T00:00:00.000Z',
+      dateModified: '2026-09-01T00:00:00.000Z',
       inLanguage: 'ro-RO',
       author: { '@type': 'Organization', '@id': 'https://englishminds.ro/#organizatie', name: 'English Minds Academy' },
       publisher: { '@id': 'https://englishminds.ro/#organizatie', name: 'English Minds Academy' },
     });
+  });
+
+  it('uses the update date as dateModified when the article was edited', () => {
+    const post = blogPostingJsonLd({
+      headline: 'Titlu',
+      description: 'Descriere',
+      url: 'https://englishminds.ro/blog/titlu/',
+      image: 'https://englishminds.ro/_astro/cover.jpg',
+      datePublished: new Date('2026-09-01T00:00:00Z'),
+      dateModified: new Date('2026-10-01T00:00:00Z'),
+      organizationUrl: 'https://englishminds.ro',
+      organizationName: 'English Minds Academy',
+    });
+    expect(post).toMatchObject({ dateModified: '2026-10-01T00:00:00.000Z' });
   });
 });

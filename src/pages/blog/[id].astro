@@ -24,6 +24,8 @@ const cover = await getImage({ src: post.data.cover, ...ogImageSize(post.data.co
   title={post.data.title}
   description={post.data.description}
   type="article"
+  publishedTime={post.data.publishedAt}
+  modifiedTime={post.data.updatedAt}
   image={post.data.cover}
   imageAlt={post.data.coverAlt}
   jsonLd={[
@@ -33,6 +35,7 @@ const cover = await getImage({ src: post.data.cover, ...ogImageSize(post.data.co
       url: canonicalUrl(Astro.url.pathname, site.url),
       image: new URL(cover.src, site.url).href,
       datePublished: post.data.publishedAt,
+      dateModified: post.data.updatedAt,
       organizationUrl: site.url,
       organizationName: site.name,
     }),

@@ -126,6 +126,23 @@ describe('planTags', () => {
     expect(plan.calls).not.toContainEqual({ sink: 'gtag', args: ['config', 'G-ABC123XYZ'] });
   });
 
+  it('loads only GA4 with analytics consent alone: no Ads config, no Meta', () => {
+    const plan = planTags(IDS, STATS, NO_CONSENT, NOW);
+    expect(plan.gtagSrc).toBe(`${GTAG_URL}?id=G-ABC123XYZ`);
+    expect(plan.loadPixel).toBe(false);
+    expect(plan.calls.filter((c) => c.sink === 'fbq')).toEqual([]);
+    expect(plan.calls).toContainEqual({ sink: 'gtag', args: ['config', 'G-ABC123XYZ'] });
+    expect(plan.calls).not.toContainEqual({ sink: 'gtag', args: ['config', 'AW-1234567890'] });
+  });
+
+  it('does not load Meta with marketing consent but no pixel id', () => {
+    const noPixel = parseTrackingIds({ ...RAW, metaPixelId: 'TODO' });
+    const plan = planTags(noPixel, ALL, NO_CONSENT, NOW);
+    expect(plan.loadPixel).toBe(false);
+    expect(plan.calls.filter((c) => c.sink === 'fbq')).toEqual([]);
+    expect(plan.gtagSrc).toBe(`${GTAG_URL}?id=G-ABC123XYZ`);
+  });
+
   it('revokes marketing and denies the signals when marketing is withdrawn', () => {
     const plan = planTags(IDS, STATS, ALL, NOW);
     expect(plan.loadPixel).toBe(false);
@@ -166,6 +183,16 @@ describe('leadConversionCalls', () => {
       { sink: 'gtag', args: ['event', 'conversion', { send_to: 'AW-1234567890/AbC-dEf_123' }] },
       { sink: 'fbq', args: ['track', 'Lead', { content_name: 'home' }] },
     ]);
+  });
+
+  it('never puts name, phone or email in a tag payload, even if the event detail carries them', () => {
+    const leaky = { ...detail, name: 'Maria Popescu', phone: '0775630680', email: 'maria@example.ro' };
+    const calls = leadConversionCalls(leaky, IDS, ALL);
+    expect(calls.length).toBeGreaterThan(0);
+    const payload = JSON.stringify(calls);
+    for (const secret of ['Maria', 'Popescu', '0775630680', 'maria@example.ro', '"name"', '"phone"', '"email"']) {
+      expect(payload).not.toContain(secret);
+    }
   });
 
   it('leaves out a missing age group', () => {
