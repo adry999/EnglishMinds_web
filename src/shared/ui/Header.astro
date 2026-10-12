@@ -21,9 +21,9 @@ const NAV: readonly { key: NavKey; label: string; href: string }[] = [
 const { active } = Astro.props;
 ---
 <header class="site-header">
-  <div class="site-header__inner">
+  <site-menu class="site-header__inner">
     <Logo />
-    <nav class="site-header__nav" aria-label="Principal">
+    <nav id="site-nav" class="site-header__nav" aria-label="Principal">
       <ul>
         {NAV.map((item) => (
           <li>
@@ -33,5 +33,14 @@ const { active } = Astro.props;
       </ul>
     </nav>
     <a class="site-header__cta" href={withBase('/lectie-demo/')}>Rezervă locul acum</a>
-  </div>
+    <button class="site-header__toggle" type="button" aria-expanded="false" aria-controls="site-nav" hidden>
+      <span class="site-header__bars" aria-hidden="true"></span>
+      <span class="visually-hidden">Meniu</span>
+    </button>
+  </site-menu>
 </header>
+
+<script>
+  import { defineSiteMenu } from './site-menu.element';
+  defineSiteMenu();
+</script>

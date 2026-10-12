@@ -25,6 +25,13 @@ describe('Header', () => {
     expect(await render()).not.toContain('aria-current');
   });
 
+  it('renders a hidden menu toggle that controls the navigation', async () => {
+    const html = await render();
+    expect(html).toMatch(/<nav id="site-nav"/);
+    expect(html).toMatch(/<button class="site-header__toggle" type="button" aria-expanded="false" aria-controls="site-nav" hidden>/);
+    expect(html).toMatch(/<span class="visually-hidden">Meniu<\/span>/);
+  });
+
   it('sends the main call to action to the demo lesson page', async () => {
     expect(await render()).toMatch(/href="\/lectie-demo\/"[^>]*>Rezervă locul acum</);
   });
