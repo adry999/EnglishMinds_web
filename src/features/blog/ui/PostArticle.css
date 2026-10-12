@@ -67,3 +67,16 @@
   color: var(--color-text-accent);
   font-weight: 900;
 }
+
+/* Only rendered while drafts are visible (dev server and the client preview). */
+.draft-badge {
+  display: inline-block;
+  margin: 0;
+  padding: 2px 10px;
+  border: 2px dashed var(--color-navy);
+  border-radius: var(--radius-pill);
+  background: var(--color-sun);
+  color: var(--color-navy);
+  font-size: 0.8125rem;
+  font-weight: 900;
+}

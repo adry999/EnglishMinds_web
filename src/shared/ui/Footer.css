@@ -7,7 +7,8 @@
   outline-color: var(--color-sun);
 }
 
-.site-footer a {
+/* :where() keeps this at zero specificity, so the footer's own link rules (social button, legal links, hovers) win. */
+.site-footer :where(a:not(.button)) {
   color: var(--color-white);
 }
 

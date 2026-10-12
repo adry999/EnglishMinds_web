@@ -63,6 +63,12 @@ describe('shared visuals', () => {
     expect(html).toContain('aria-label="Contact rapid"');
   });
 
+  it('names the hero element it waits for and renders the bar visible by default', async () => {
+    const html = await render(StickyContact, { props: { hideWhileVisible: '.home-hero__actions' } });
+    expect(html).toContain('data-hide-while-visible=".home-hero__actions"');
+    expect(html).not.toMatch(/<nav class="sticky-contact"[^>]*hidden/);
+  });
+
   it('lets the page override the demo link', async () => {
     const html = await render(StickyContact, { props: { demoHref: '#contact' } });
     expect(html).toContain('href="#contact"');

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { FakeLeadRepository, FakeNotifier, FakeRateLimiter, RecordingLogger, fixedClock } from '@test-support/lead-fakes';
+import { FakeLeadRepository, FakeDispatcher, FakeRateLimiter, RecordingLogger, fixedClock } from '@test-support/lead-fakes';
 import { MAX_BODY_BYTES, createRequestHandler, type RequestHandler } from './handle-request';
 
 const BASE = 'http://localhost';
@@ -27,7 +27,7 @@ beforeEach(() => {
   handle = createRequestHandler({
     repository,
     rateLimiter,
-    notifier: new FakeNotifier(),
+    dispatcher: new FakeDispatcher(),
     logger: new RecordingLogger(),
     clock: fixedClock('2026-10-11T09:30:00.000Z'),
     hashIp: (ip) => `hash(${ip})`,
@@ -58,7 +58,7 @@ describe('handle request', () => {
     expect(response.status).toBe(201);
     expect(await response.json()).toEqual({ ok: true });
     expect(repository.saved).toHaveLength(1);
-    expect(rateLimiter.keys).toEqual(['hash(203.0.113.7)']);
+    expect(rateLimiter.keys).toEqual(['hash(203.0.113.7)', 'global']);
   });
 
   it('accepts a charset in the content type', async () => {

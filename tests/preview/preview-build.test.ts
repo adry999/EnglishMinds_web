@@ -89,6 +89,21 @@ describe('preview build', () => {
     }
   });
 
+  it('lists the draft posts on the blog, each marked as a draft', () => {
+    const list = read('blog/index.html');
+    expect(list).not.toContain('Primele articole apar în curând.');
+    expect(list.match(/class="blog-card"/g)?.length ?? 0).toBeGreaterThanOrEqual(1);
+    expect(list).toContain('class="blog-filter__pills"');
+    expect(list).toContain('Ciornă');
+    expect(list).toContain(`href="${BASE}/blog/engleza-la-scoala/"`);
+  });
+
+  it('builds the draft article pages with a draft note', () => {
+    const article = read('blog/engleza-la-scoala/index.html');
+    expect(article).toContain('<article class="post">');
+    expect(article).toContain('Ciornă');
+  });
+
   it('marks the lead forms as demo, so they never reach the API', () => {
     expect(read('lectie-demo/index.html')).toMatch(/<lead-form[^>]*\sdata-demo/);
     expect(read('index.html')).toMatch(/<lead-form[^>]*\sdata-demo/);

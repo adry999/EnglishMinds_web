@@ -7,6 +7,7 @@ await build({
   entryPoints: {
     app: 'server/entry.node.ts',
     'purge-expired-leads': 'server/jobs/purge-expired-leads.ts',
+    'notify-pending-leads': 'server/jobs/notify-pending-leads.ts',
   },
   bundle: true,
   platform: 'node',

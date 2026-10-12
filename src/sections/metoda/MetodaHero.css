@@ -40,7 +40,7 @@
   overflow: hidden;
   border: 12px solid var(--color-sun);
   border-radius: 50%;
-  background: var(--color-peach);
+  background: var(--color-photo-bg);
 }
 
 .metoda-hero__photo img {

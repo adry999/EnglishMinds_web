@@ -1,11 +1,12 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { Readable } from 'node:stream';
-import { readEnvironment } from './config/environment';
-import { clientIpOf } from './client-ip';
+import { ConfigError, readEnvironment, type Environment } from './config/environment';
+import { clientIpOf, describeClientIp } from './client-ip';
 import { createRequestHandler } from './handle-request';
 import { createDatabasePool } from './db/pool';
 import { hashIp } from './leads/ip-hash';
-import { createSmtpNotifier } from './leads/lead-notification';
+import { createChannels } from './leads/channels';
+import { createLeadDispatcher } from './leads/notify-leads';
 import { safeError } from './leads/safe-error';
 import { createMysqlLeadRepository } from './leads/lead.repository';
 import { consoleLogger, systemClock } from './leads/ports';
@@ -41,22 +42,40 @@ async function sendWebResponse(response: Response, res: ServerResponse): Promise
   res.end(Buffer.from(await response.arrayBuffer()));
 }
 
-const env = readEnvironment();
+/**
+ * A bad configuration must end in a plain exit, never an environment dump: a Passenger page in development
+ * mode would publish the variables. Only the name of the offending variable is written out.
+ */
+function loadEnvironment(): Environment {
+  try {
+    return readEnvironment();
+  } catch (error) {
+    const variable = error instanceof ConfigError ? error.variable : 'unknown';
+    console.error(`[server] cannot start: invalid or missing configuration (${variable}). Fix the application's environment variables.`);
+    process.exit(1);
+  }
+}
+
+const env = loadEnvironment();
 const pool = createDatabasePool(env.db);
 const handle = createRequestHandler({
   repository: createMysqlLeadRepository(pool),
   rateLimiter: createMysqlRateLimiter(pool),
-  notifier: createSmtpNotifier(env),
+  dispatcher: createLeadDispatcher(createChannels(env), consoleLogger),
+  globalHourlyCap: env.globalHourlyCap,
   clock: systemClock,
   logger: consoleLogger,
   hashIp: (ip) => hashIp(ip, env.ipHashSalt),
 });
 
 createServer((req, res) => {
+  if (env.debugClientIp && pathOf(req.url) === '/api/health') {
+    console.info('[debug] client address', describeClientIp(req.headers['x-forwarded-for'], req.socket.remoteAddress, env.trustProxyHops, env.ipHashSalt));
+  }
   Promise.resolve()
     .then(() =>
       handle(toWebRequest(req), {
-        clientIp: clientIpOf(req.headers['x-forwarded-for'], req.socket.remoteAddress, env.trustProxy),
+        clientIp: clientIpOf(req.headers['x-forwarded-for'], req.socket.remoteAddress, env.trustProxyHops),
       }),
     )
     .then((response) => sendWebResponse(response, res))

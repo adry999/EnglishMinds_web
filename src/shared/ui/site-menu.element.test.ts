@@ -36,9 +36,21 @@ describe('<site-menu>', () => {
     expect(toggle().getAttribute('aria-expanded')).toBe('false');
   });
 
+  it('moves focus to the first link when the menu opens', () => {
+    toggle().focus();
+    toggle().click();
+    expect(document.activeElement).toBe(document.querySelector('nav a'));
+  });
+
+  it('does not move focus when the menu closes', () => {
+    toggle().click();
+    toggle().focus();
+    toggle().click();
+    expect(document.activeElement).toBe(toggle());
+  });
+
   it('closes on Escape and gives focus back to the toggle', () => {
     toggle().click();
-    document.querySelector<HTMLAnchorElement>('nav a')!.focus();
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
     expect(menu().hasAttribute('data-open')).toBe(false);
     expect(document.activeElement).toBe(toggle());

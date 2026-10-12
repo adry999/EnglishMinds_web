@@ -116,7 +116,27 @@ describe('server bundle', () => {
     expect(response.status).toBe(201);
   });
 
-  it('bundles the purge job', () => {
+  it('bundles the purge and the notification retry jobs', () => {
     expect(existsSync(join(dir, 'purge-expired-leads.cjs'))).toBe(true);
+    expect(existsSync(join(dir, 'notify-pending-leads.cjs'))).toBe(true);
+  });
+
+  it('exits on a bad configuration without printing any variable value', async () => {
+    const secret = 'super-secret-db-password';
+    const result = await new Promise<{ code: number | null; output: string }>((resolve) => {
+      const bad = spawn(process.execPath, [join(dir, 'app.cjs')], {
+        env: { ...process.env, ...TEST_ENV, DB_PASSWORD: secret, IP_HASH_SALT: 'too-short' },
+      });
+      let output = '';
+      bad.stdout?.on('data', (chunk: Buffer) => (output += chunk.toString()));
+      bad.stderr?.on('data', (chunk: Buffer) => (output += chunk.toString()));
+      bad.once('exit', (code) => resolve({ code, output }));
+    });
+    expect(result.code).toBe(1);
+    expect(result.output).toContain('cannot start');
+    expect(result.output).toContain('IP_HASH_SALT');
+    expect(result.output).not.toContain(secret);
+    expect(result.output).not.toContain('too-short');
+    expect(result.output).not.toMatch(/\n\s+at /);
   });
 });

@@ -20,6 +20,7 @@ const { Content } = await render(post);
 <article class="post">
   <header class="post__header">
     <Eyebrow>{categoryLabel(post.data.category)}</Eyebrow>
+    {post.data.draft && <p class="draft-badge">Ciornă: articol de probă, nepublicat</p>}
     <h1>{post.data.title}</h1>
     <p class="post__meta">
       <time datetime={post.data.publishedAt.toISOString()}>{formatPostDate(post.data.publishedAt)}</time>

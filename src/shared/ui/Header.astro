@@ -13,6 +13,11 @@ const { active } = Astro.props;
 <header class="site-header">
   <site-menu class="site-header__inner">
     <Logo />
+    <!-- Before the nav in DOM order so Tab from the toggle enters the opened menu; the grid places it on the right. -->
+    <button class="site-header__toggle" type="button" aria-expanded="false" aria-controls="site-nav" hidden>
+      <span class="site-header__bars" aria-hidden="true"></span>
+      <span class="visually-hidden">Meniu</span>
+    </button>
     <nav id="site-nav" class="site-header__nav" aria-label="Principal">
       <ul>
         {NAV.map((item) => (
@@ -23,10 +28,6 @@ const { active } = Astro.props;
       </ul>
     </nav>
     <a class="site-header__cta" href={withBase('/lectie-demo/')}>Rezervă locul acum</a>
-    <button class="site-header__toggle" type="button" aria-expanded="false" aria-controls="site-nav" hidden>
-      <span class="site-header__bars" aria-hidden="true"></span>
-      <span class="visually-hidden">Meniu</span>
-    </button>
   </site-menu>
 </header>
 

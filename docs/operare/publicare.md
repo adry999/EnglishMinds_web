@@ -48,9 +48,11 @@ Căile trebuie să înceapă cu `/`, fără `/` la sfârșit, să aibă cel puț
    - Application root: aceeași valoare ca `DEPLOY_APP_ROOT` al environment-ului respectiv (de exemplu `/home/utilizator/em-api` pentru producție și `/home/utilizator/em-api-staging` pentru staging; niciodată aceeași pentru ambele);
    - Application URL: pe domeniul principal, `/api` pentru producție; pe subdomeniul de staging, `/api` (adică `<staging>/api`);
    - Application startup file: `app.cjs`;
-   - variabilele de mediu din `server.md` §1, separate pentru fiecare aplicație (inclusiv `DB_*` către baza ei de date).
+   - **Application mode: Production.** cPanel propune uneori Development, iar în acel mod Passenger afișează la o eroare de pornire pagini care includ variabilele de mediu (`DB_PASSWORD`, `SMTP_PASSWORD`, `IP_HASH_SALT`), vizibile oricui. Verifică modul la fiecare aplicație (producție și staging) și după fiecare modificare a ei;
+   - variabilele de mediu din `server.md` §1, separate pentru fiecare aplicație (inclusiv `DB_*` către baza ei de date);
+   - în folderul aplicației (Application root), în fișierul `.htaccess` creat de cPanel pentru aplicație, adaugă linia `PassengerFriendlyErrorPages off`. Publicarea automată nu atinge acest fișier (urcă doar `app.cjs`, `purge-expired-leads.cjs` și `notify-pending-leads.cjs`), deci setarea rămâne. Serverul, la rândul lui, se oprește la o configurare greșită cu un mesaj generic, fără valori.
 4. **Bazele de date.** Creează două baze de date MySQL, una pentru producție și una pentru staging (fiecare cu utilizatorul ei), și importă migrațiile în amândouă, conform `server.md` §2. Variabilele de mediu ale fiecărei aplicații Node trimit către baza ei.
-5. **Cron.** Adaugă jobul zilnic de curățare, conform `server.md` §4.
+5. **Cron.** Adaugă jobul zilnic de curățare și jobul de reîncercare a notificărilor (la 10 minute), conform `server.md` §4.
 6. **Subdomeniul de staging.** cPanel → Domains: creează subdomeniul, cu folderul lui (acesta este `DEPLOY_WEB_ROOT` pentru staging). Folderul trebuie să fie **în afara** lui `public_html`, de exemplu `/home/utilizator/staging.englishminds.ro`: cPanel propune implicit `public_html/<subdomeniu>`, iar publicarea pe producție șterge din `public_html` tot ce nu e în build, deci ar șterge și staging-ul. Apoi cPanel → **Directory Privacy**: protejează folderul cu parolă, creează utilizatorul și parola. Pune în variabila `DEPLOY_HTPASSWD_FILE` calea fișierului de parole generat (de exemplu `/home/utilizator/.htpasswds/staging/passwd`). Publicarea adaugă singură blocul de autentificare în `.htaccess` la fiecare rulare.
 7. **SSL.** cPanel → SSL/TLS Status: rulează **AutoSSL** (Let's Encrypt) pentru domeniu și pentru subdomeniul de staging.
 
@@ -81,7 +83,7 @@ Clientul poate vedea o versiune de probă a site-ului la **https://adry999.githu
 
 - Se reconstruiește singură după fiecare rulare **CI** reușită pe `main` (workflow-ul **Pages**). Se poate porni și manual: GitHub → Actions → **Pages** → Run workflow.
 - Are `noindex` și `robots.txt` care interzice tot, deci Google nu o indexează. Canonical-urile și sitemap-ul arată spre adresa de preview.
-- Formularul de contact este dezactivat: la trimitere apare mesajul „Aceasta este o versiune demo a site-ului. Trimiterea formularului este dezactivată.”, fără apel către server.
+- Formularul de contact este dezactivat: după validare apare starea de mulțumire, cu mențiunea „Aceasta este o versiune demo a site-ului: nu am trimis și nu am salvat nimic.”, fără apel către server, fără fereastra WhatsApp și fără evenimente de măsurare.
 - Se construiește cu `SITE_ENV=preview`, `SITE_BASE=/EnglishMinds_web` și `SITE_URL=https://adry999.github.io`. Cât timp aceste variabile lipsesc (producție, staging, dezvoltare locală), site-ul rămâne exact ca până acum.
 - Configurare unică: Settings → Pages → **Source** = **GitHub Actions**. Fără ea, workflow-ul eșuează la pasul de publicare.
 - Dacă repository-ul sau contul GitHub își schimbă numele, actualizează `SITE_BASE` și `SITE_URL` în `.github/workflows/pages.yml`.

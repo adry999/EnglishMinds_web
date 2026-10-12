@@ -33,6 +33,7 @@ export class SiteMenu extends HTMLElement {
   private setOpen(open: boolean): void {
     this.toggleAttribute('data-open', open);
     this.toggle?.setAttribute('aria-expanded', String(open));
+    if (open) this.querySelector<HTMLAnchorElement>('nav a')?.focus();
   }
 }
 

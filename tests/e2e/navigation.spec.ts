@@ -18,6 +18,17 @@ test('mobile: the menu opens from the toggle, leads to a section and closes on E
   await expect(page).toHaveURL(/\/grupe\/$/);
 });
 
+test('mobile: opening the menu from the keyboard lands on the first link and Tab walks the list', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'the toggle only exists on narrow screens');
+  await page.goto('/');
+  const nav = page.getByRole('navigation', { name: 'Principal' });
+  await page.getByRole('button', { name: 'Meniu' }).focus();
+  await page.keyboard.press('Enter');
+  await expect(nav.getByRole('link', { name: 'Acasă' })).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(nav.getByRole('link', { name: 'Grupe' })).toBeFocused();
+});
+
 test('desktop: the links are always visible and there is no toggle', async ({ page, isMobile }) => {
   test.skip(isMobile, 'desktop layout only');
   await page.goto('/');

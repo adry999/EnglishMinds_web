@@ -37,7 +37,7 @@ fi
 HTPASSWD_FILE="${DEPLOY_HTPASSWD_FILE:-}"
 if [[ -n "$HTPASSWD_FILE" ]]; then check_path DEPLOY_HTPASSWD_FILE "$HTPASSWD_FILE"; fi
 
-for required in dist/index.html dist-server/app.cjs dist-server/purge-expired-leads.cjs; do
+for required in dist/index.html dist-server/app.cjs dist-server/purge-expired-leads.cjs dist-server/notify-pending-leads.cjs; do
   [[ -f "$required" ]] || { echo "deploy: $required is missing, build first" >&2; exit 1; }
 done
 
@@ -52,6 +52,7 @@ mirror --reverse --verbose --exclude-glob api/ --exclude-glob .well-known/ --exc
 mirror --reverse --delete --verbose --exclude-glob api/ --exclude-glob .well-known/ --exclude-glob cgi-bin/ --exclude-glob .user.ini --exclude-glob error_log --exclude-glob .htpasswds/ dist/ ${WEB_ROOT}
 put -O ${APP_ROOT} dist-server/app.cjs
 put -O ${APP_ROOT} dist-server/purge-expired-leads.cjs
+put -O ${APP_ROOT} dist-server/notify-pending-leads.cjs
 put -O ${APP_ROOT}/tmp dist-server/restart.txt
 bye
 COMMANDS_END

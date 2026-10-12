@@ -77,5 +77,9 @@ const hidden = noindex || !isIndexable(siteEnv(import.meta.env.SITE_ENV));
     <CookieConsent />
     <slot />
     <UtmCapture />
+    <script>
+      import { fadeInImages } from '@core/ui/image-fade';
+      fadeInImages();
+    </script>
   </body>
 </html>

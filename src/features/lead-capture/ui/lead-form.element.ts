@@ -1,5 +1,5 @@
 import type { AgeGroup } from '@shared/contracts/age-groups';
-import { LEVEL_TEST_COMPLETED, createLeadSubmitted, type LevelTestCompletedDetail } from '@shared/contracts/domain-events';
+import { LEAD_FORM_REQUESTED, LEVEL_TEST_COMPLETED, createLeadSubmitted, type LevelTestCompletedDetail } from '@shared/contracts/domain-events';
 import { MIN_ELAPSED_MS, validateLead, type LeadField, type LeadRequest, type LeadSource } from '@shared/contracts/lead.schema';
 import { POLICY_VERSION } from '@shared/contracts/policy';
 import { submitLead } from '../api/lead.client';
@@ -19,7 +19,7 @@ const GENERAL_ERROR = 'Verifică datele și încearcă din nou.';
 const MIN_FILL_MS = MIN_ELAPSED_MS + 200;
 const SEND_FAILED = 'Nu am putut trimite cererea. Scrie-ne pe WhatsApp sau sună-ne.';
 const SENDING = 'Se trimite…';
-const DEMO_NOTICE = 'Aceasta este o versiune demo a site-ului. Trimiterea formularului este dezactivată.';
+const DEMO_DONE = 'Aceasta este o versiune demo a site-ului: nu am trimis și nu am salvat nimic.';
 const DONE_OPENED = 'Ți-am deschis WhatsApp cu mesajul completat. Trimite-l și te sunăm să stabilim ziua lecției.';
 const DONE_BLOCKED = 'Am primit datele tale și te sunăm în curând. Dacă vrei, scrie-ne și pe WhatsApp.';
 const DONE_UNSAVED = 'Nu am putut salva cererea pe site. Trimite mesajul din WhatsApp și rezervarea se finalizează acolo.';
@@ -37,8 +37,21 @@ export class LeadForm extends HTMLElement {
     this.hidden = false;
   };
 
+  /** The level-test result asks for the booking form: bring it into view and put the cursor in its first field. */
+  private readonly onFormRequested = (): void => {
+    this.hidden = false;
+    const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+    const form = this.querySelector<HTMLFormElement>('form.lead-form__form');
+    const target = form && !form.hidden ? form.querySelector<HTMLElement>('input[name="parentName"]') : this.querySelector<HTMLElement>('.lead-form__done');
+    target?.focus({ preventScroll: true });
+  };
+
   connectedCallback(): void {
-    if (this.source === 'test') document.addEventListener(LEVEL_TEST_COMPLETED, this.onTestCompleted);
+    if (this.source === 'test') {
+      document.addEventListener(LEVEL_TEST_COMPLETED, this.onTestCompleted);
+      document.addEventListener(LEAD_FORM_REQUESTED, this.onFormRequested);
+    }
     if (this.dataset.enhanced === 'true') return;
     this.enhance();
     if (this.dataset.enhanced !== 'true' && document.readyState === 'loading') {
@@ -48,6 +61,7 @@ export class LeadForm extends HTMLElement {
 
   disconnectedCallback(): void {
     document.removeEventListener(LEVEL_TEST_COMPLETED, this.onTestCompleted);
+    document.removeEventListener(LEAD_FORM_REQUESTED, this.onFormRequested);
   }
 
   private get source(): LeadSource {
@@ -122,21 +136,22 @@ export class LeadForm extends HTMLElement {
       this.showFieldErrors(form, local.fields);
       return;
     }
+    const ageGroup: AgeGroup | null = local.lead.childAgeGroup;
+    const whatsappUrl = leadWhatsappUrl({
+      parentName: request.parentName,
+      phone: request.phone,
+      childAgeGroup: ageGroup,
+      testResult: this.source === 'test' && this.testOutcome ? testResultLabel(this.testOutcome) : null,
+    });
     if (this.dataset.demo !== undefined) {
-      this.setStatus(form, DEMO_NOTICE);
+      // Preview build: show the real thank-you state so the client can judge it, but send, open and track nothing.
+      this.showDone(form, local.lead.parentName, whatsappUrl, `${DONE_BLOCKED} ${DEMO_DONE}`);
       return;
     }
     const popup = window.open('', '_blank');
     if (popup) popup.opener = null;
     this.setSubmitting(form, true);
     try {
-      const ageGroup: AgeGroup | null = local.lead.childAgeGroup;
-      const whatsappUrl = leadWhatsappUrl({
-        parentName: request.parentName,
-        phone: request.phone,
-        childAgeGroup: ageGroup,
-        testResult: this.source === 'test' && this.testOutcome ? testResultLabel(this.testOutcome) : null,
-      });
       const remaining = MIN_FILL_MS - (performance.now() - this.startedAt);
       if (remaining > 0) await new Promise<void>((done) => setTimeout(done, remaining));
       const result = await submitLead({ ...request, elapsedMs: Math.round(performance.now() - this.startedAt) });

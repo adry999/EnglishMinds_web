@@ -23,7 +23,10 @@ describe('readEnvironment', () => {
       smtp: { host: 'mail.example.ro', port: 465, user: 'site@example.ro', password: 'mail-secret' },
       mail: { from: 'site@example.ro', to: 'office@example.ro' },
       ipHashSalt: 's'.repeat(32),
-      trustProxy: false,
+      trustProxyHops: 0,
+      globalHourlyCap: 60,
+      telegram: null,
+      debugClientIp: false,
     });
   });
 
@@ -35,7 +38,40 @@ describe('readEnvironment', () => {
     const env = readEnvironment({ ...BASE, DB_PORT: '3307', SMTP_PORT: '587', TRUST_PROXY: 'true' });
     expect(env.db.port).toBe(3307);
     expect(env.smtp.port).toBe(587);
-    expect(env.trustProxy).toBe(true);
+    expect(env.trustProxyHops).toBe(1);
+  });
+
+  it('reads TRUST_PROXY_HOPS and lets it win over the legacy flag', () => {
+    expect(readEnvironment({ ...BASE, TRUST_PROXY_HOPS: '2' }).trustProxyHops).toBe(2);
+    expect(readEnvironment({ ...BASE, TRUST_PROXY: 'true', TRUST_PROXY_HOPS: '0' }).trustProxyHops).toBe(0);
+    expect(readEnvironment({ ...BASE, TRUST_PROXY: 'true', TRUST_PROXY_HOPS: '2' }).trustProxyHops).toBe(2);
+  });
+
+  it.each(['-1', '1.5', 'x', '11'])('rejects TRUST_PROXY_HOPS=%j', (value) => {
+    expect(() => readEnvironment({ ...BASE, TRUST_PROXY_HOPS: value })).toThrow(`TRUST_PROXY_HOPS invalid: "${value}"`);
+  });
+
+  it('reads the site-wide cap and the debug flag', () => {
+    const env = readEnvironment({ ...BASE, LEAD_GLOBAL_HOURLY_CAP: '25', DEBUG_CLIENT_IP: 'true' });
+    expect(env.globalHourlyCap).toBe(25);
+    expect(env.debugClientIp).toBe(true);
+    expect(() => readEnvironment({ ...BASE, LEAD_GLOBAL_HOURLY_CAP: '0' })).toThrow('LEAD_GLOBAL_HOURLY_CAP invalid: "0"');
+  });
+
+  it('enables Telegram only when both variables are set', () => {
+    const env = readEnvironment({ ...BASE, TELEGRAM_BOT_TOKEN: '123456:ABC-def_GHI', TELEGRAM_CHAT_ID: '-1001234567' });
+    expect(env.telegram).toEqual({ botToken: '123456:ABC-def_GHI', chatId: '-1001234567' });
+    expect(Object.isFrozen(env.telegram)).toBe(true);
+  });
+
+  it('requires the other Telegram variable and never echoes the token', () => {
+    expect(() => readEnvironment({ ...BASE, TELEGRAM_BOT_TOKEN: '123456:ABC' })).toThrow('Missing environment variable: TELEGRAM_CHAT_ID');
+    expect(() => readEnvironment({ ...BASE, TELEGRAM_CHAT_ID: '5' })).toThrow('Missing environment variable: TELEGRAM_BOT_TOKEN');
+    expect(() => readEnvironment({ ...BASE, TELEGRAM_BOT_TOKEN: 'secret-token', TELEGRAM_CHAT_ID: '5' })).toThrow(/^TELEGRAM_BOT_TOKEN invalid$/);
+  });
+
+  it('exposes the variable name on configuration errors', () => {
+    expect(() => readEnvironment({ ...BASE, DB_HOST: '' })).toThrow(expect.objectContaining({ name: 'ConfigError', variable: 'DB_HOST' }));
   });
 
   it.each(['abc', '0', '70000', '80.5', ''])('rejects PORT=%j with a clear message', (value) => {
