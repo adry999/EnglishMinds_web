@@ -9,6 +9,7 @@ import { UtmCapture } from '@features/lead-capture';
 import { photos } from '@shared/content/photos';
 import { site } from '@shared/content/site';
 import { serializeJsonLd } from '@shared/seo/json-ld';
+import { isIndexable, siteEnv } from '@shared/seo/site-env';
 import { canonicalUrl, fullTitle, ogImageSize } from '@shared/seo/page-meta';
 
 interface Props {
@@ -35,6 +36,7 @@ const canonical = canonicalUrl(Astro.url.pathname, site.url);
 const ogSize = ogImageSize(image);
 const ogImage = await getImage({ src: image, ...ogSize, fit: 'cover', format: 'jpg' });
 const ogImageUrl = new URL(ogImage.src, site.url).href;
+const hidden = noindex || !isIndexable(siteEnv(import.meta.env.SITE_ENV));
 ---
 <!doctype html>
 <html lang="ro">
@@ -47,7 +49,7 @@ const ogImageUrl = new URL(ogImage.src, site.url).href;
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    {noindex && <meta name="robots" content="noindex" />}
+    {hidden && <meta name="robots" content="noindex" />}
     <meta property="og:type" content={type} />
     <meta property="og:locale" content="ro_RO" />
     <meta property="og:site_name" content={site.name} />
