@@ -62,6 +62,9 @@ Bifează fiecare punct pe URL-ul de staging înainte de lansare. Înlocuiește `
 
 - [ ] Subdomeniul de staging cere parola.
   - Verificare: deschide URL-ul într-o fereastră privată.
+- [ ] După o publicare automată, staging-ul cere în continuare parola.
+  - Verificare: deschide URL-ul într-o fereastră privată imediat după ce rulează workflow-ul Deploy.
+  - Parola vine din variabila `DEPLOY_HTPASSWD_FILE` (doar în mediul `staging`): creează o dată utilizatorul în cPanel, Directory Privacy, apoi setează variabila la calea fișierului passwd generat (de exemplu `/home/u/.htpasswds/staging/passwd`). Scriptul adaugă blocul de autentificare în `.htaccess` la fiecare publicare. Nu te baza pe `.htaccess`-ul scris de cPanel, pentru că publicarea îl suprascrie.
 - [ ] Staging-ul are `noindex` sau este blocat în `robots.txt`.
   - Verificare: `curl -s -u user:parola https://<staging>/robots.txt` și antetul `X-Robots-Tag` / meta `robots` din pagină.
 
