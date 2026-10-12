@@ -7,13 +7,17 @@
   outline-color: var(--color-sun);
 }
 
+.site-footer a {
+  color: var(--color-white);
+}
+
 .site-footer__inner {
   display: flex;
   flex-direction: column;
-  gap: 36px;
+  gap: 40px;
   max-width: var(--container);
   margin-inline: auto;
-  padding: 56px var(--gutter) 32px;
+  padding: 56px var(--gutter) 28px;
 }
 
 .site-footer__cta {
@@ -22,6 +26,8 @@
   justify-content: space-between;
   align-items: center;
   gap: 24px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid rgb(255 255 255 / 0.18);
 }
 
 .site-footer__title {
@@ -43,44 +49,155 @@
   gap: 10px;
 }
 
-.site-footer__meta {
+.site-footer__columns {
+  display: grid;
+  gap: 36px;
+}
+
+.site-footer__brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.site-footer__tagline {
+  max-width: 22rem;
+  margin: 0;
+  color: rgb(255 255 255 / 0.85);
+  line-height: 1.5;
+}
+
+/* Instagram as a pill in the brand style: white outline that fills with sun yellow on hover. */
+.site-footer__social {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 10px 20px 10px 14px;
+  border: 2px solid var(--color-white);
+  border-radius: var(--radius-pill);
+  font-weight: 900;
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.site-footer__social:hover {
+  border-color: var(--color-sun);
+  background: var(--color-sun);
+  color: var(--color-navy);
+}
+
+.site-footer__social-icon {
+  flex: none;
+}
+
+.site-footer__heading {
+  margin: 0 0 14px;
+  color: var(--color-sun);
+  font-family: var(--font-label);
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.site-footer__col ul {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-footer__col a {
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.site-footer__col a:hover {
+  color: var(--color-sun);
+  text-decoration: underline;
+}
+
+.site-footer__col address {
+  font-style: normal;
+  line-height: 1.5;
+}
+
+.site-footer__bottom {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  gap: 16px 24px;
-  padding-top: 24px;
+  gap: 12px 24px;
+  padding-top: 20px;
   border-top: 1px solid rgb(255 255 255 / 0.18);
-  font-weight: 700;
+  color: rgb(255 255 255 / 0.8);
+  font-size: 0.9375rem;
 }
 
-.site-footer__meta address {
-  font-style: normal;
+.site-footer__copy {
+  margin: 0;
 }
 
-.site-footer__meta a {
-  color: var(--color-white);
+.site-footer__legal ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-footer__legal a,
+.site-footer__cookie-settings {
+  color: rgb(255 255 255 / 0.8);
 }
 
 .site-footer__cookie-settings {
   padding: 0;
   border: 0;
   background: none;
-  color: var(--color-white);
   font: inherit;
   text-decoration: underline;
   cursor: pointer;
 }
 
-.site-footer__legal ul {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+.site-footer__legal a:hover,
+.site-footer__cookie-settings:hover {
+  color: var(--color-sun);
 }
 
-.site-footer__copy {
-  margin: 0;
+@media (prefers-reduced-motion: reduce) {
+  .site-footer__social {
+    transition: none;
+  }
+}
+
+@media (min-width: 640px) {
+  .site-footer__columns {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .site-footer__brand {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 1000px) {
+  .site-footer__columns {
+    grid-template-columns: 1.4fr 1fr 1fr;
+    gap: 48px;
+  }
+
+  .site-footer__brand {
+    grid-column: auto;
+  }
+}
+
+.site-footer__col .site-footer__map {
+  color: var(--color-sun);
+  text-decoration: underline;
 }
