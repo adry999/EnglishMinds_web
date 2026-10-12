@@ -46,6 +46,7 @@ O copie a cererii ajunge și prin email la academie. Aceste emailuri nu se șter
 - furnizorul de găzduire a site-ului, cu serverele în Uniunea Europeană;
 - serviciul de email care trimite notificarea (serverul de email al domeniului nostru);
 - furnizorul căsuței de email a academiei, unde primim notificarea cererii;
+- Telegram (Telegram Messenger), unde trimitem academiei un mesaj scurt despre cerere, ca să nu o ratăm: doar numele tău, telefonul, grupa de vârstă a copilului și pagina din care ai scris;
 - WhatsApp (Meta), doar dacă tu alegi să trimiți mesajul. În acest caz se aplică și politica de confidențialitate WhatsApp.
 
 ## Statistici și reclame
@@ -54,7 +55,9 @@ Folosim instrumente de statistici și de reclame doar dacă accepți în banneru
 
 ## Transferuri în afara UE
 
-Dacă accepți statisticile sau marketingul în bannerul de cookies, Google (Google Analytics 4 și Google Ads) și Meta (Meta Pixel) pot prelucra date și în Statele Unite ale Americii. Transferul se face în baza Cadrului UE–SUA privind confidențialitatea datelor (Data Privacy Framework), pentru care Comisia Europeană a adoptat decizia de adecvare din 10 iulie 2023, și a clauzelor contractuale standard. Același lucru se întâmplă cu WhatsApp (Meta), dacă tu alegi să trimiți mesajul. Dacă nu accepți aceste categorii, nu pleacă nicio cerere către Google sau Meta.
+Dacă accepți statisticile sau marketingul în bannerul de cookies, Google (Google Analytics 4 și Google Ads) și Meta (Meta Pixel) pot prelucra date și în Statele Unite ale Americii. Transferul se face în baza Cadrului UE–SUA privind confidențialitatea datelor (Data Privacy Framework), pentru care Comisia Europeană a adoptat decizia de adecvare din 10 iulie 2023, și a clauzelor contractuale standard. Același lucru se întâmplă cu WhatsApp (Meta), dacă tu alegi să trimiți mesajul.
+
+Mesajul de notificare trimis academiei pe Telegram (doar numele, telefonul, grupa de vârstă și pagina) este prelucrat pe serverele Telegram Messenger, care se află în afara Uniunii Europene. Folosim acest canal doar pentru ca echipa să te poată suna repede; mesajele se șterg în aceleași 12 luni. Dacă nu accepți aceste categorii, nu pleacă nicio cerere către Google sau Meta. Notificarea Telegram către academie nu depinde de bannerul de cookies, pentru că face parte din prelucrarea cererii tale.
 
 ## Meta Pixel: operatori asociați
 

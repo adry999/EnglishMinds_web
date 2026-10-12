@@ -22,7 +22,7 @@ describe.skipIf(!hasBash)('scripts/deploy.sh --dry-run', () => {
     work = mkdtempSync(join(tmpdir(), 'em-deploy-'));
     mkdirSync(join(work, 'dist'));
     mkdirSync(join(work, 'dist-server'));
-    for (const file of ['dist/index.html', 'dist-server/app.cjs', 'dist-server/purge-expired-leads.cjs']) {
+    for (const file of ['dist/index.html', 'dist-server/app.cjs', 'dist-server/purge-expired-leads.cjs', 'dist-server/notify-pending-leads.cjs']) {
       writeFileSync(join(work, file), '');
     }
   });
@@ -53,6 +53,7 @@ describe.skipIf(!hasBash)('scripts/deploy.sh --dry-run', () => {
     const output = run(testEnv);
     expect(output).toContain('put -O /home/u/em-api dist-server/app.cjs');
     expect(output).toContain('put -O /home/u/em-api dist-server/purge-expired-leads.cjs');
+    expect(output).toContain('put -O /home/u/em-api dist-server/notify-pending-leads.cjs');
     expect(output).toContain('put -O /home/u/em-api/tmp dist-server/restart.txt');
   });
 
@@ -135,7 +136,7 @@ describe.skipIf(!hasBash)('scripts/deploy.sh real run with a stub lftp', () => {
   beforeAll(() => {
     work = mkdtempSync(join(tmpdir(), 'em-deploy-real-'));
     for (const dir of ['dist', 'dist-server', 'bin']) mkdirSync(join(work, dir));
-    for (const file of ['dist/index.html', 'dist-server/app.cjs', 'dist-server/purge-expired-leads.cjs', 'key', 'known_hosts']) {
+    for (const file of ['dist/index.html', 'dist-server/app.cjs', 'dist-server/purge-expired-leads.cjs', 'dist-server/notify-pending-leads.cjs', 'key', 'known_hosts']) {
       writeFileSync(join(work, file), '');
     }
     // The stub records its arguments and the .htaccess it sees at call time, then succeeds.

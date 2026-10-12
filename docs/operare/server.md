@@ -1,6 +1,6 @@
 # Serverul formularului: operare
 
-Serverul primește cererile `POST /api/lead`, salvează contactul în MySQL și trimite un email. Rulează ca aplicație Node pe cPanel (Passenger).
+Serverul primește cererile `POST /api/lead`, salvează contactul în MySQL și anunță academia prin email și, opțional, prin Telegram. Rulează ca aplicație Node pe cPanel (Passenger).
 
 ## 1. Variabile de mediu
 
@@ -14,13 +14,45 @@ Modelul este `.env.example`. Pe cPanel se setează în aplicația Node; local, �
 | `MAIL_FROM` | Adresa expeditorului. |
 | `MAIL_TO` | Adresa care primește contactele noi. |
 | `IP_HASH_SALT` | Cel puțin 32 de caractere aleatorii. Se folosește la calculul amprentei IP (SHA-256 cu sare) pentru limitarea trimiterilor. Schimbarea lui resetează limitele. |
-| `TRUST_PROXY` | `true` pe cPanel/Passenger, `false` local. |
+| `TRUST_PROXY_HOPS` | Câte proxy-uri se află între vizitator și aplicație și adaugă fiecare adresa în `X-Forwarded-For` (număr întreg, implicit `0`). `0` = se folosește adresa conexiunii directe (local); `1` = ultima adresă din antet; `2` = penultima etc. Vezi „Adresa IP a vizitatorului”. |
+| `TRUST_PROXY` | Vechiul comutator. `true` echivalează cu `TRUST_PROXY_HOPS=1`; dacă `TRUST_PROXY_HOPS` e setat, acela are prioritate. |
+| `LEAD_GLOBAL_HOURLY_CAP` | Câte cereri acceptă site-ul pe oră, de la toți vizitatorii la un loc (implicit `60`). Plasă de siguranță când adresa vizitatorului nu poate fi identificată sau este falsificată; peste prag toți primesc `429` până la ora următoare. |
+| `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` | Opționale, se setează amândouă sau niciuna. Dacă există, fiecare cerere nouă trimite și un mesaj scurt pe Telegram (nume, telefon, grupa de vârstă, pagina, ora). Vezi „Notificarea pe Telegram”. Tokenul este o parolă: doar în variabilele de mediu, niciodată în repository sau în loguri. |
+| `DEBUG_CLIENT_IP` | `true` doar temporar, la verificarea de pe staging; apoi șterge-o. Vezi „Adresa IP a vizitatorului”. |
 
 Serverul nu pornește dacă lipsește o variabilă sau are valoare invalidă.
 
 ### Adresa IP a vizitatorului
 
-Cu `TRUST_PROXY=true`, serverul ia ultima (cea mai din dreapta) adresă din `X-Forwarded-For`. Presupune exact un singur proxy de încredere în fața aplicației (Passenger/cPanel); intrările din stânga pot fi falsificate de client. Dacă hostingul are mai mulți proxy, regula trebuie ajustată. Cu `TRUST_PROXY=false` se folosește adresa conexiunii directe.
+Limita de trimiteri se calculează pe adresa IP a vizitatorului, iar adresa corectă depinde de lanțul de proxy-uri al hostingului. Regula este una singură: cu `TRUST_PROXY_HOPS=N`, serverul ia a N-a adresă numărând din dreapta în `X-Forwarded-For`. Tot ce e mai în stânga este scris de client și se ignoră. Dacă antetul are mai puține adrese decât N sau lipsește, se folosește adresa conexiunii directe.
+
+- `0`: local, fără proxy.
+- `1`: un proxy (Apache/Passenger) care adaugă adresa de la care a primit conexiunea. Valoarea probabilă pe cPanel, dar **trebuie verificată pe staging**.
+- `2`: două proxy-uri, de exemplu dacă se pune Cloudflare în fața hostingului.
+
+Dacă adresa nu poate fi aflată deloc, nu se mai folosește o găleată comună „necunoscut” (care ar bloca tot site-ul după 5 cereri): se aplică doar plafonul `LEAD_GLOBAL_HOURLY_CAP` și apare un avertisment în log. Plafonul se aplică întotdeauna, indiferent de adresă, și numără în același tabel `rate_limits`, la cheia `global`.
+
+Cum verifici valoarea corectă pe staging:
+
+1. Setează temporar `DEBUG_CLIENT_IP=true` și repornește aplicația.
+2. Deschide `https://<staging>/api/health` de pe două rețele diferite (Wi-Fi și date mobile). Serverul scrie la fiecare cerere o linie `[debug] client address` cu `hops`, `forwardedEntries`, `hasSocketAddress` și `resolvedHash` (primele 12 caractere ale amprentei, nu adresa).
+3. Cu valoarea corectă, `resolvedHash` este **diferit** pe cele două rețele și identic la cereri repetate de pe aceeași rețea. Dacă e identic pe ambele rețele, ai luat adresa proxy-ului: schimbă `TRUST_PROXY_HOPS` (sau verifică `forwardedEntries`: dacă e mai mic decât `hops`, proxy-ul nu adaugă adresa; vezi și `hasSocketAddress`).
+4. Șterge `DEBUG_CLIENT_IP` și repornește aplicația.
+
+### Notificarea pe Telegram (opțional)
+
+Emailul rămâne canalul principal; Telegram este o a doua cale, ca o cerere să nu treacă neobservată dacă emailul nu funcționează. Canalele sunt independente: dacă unul eșuează, celălalt tot trimite, iar vizitatorul primește oricum confirmarea.
+
+1. În Telegram, scrie lui `@BotFather`, comanda `/newbot`, și păstrează tokenul primit (`TELEGRAM_BOT_TOKEN`).
+2. Adaugă botul într-un grup al academiei (sau scrie-i direct un mesaj).
+3. Află identificatorul conversației (`TELEGRAM_CHAT_ID`): după ce ai scris un mesaj în grup, deschide în browser `https://api.telegram.org/bot<token>/getUpdates` și caută `"chat":{"id":...}` (pentru grupuri numărul e negativ).
+4. Setează cele două variabile în aplicația Node și repornește-o. Fără ele, funcția este oprită.
+
+Mesajul conține doar numele părintelui, telefonul, grupa de vârstă, pagina și ora. Telegram Messenger are servere în afara UE, de aceea este trecut în politica de confidențialitate și în `registru-prelucrare.md`. Cererea către Telegram are un timeout de 5 secunde; tokenul nu apare în loguri.
+
+### Cereri nenotificate: reîncercare
+
+Fiecare cerere salvată are în baza de date `notified_at` (momentul în care cel puțin un canal a reușit) și `notify_attempts`. Dacă niciun canal nu a reușit (SMTP căzut, parola de email schimbată, aplicația repornită în timpul trimiterii), jobul `notify-pending-leads` o retrimite: cererile mai vechi de 5 minute și mai noi de 7 zile, de cel mult 3 ori în total (prima încercare se numără). Dacă o cerere rămâne cu `notified_at` gol în phpMyAdmin, ea nu a ajuns la nimeni: sună părintele din baza de date.
 
 ## 2. Baza de date
 
@@ -28,6 +60,9 @@ Cu `TRUST_PROXY=true`, serverul ia ultima (cea mai din dreapta) adresă din `X-F
 
 1. `server/db/migrations/001_create_leads.sql`
 2. `server/db/migrations/002_create_rate_limits.sql`
+3. `server/db/migrations/003_add_lead_notification_state.sql`
+
+Migrațiile pot fi rulate din nou fără pagube (a treia adaugă coloanele doar dacă lipsesc). La o actualizare a unui site existent, rulează în phpMyAdmin doar migrațiile noi, înainte de publicare.
 
 ## 3. Publicare
 
@@ -35,18 +70,26 @@ Publicarea este automată, prin GitHub Actions după un CI verde: vezi `publicar
 
 ### Publicare manuală (rezervă)
 
-1. `npm run build:server` creează două pachete în `dist-server/`: `app.cjs` (serverul) și `purge-expired-leads.cjs` (jobul de curățare).
-2. Urcă `app.cjs` în folderul aplicației Node (punct de pornire: `app.cjs`) și `purge-expired-leads.cjs` în același folder.
+1. `npm run build:server` creează trei pachete în `dist-server/`: `app.cjs` (serverul), `purge-expired-leads.cjs` (jobul de curățare) și `notify-pending-leads.cjs` (jobul de reîncercare a notificărilor).
+2. Urcă `app.cjs` în folderul aplicației Node (punct de pornire: `app.cjs`) și celelalte două în același folder.
 3. Repornește aplicația prin `tmp/restart.txt` (`touch tmp/restart.txt` sau din interfața cPanel).
 
-Emailul se trimite după ce răspunsul a plecat către vizitator, pe principiul „cât se poate": dacă SMTP eșuează, contactul rămâne salvat în baza de date, iar eroarea apare în loguri ca avertisment (fără date personale).
+Notificările (email și Telegram) pleacă după ce răspunsul a ajuns la vizitator. Dacă un canal eșuează, contactul rămâne salvat, eroarea apare în loguri ca avertisment (fără date personale), iar jobul de reîncercare de mai jos retrimite cererea.
 
-## 4. Curățare zilnică (cron)
+## 4. Joburi programate (cron)
 
-În cPanel, la Cron Jobs, o dată pe zi:
+În cPanel, la Cron Jobs, se programează două joburi. Cron nu are `node` în PATH: folosește calea completă din mediul virtual al aplicației (cPanel → Setup Node.js App arată comanda `source /home/<utilizator>/nodevenv/<aplicație>/22/bin/activate`; binarul este `/home/<utilizator>/nodevenv/<aplicație>/22/bin/node`). Fișierul `.env` pentru `--env-file` stă în afara folderului site-ului, cu drepturi `600`.
+
+Curățare, o dată pe zi:
 
 ```
-node /calea/aplicatiei/purge-expired-leads.cjs
+/calea/completa/node /calea/aplicatiei/purge-expired-leads.cjs
+```
+
+Reîncercarea notificărilor, la fiecare 10 minute:
+
+```
+*/10 * * * * /calea/completa/node --env-file=/cale/.env /calea/aplicatiei/notify-pending-leads.cjs
 ```
 
 Jobul are nevoie de exactamente aceleași variabile de mediu ca aplicația, toate (nu doar cele `DB_*`): configurarea se validează integral la pornire, iar dacă lipsește ceva jobul se oprește fără să șteargă nimic. Rulează-l cu același fișier de mediu (`node --env-file=/cale/.env /cale/purge-expired-leads.cjs`) sau cu variabilele setate în panou. Șterge contactele mai vechi de 12 luni și limitele de trimitere mai vechi de 24 de ore.
@@ -60,6 +103,7 @@ Jobul are nevoie de exactamente aceleași variabile de mediu ca aplicația, toat
 ## 6. De verificat pe staging
 
 - Ruta `/api/lead` este servită pe același domeniu ca site-ul (spec §13.1).
-- Adresa IP din `X-Forwarded-For` este a vizitatorului, nu a proxy-ului (trimite un formular și verifică în logul/baza de date că limitarea diferențiază vizitatorii).
-- Tabela `rate_limits` arată valori `ip_hash` diferite pentru două rețele diferite (de exemplu Wi-Fi și date mobile).
+- `TRUST_PROXY_HOPS` este cel corect: procedura cu `DEBUG_CLIENT_IP` din „Adresa IP a vizitatorului” arată `resolvedHash` diferit pe două rețele diferite.
+- Tabela `rate_limits` arată valori `ip_hash` diferite pentru două rețele diferite (de exemplu Wi-Fi și date mobile), plus rândul `global`.
+- Aplicația rulează în mod **Production** (nu Development) și o variabilă greșită dă o pagină 500 simplă, fără variabile de mediu (vezi `publicare.md` §3).
 - Un email de test ajunge la `MAIL_TO`, iar pe portul 587 conexiunea folosește TLS.

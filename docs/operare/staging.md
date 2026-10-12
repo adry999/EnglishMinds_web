@@ -12,12 +12,21 @@ Staging-ul se publică automat din branch-ul `staging` (vezi `publicare.md`). Ar
 
 ## IP-ul real al vizitatorului
 
-- [ ] În log, două cereri de pe telefoane diferite au amprente diferite.
-  - Verificare: trimite formularul de pe două telefoane (date mobile) și compară amprentele din log-ul serverului.
+- [ ] `TRUST_PROXY_HOPS` este cel corect.
+  - Verificare: urmează procedura din `server.md` („Adresa IP a vizitatorului”): cu `DEBUG_CLIENT_IP=true`, deschide `https://<staging>/api/health` de pe Wi-Fi și de pe date mobile; linia `[debug] client address` din logul aplicației (cPanel → Setup Node.js App) trebuie să aibă `resolvedHash` diferit pe cele două rețele. Apoi șterge `DEBUG_CLIENT_IP` și repornește aplicația.
+- [ ] Rândurile din `rate_limits` confirmă același lucru.
+  - Verificare: după două trimiteri de pe rețele diferite, phpMyAdmin → tabela `rate_limits` are două valori `ip_hash` diferite, plus rândul `global`.
 - [ ] A 6-a cerere într-o oră de pe același IP primește `429`.
   - Verificare: trimite 6 cereri de pe același telefon, toate în aceeași oră calendaristică (fereastra de limitare este fixă, pe ora de ceas); formularul afișează alerta cu linkurile WhatsApp și telefon.
-- [ ] Proxy-ul hostingului pune un singur hop în `X-Forwarded-For`.
-  - Verificare: urmărește `docs/operare/server.md` (secțiunea „Adresa IP a vizitatorului”); în log, IP-ul folosit pentru limitare trebuie să fie al vizitatorului, nu al proxy-ului.
+
+## Modul aplicației Node (secrete)
+
+- [ ] Aplicația Node rulează în mod **Production**, nu Development.
+  - Verificare: cPanel → Setup Node.js App → aplicația → „Application mode” arată `Production`. În Development, Passenger poate afișa public variabilele de mediu (parole) la o eroare de pornire.
+- [ ] O configurare greșită nu publică variabilele de mediu.
+  - Verificare: pe staging, schimbă temporar `MAIL_TO` în `gresit`, repornește aplicația și deschide `https://<staging>/api/health`: trebuie să apară o pagină de eroare simplă (500/503), fără nume sau valori de variabile. În logul aplicației apare doar „cannot start: invalid or missing configuration (MAIL_TO)”. Apoi restabilește valoarea.
+- [ ] `.htaccess`-ul aplicației conține `PassengerFriendlyErrorPages off`.
+  - Verificare: în folderul aplicației Node (`DEPLOY_APP_ROOT`) deschide `.htaccess` și verifică linia (vezi `publicare.md` §3).
 
 ## Email
 
@@ -26,8 +35,19 @@ Staging-ul se publică automat din branch-ul `staging` (vezi `publicare.md`). Ar
 - [ ] Serverul SMTP pe portul 587 cere TLS.
   - Verificare: `openssl s_client -starttls smtp -connect <smtp-host>:587` arată un certificat valid.
 
+## Notificări
+
+- [ ] Telegram (dacă este configurat) primește cererea.
+  - Verificare: trimite formularul și verifică mesajul în grupul academiei, în câteva secunde.
+- [ ] Cererea apare ca notificată în baza de date.
+  - Verificare: phpMyAdmin → `leads`: `notified_at` este completat și `notify_attempts` este 1.
+- [ ] Reîncercarea funcționează.
+  - Verificare: setează temporar o parolă SMTP greșită (și, dacă folosești Telegram, un `TELEGRAM_CHAT_ID` greșit), trimite formularul și observă `notified_at` gol; restabilește valorile, așteaptă următoarea rulare a jobului `notify-pending-leads` (10 minute) și verifică `notified_at` completat și emailul sosit.
+
 ## Cron
 
+- [ ] `notify-pending-leads` rulează la 10 minute, cu calea completă către `node`.
+  - Verificare: programarea cron conține jobul (`server.md` §4); în log apare linia „pending leads retried”.
 - [ ] `purge-expired-leads` rulează zilnic.
   - Verificare: programarea cron a hostingului (sau `crontab -l`) conține jobul zilnic.
 - [ ] În log apare numărul de rânduri șterse.
