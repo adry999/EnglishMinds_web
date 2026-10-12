@@ -25,6 +25,10 @@ const cover = await getImage({ src: post.data.cover, ...ogImageSize(post.data.co
   title={post.data.title}
   description={post.data.description}
   type="article"
+  crumbs={[
+    { name: 'Blog', path: '/blog/' },
+    { name: post.data.title, path: `/blog/${post.id}/` },
+  ]}
   publishedTime={post.data.publishedAt}
   modifiedTime={post.data.updatedAt}
   image={post.data.cover}

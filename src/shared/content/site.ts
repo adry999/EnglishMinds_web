@@ -234,5 +234,10 @@ export const site = {
     googleAdsId: 'TODO: ID Google Ads (AW-…)',
     googleAdsLeadLabel: 'TODO: eticheta conversiei Lead din Google Ads',
   },
+  /** Optional search engine verification tokens. Empty = no tag rendered. */
+  seo: {
+    googleSiteVerification: '',
+    bingSiteVerification: '',
+  },
   faq,
 } as const;

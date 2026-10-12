@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { blogPostingJsonLd, faqJsonLd, organizationJsonLd, serializeJsonLd } from './json-ld';
+import { ageRangeOf, blogPostingJsonLd, breadcrumbJsonLd, courseJsonLd, faqJsonLd, organizationJsonLd, serializeJsonLd } from './json-ld';
 
 const ORG = {
   name: 'English Minds Academy',
@@ -39,8 +39,111 @@ describe('organizationJsonLd', () => {
         addressLocality: 'Cluj-Napoca',
         addressCountry: 'RO',
       },
+      areaServed: 'Cluj-Napoca',
       sameAs: ['https://www.instagram.com/englishminds_academy/'],
     });
+  });
+});
+
+describe('organizationJsonLd, optional fields', () => {
+  it('adds email, logo, image and the served area when given', () => {
+    const out = organizationJsonLd({ ...ORG, email: 'salut@englishminds.ro', image: 'https://englishminds.ro/_astro/og.jpg' });
+    expect(out).toMatchObject({
+      email: 'salut@englishminds.ro',
+      image: 'https://englishminds.ro/_astro/og.jpg',
+      logo: 'https://englishminds.ro/_astro/og.jpg',
+      areaServed: 'Cluj-Napoca',
+    });
+  });
+
+  it('leaves out TODO placeholders and missing values, never emitting them', () => {
+    const out = organizationJsonLd({ ...ORG, email: 'TODO: adresa de email de contact' });
+    expect(out).not.toHaveProperty('email');
+    expect(out).not.toHaveProperty('image');
+    expect(out).not.toHaveProperty('logo');
+    expect(JSON.stringify(out)).not.toContain('TODO');
+  });
+
+  it('never sets priceRange', () => {
+    expect(organizationJsonLd(ORG)).not.toHaveProperty('priceRange');
+  });
+});
+
+describe('faqJsonLd, TODO guard', () => {
+  it('skips entries whose question or answer still holds a TODO', () => {
+    const out = faqJsonLd([
+      { question: 'Q1?', answer: 'A1.' },
+      { question: 'Q2?', answer: 'După metoda Cambridge, cu manualul TODO: manualul Cambridge folosit.' },
+      { question: 'TODO: Q3?', answer: 'A3.' },
+    ]);
+    expect(out).toMatchObject({ mainEntity: [{ name: 'Q1?' }] });
+    expect(JSON.stringify(out)).not.toContain('TODO');
+  });
+
+  it('returns null when nothing is left, so no empty FAQPage is published', () => {
+    expect(faqJsonLd([{ question: 'Q?', answer: 'TODO' }])).toBeNull();
+    expect(faqJsonLd([])).toBeNull();
+  });
+});
+
+describe('breadcrumbJsonLd', () => {
+  it('numbers the trail from 1 with absolute urls', () => {
+    expect(
+      breadcrumbJsonLd([
+        { name: 'Acasă', url: 'https://englishminds.ro/' },
+        { name: 'Blog', url: 'https://englishminds.ro/blog/' },
+        { name: 'Un articol', url: 'https://englishminds.ro/blog/un-articol/' },
+      ]),
+    ).toEqual({
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Acasă', item: 'https://englishminds.ro/' },
+        { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://englishminds.ro/blog/' },
+        { '@type': 'ListItem', position: 3, name: 'Un articol', item: 'https://englishminds.ro/blog/un-articol/' },
+      ],
+    });
+  });
+});
+
+describe('ageRangeOf', () => {
+  it('turns the display age group into a schema.org range', () => {
+    expect(ageRangeOf('5–6 ani')).toBe('5-6');
+    expect(ageRangeOf('13–14 ani')).toBe('13-14');
+  });
+});
+
+describe('courseJsonLd', () => {
+  const input = {
+    name: 'Engleză pentru copii, nivel Starters',
+    description: 'Primele cuvinte și propoziții.',
+    url: 'https://englishminds.ro/grupe/#starters',
+    organizationUrl: 'https://englishminds.ro',
+    organizationName: 'English Minds Academy',
+    educationalLevel: 'Starters',
+    typicalAgeRange: '5-6',
+  };
+
+  it('describes the course with the organization as provider and a student audience', () => {
+    expect(courseJsonLd(input)).toEqual({
+      '@context': 'https://schema.org',
+      '@type': 'Course',
+      name: 'Engleză pentru copii, nivel Starters',
+      description: 'Primele cuvinte și propoziții.',
+      url: 'https://englishminds.ro/grupe/#starters',
+      inLanguage: 'en',
+      educationalLevel: 'Starters',
+      typicalAgeRange: '5-6',
+      audience: { '@type': 'EducationalAudience', educationalRole: 'student' },
+      provider: { '@type': 'EducationalOrganization', '@id': 'https://englishminds.ro/#organizatie', name: 'English Minds Academy' },
+    });
+  });
+
+  it('emits no offers and no TODO text', () => {
+    const out = courseJsonLd({ ...input, description: 'Ce învață. TODO: de completat' });
+    expect(out).not.toHaveProperty('offers');
+    expect(out).not.toHaveProperty('description');
+    expect(JSON.stringify(out)).not.toContain('TODO');
   });
 });
 

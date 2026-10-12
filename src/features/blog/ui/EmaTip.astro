@@ -1,4 +1,5 @@
 ---
+import { withBase } from '@shared/lib/with-base';
 import Button from '@shared/ui/Button.astro';
 import EmaPortrait from '@shared/ui/EmaPortrait.astro';
 import './EmaTip.css';
@@ -7,7 +8,7 @@ import './EmaTip.css';
   <EmaPortrait size="sm" alt="" />
   <div class="ema-tip__text">
     <h2 id="ema-tip-heading">Sfatul Emei</h2>
-    <p>Nu știi de unde să începi? Fă testul de nivel și îți spunem ce se potrivește copilului tău.</p>
+    <p>Nu știi de unde să începi? Fă testul de nivel și îți spunem ce se potrivește copilului tău. Sau <a href={withBase('/lectie-demo/')}>rezervă direct lecția demo gratuită</a>.</p>
   </div>
   <Button variant="sun" class="ema-tip__cta" href="/test-de-nivel/">Fă testul</Button>
 </aside>

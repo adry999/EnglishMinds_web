@@ -1,4 +1,5 @@
 ---
+import { getImage } from 'astro:assets';
 import BaseLayout from '@layouts/BaseLayout.astro';
 import { Faq } from '@features/faq';
 import { LeadForm } from '@features/lead-capture';
@@ -8,24 +9,30 @@ import LevelsOverview from '@sections/home/LevelsOverview.astro';
 import OfferStrip from '@sections/home/OfferStrip.astro';
 import TestTeaser from '@sections/home/TestTeaser.astro';
 import ValueCards from '@sections/home/ValueCards.astro';
+import { photos } from '@shared/content/photos';
 import { site } from '@shared/content/site';
 import { faqJsonLd, organizationJsonLd } from '@shared/seo/json-ld';
-import { siteRootUrl } from '@shared/seo/page-meta';
+import { ogImageSize, siteRootUrl } from '@shared/seo/page-meta';
 import Footer from '@shared/ui/Footer.astro';
 import Header from '@shared/ui/Header.astro';
 import StickyContact from '@shared/ui/StickyContact.astro';
+
+const root = siteRootUrl(Astro.site, site.url, import.meta.env.BASE_URL);
+const brandImage = await getImage({ src: photos.class, ...ogImageSize(photos.class), fit: 'cover', format: 'jpg' });
 ---
 <BaseLayout
-  title={site.name}
-  description="Cursuri de engleză după metoda Cambridge pentru copii de 5–14 ani, în Cluj-Napoca. Lecție demo gratuită."
+  title="Cursuri de engleză pentru copii, Cluj"
+  description="Cursuri de engleză pentru copii de 5–14 ani în Cluj-Napoca, după metoda Cambridge. Grupe pe vârste și niveluri. Rezervă o lecție demo gratuită."
   jsonLd={[
     organizationJsonLd({
       name: site.name,
-      url: siteRootUrl(Astro.site, site.url, import.meta.env.BASE_URL),
+      url: root,
       telephone: site.contact.phoneE164,
       streetAddress: site.contact.street,
       addressLocality: site.contact.city,
       sameAs: [site.contact.instagramUrl],
+      email: site.contact.email,
+      image: new URL(brandImage.src, root).href,
     }),
     faqJsonLd(site.faq),
   ]}

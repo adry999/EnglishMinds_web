@@ -8,8 +8,9 @@ import Header from '@shared/ui/Header.astro';
 const posts = await getPublishedPosts();
 ---
 <BaseLayout
-  title="Blog"
-  description="Sfaturi scurte pentru părinți: cum îți ajuți copilul cu engleza acasă, fără teme în plus."
+  title="Blog: sfaturi de engleză pentru părinți"
+  description="Sfaturi pentru părinți: cum îți ajuți copilul cu engleza acasă, fără teme în plus, și cum alegi un curs potrivit pentru vârsta lui."
+  crumbs={[{ name: 'Blog', path: '/blog/' }]}
 >
   <Header active="blog" />
   <main id="continut" class="container blog-page">
