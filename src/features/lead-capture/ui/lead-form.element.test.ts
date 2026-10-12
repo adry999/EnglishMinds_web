@@ -11,10 +11,10 @@ const submitMock = vi.mocked(submitLead);
 
 const AGES = ['5–6 ani', '7–8 ani', '9–10 ani', '11–12 ani', '13–14 ani'];
 
-function markup(source: string, { ages = true, hidden = false } = {}): string {
+function markup(source: string, { ages = true, hidden = false, demo = false } = {}): string {
   const id = (part: string) => `lead-${source}-${part}`;
   return `
-  <lead-form class="lead-form" data-source="${source}" data-phone-display="+40 775 630 680" ${hidden ? 'hidden' : ''}>
+  <lead-form class="lead-form" data-source="${source}" data-phone-display="+40 775 630 680" ${hidden ? 'hidden' : ''} ${demo ? 'data-demo' : ''}>
     <div class="lead-form__fallback"><p>Formularul are nevoie de JavaScript.</p></div>
     <form class="lead-form__form" novalidate hidden>
       <input id="${id('parentName')}" name="parentName" />
@@ -43,7 +43,7 @@ let popup: FakePopup | null;
 let openSpy: ReturnType<typeof vi.spyOn>;
 let now = 0;
 
-function mount(source = 'home', options?: { ages?: boolean; hidden?: boolean }): HTMLElement {
+function mount(source = 'home', options?: { ages?: boolean; hidden?: boolean; demo?: boolean }): HTMLElement {
   // Parse detached, then attach: happy-dom fires connectedCallback before innerHTML children exist.
   const holder = document.createElement('div');
   holder.innerHTML = markup(source, options);
@@ -83,6 +83,31 @@ beforeEach(() => {
 afterEach(() => {
   vi.restoreAllMocks();
   document.body.innerHTML = '';
+});
+
+describe('<lead-form> in demo mode', () => {
+  it('shows the demo notice instead of sending, opening WhatsApp or announcing a lead', async () => {
+    const host = mount('home', { demo: true });
+    const announced = vi.fn();
+    host.addEventListener(LEAD_SUBMITTED, announced);
+    fill();
+    submit();
+    await flush();
+    expect(el('.lead-form__status').textContent).toBe('Aceasta este o versiune demo a site-ului. Trimiterea formularului este dezactivată.');
+    expect(submitMock).not.toHaveBeenCalled();
+    expect(openSpy).not.toHaveBeenCalled();
+    expect(announced).not.toHaveBeenCalled();
+    expect(el<HTMLElement>('.lead-form__done').hidden).toBe(true);
+    expect(el<HTMLFormElement>('form').hidden).toBe(false);
+  });
+
+  it('keeps the validation errors for an incomplete form', async () => {
+    mount('home', { demo: true });
+    submit();
+    await flush();
+    expect(el('[data-error-for="parentName"]').textContent).not.toBe('');
+    expect(el('.lead-form__status').textContent).toBe('');
+  });
 });
 
 describe('<lead-form>', () => {

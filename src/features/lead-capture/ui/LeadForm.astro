@@ -2,6 +2,8 @@
 import { AGE_GROUPS } from '@shared/contracts/age-groups';
 import type { LeadSource } from '@shared/contracts/lead.schema';
 import { site } from '@shared/content/site';
+import { withBase } from '@shared/lib/with-base';
+import { leadSubmissionEnabled, siteEnv } from '@shared/seo/site-env';
 import WhatsAppButton from '@shared/ui/WhatsAppButton.astro';
 import '@shared/ui/Button.css';
 import './lead-form.css';
@@ -27,13 +29,14 @@ const {
   showAgeGroups = true,
   hidden = false,
 } = Astro.props;
+const demo = !leadSubmissionEnabled(siteEnv(import.meta.env.SITE_ENV));
 const Heading = headingLevel === 2 ? 'h2' : 'h3';
 const id = (part: string): string => `lead-${source}-${part}`;
 const { contact } = site;
 const submitVariant = tone === 'navy' ? 'button--sun' : 'button--primary';
 const callVariant = tone === 'navy' ? 'button--outline-light' : 'button--outline';
 ---
-<lead-form class:list={['lead-form', `lead-form--${tone}`]} data-source={source} data-phone-display={contact.phoneDisplay} {...(hidden ? { hidden: "" } : {})}>
+<lead-form class:list={['lead-form', `lead-form--${tone}`]} data-source={source} data-phone-display={contact.phoneDisplay} {...(hidden ? { hidden: "" } : {})} {...(demo ? { 'data-demo': '' } : {})}>
   <div class="lead-form__fallback">
     <p>Formularul are nevoie de JavaScript. Scrie-ne pe WhatsApp sau sună-ne la <a href={`tel:${contact.phoneE164}`}>{contact.phoneDisplay}</a>.</p>
     <WhatsAppButton label="Scrie-ne pe WhatsApp" />
@@ -73,7 +76,7 @@ const callVariant = tone === 'navy' ? 'button--outline-light' : 'button--outline
     </div>
     <div class="lead-form__consent">
       <input id={id('consent')} name="consent" type="checkbox" aria-describedby={id('consent-error')} />
-      <label for={id('consent')}>Sunt de acord ca English Minds Academy să mă contacteze telefonic sau pe WhatsApp pentru lecția demo, conform <a href="/confidentialitate/">politicii de confidențialitate</a>.</label>
+      <label for={id('consent')}>Sunt de acord ca English Minds Academy să mă contacteze telefonic sau pe WhatsApp pentru lecția demo, conform <a href={withBase('/confidentialitate/')}>politicii de confidențialitate</a>.</label>
       <p class="lead-form__error" id={id('consent-error')} data-error-for="consent"></p>
     </div>
     <button class:list={['button', submitVariant, 'lead-form__submit']} type="submit">{submitLabel}</button>
