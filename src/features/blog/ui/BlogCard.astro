@@ -21,6 +21,7 @@ const href = withBase(`/blog/${post.id}/`);
     <div class="blog-card__body">
       <p class="blog-card__meta">
         <span class="blog-card__chip">{categoryLabel(post.data.category)}</span>
+        {post.data.draft && <span class="draft-badge">Ciornă</span>}
         <span>{readingMinutes(post.body ?? '')} min de citit</span>
       </p>
       <h2 class="blog-card__title">{post.data.title}</h2>
