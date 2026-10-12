@@ -22,10 +22,11 @@ describe('built pages', () => {
     expect(html).toContain('id="continut"');
   });
 
-  it.each(PAGES)('%s preloads the first-paint faces only and still declares the other weights', (page) => {
+  it.each(PAGES)('%s preloads every declared font face', (page) => {
     const html = read(page);
-    // Nunito 900, 700 and 600 plus Barlow 700, each in latin and latin-ext; Nunito 800 loads on demand through @font-face.
-    expect(html.match(/<link rel="preload"[^>]*as="font"/g)).toHaveLength(8);
+    // All Nunito weights (600, 700, 800, 900) and Barlow Condensed 700, each in latin and latin-ext = 10. Preloading only
+    // some weights caused CLS (0.38 on /test-de-nivel/): a page using a weight that was not preloaded swapped its font late.
+    expect(html.match(/<link rel="preload"[^>]*as="font"/g)).toHaveLength(10);
     const declared = new Set([...html.matchAll(/@font-face\{[^}]*font-weight:(\d+)/g)].map((match) => match[1]));
     for (const weight of ['600', '700', '800', '900']) expect(declared).toContain(weight);
   });

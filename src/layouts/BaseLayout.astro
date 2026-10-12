@@ -49,9 +49,7 @@ const hidden = noindex || !isIndexable(siteEnv(import.meta.env.SITE_ENV));
   <head>
     <meta charset="utf-8" />
     <ConsentDefaults />
-    {/* Preload the faces visible on first paint: body text (600), buttons and strong text (700), headings (900) and the
-        Barlow labels. Nunito 800 loads on demand; a late body or label face shifted the legal pages (CLS 0.21). */}
-    <Font cssVariable="--font-nunito" preload={[{ weight: 900 }, { weight: 700 }, { weight: 600 }]} />
+    <Font cssVariable="--font-nunito" preload />
     <Font cssVariable="--font-barlow-condensed" preload />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
