@@ -37,6 +37,7 @@ jobs:
       - run: npm run build
       - run: npm run test:dist
       - run: npm run test:staging
+      - run: npm run test:preview
       - run: npm run build:server
 
   browser:

@@ -74,3 +74,14 @@ Dacă GitHub Actions nu funcționează: construiește local (`npm run build` și
 
 - Publicare: GitHub → **Actions** → workflow-ul **Deploy** → ultima rulare.
 - Aplicația Node (formularul): cPanel → Setup Node.js App → logurile aplicației.
+
+## 8. Preview pe GitHub Pages
+
+Clientul poate vedea o versiune de probă a site-ului la **https://adry999.github.io/EnglishMinds_web/**. Nu înlocuiește publicarea de la §1 și nu atinge serverul real.
+
+- Se reconstruiește singură după fiecare rulare **CI** reușită pe `main` (workflow-ul **Pages**). Se poate porni și manual: GitHub → Actions → **Pages** → Run workflow.
+- Are `noindex` și `robots.txt` care interzice tot, deci Google nu o indexează. Canonical-urile și sitemap-ul arată spre adresa de preview.
+- Formularul de contact este dezactivat: la trimitere apare mesajul „Aceasta este o versiune demo a site-ului. Trimiterea formularului este dezactivată.”, fără apel către server.
+- Se construiește cu `SITE_ENV=preview`, `SITE_BASE=/EnglishMinds_web` și `SITE_URL=https://adry999.github.io`. Cât timp aceste variabile lipsesc (producție, staging, dezvoltare locală), site-ul rămâne exact ca până acum.
+- Configurare unică: Settings → Pages → **Source** = **GitHub Actions**. Fără ea, workflow-ul eșuează la pasul de publicare.
+- Dacă repository-ul sau contul GitHub își schimbă numele, actualizează `SITE_BASE` și `SITE_URL` în `.github/workflows/pages.yml`.
