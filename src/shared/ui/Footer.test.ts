@@ -21,6 +21,25 @@ describe('Footer', () => {
     expect(html).toContain('href="https://www.instagram.com/englishminds_academy/"');
   });
 
+  it('opens Instagram in a new tab, announces it and keeps the opener away', async () => {
+    const html = await render();
+    const social = html.match(/<a class="site-footer__social"([^>]*)>([\s\S]*?)<\/a>/);
+    expect(social?.[1]).toContain('href="https://www.instagram.com/englishminds_academy/"');
+    expect(social?.[1]).toContain('target="_blank"');
+    expect(social?.[1]).toContain('rel="noopener noreferrer"');
+    expect(social?.[2]).toContain('<svg');
+    expect(social?.[2]).toContain('aria-hidden="true"');
+    expect(social?.[2]).toContain('(se deschide într-un tab nou)');
+  });
+
+  it('links every public section and the demo lesson', async () => {
+    const html = await render();
+    const pages = html.match(/<nav class="site-footer__col"[\s\S]*?<\/nav>/)?.[0] ?? '';
+    for (const href of ['/grupe/', '/metoda-cambridge/', '/test-de-nivel/', '/tabere/', '/blog/', '/lectie-demo/']) {
+      expect(pages).toContain(`href="${href}"`);
+    }
+  });
+
   it('links the legal pages', async () => {
     const html = await render();
     for (const href of ['/confidentialitate/', '/cookies/', '/termeni/']) {

@@ -3,6 +3,7 @@ import { site } from '@shared/content/site';
 import { withBase } from '@shared/lib/with-base';
 import Button from './Button.astro';
 import Logo from './Logo.astro';
+import { NAV } from './navigation';
 import WhatsAppButton from './WhatsAppButton.astro';
 import './Footer.css';
 
@@ -12,6 +13,7 @@ interface Props {
 
 const { showCta = true } = Astro.props;
 const { contact } = site;
+const PAGES = [...NAV.filter((item) => item.key !== 'acasa'), { label: 'Lecție demo gratuită', href: '/lectie-demo/' }];
 const LEGAL = [
   { label: 'Confidențialitate', href: '/confidentialitate/' },
   { label: 'Cookies', href: '/cookies/' },
@@ -30,17 +32,50 @@ const year = new Date().getFullYear();
         </div>
       </div>
     )}
-    <div class="site-footer__meta">
-      <Logo />
-      <address>{`${contact.street}, ${contact.city}`}</address>
-      <a href={contact.instagramUrl}>{contact.instagramHandle}</a>
+    <div class="site-footer__columns">
+      <div class="site-footer__brand">
+        <Logo />
+        <p class="site-footer__tagline">Cursuri de engleză pentru copii de 5–14 ani, după metoda Cambridge, în {contact.city}.</p>
+        <a class="site-footer__social" href={contact.instagramUrl} target="_blank" rel="noopener noreferrer">
+          <svg class="site-footer__social-icon" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+            <rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2" />
+            <circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="2" />
+            <circle cx="17.4" cy="6.6" r="1.3" fill="currentColor" />
+          </svg>
+          <span>Urmărește-ne pe Instagram</span>
+          <span class="visually-hidden">(se deschide într-un tab nou)</span>
+        </a>
+      </div>
+      <nav class="site-footer__col" aria-labelledby="footer-pages">
+        <p class="site-footer__heading" id="footer-pages">Pagini</p>
+        <ul>
+          {PAGES.map((item) => <li><a href={withBase(item.href)}>{item.label}</a></li>)}
+        </ul>
+      </nav>
+      <div class="site-footer__col">
+        <p class="site-footer__heading">Contact</p>
+        <address>
+          <ul>
+            <li><a href={`tel:${contact.phoneE164}`}>{contact.phoneDisplay}</a></li>
+            <li><a href={contact.whatsappUrl} target="_blank" rel="noopener noreferrer">WhatsApp<span class="visually-hidden"> (se deschide într-un tab nou)</span></a></li>
+            <li><a href={contact.instagramUrl} target="_blank" rel="noopener noreferrer">{contact.instagramHandle}<span class="visually-hidden"> pe Instagram (se deschide într-un tab nou)</span></a></li>
+            <li>
+              {`${contact.street}, ${contact.city}`}
+              <br />
+              <a class="site-footer__map" href={contact.mapsUrl} target="_blank" rel="noopener noreferrer">Vezi pe hartă →<span class="visually-hidden"> (se deschide într-un tab nou)</span></a>
+            </li>
+          </ul>
+        </address>
+      </div>
+    </div>
+    <div class="site-footer__bottom">
+      <p class="site-footer__copy">© {year} {site.name}</p>
       <nav class="site-footer__legal" aria-label="Informații legale">
         <ul>
           {LEGAL.map((item) => <li><a href={withBase(item.href)}>{item.label}</a></li>)}
           <li><button type="button" class="site-footer__cookie-settings" data-cc="show-preferencesModal">Setări cookies</button></li>
         </ul>
       </nav>
-      <p class="site-footer__copy">© {year} {site.name}</p>
     </div>
   </div>
 </footer>
