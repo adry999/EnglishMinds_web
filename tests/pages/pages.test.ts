@@ -22,10 +22,10 @@ describe('built pages', () => {
     expect(html).toContain('id="continut"');
   });
 
-  it.each(PAGES)('%s preloads only the Nunito 900 and 700 faces and still declares the other weights', (page) => {
+  it.each(PAGES)('%s preloads the first-paint faces only and still declares the other weights', (page) => {
     const html = read(page);
-    // 900 and 700, each in latin and latin-ext; the remaining faces load on demand through @font-face.
-    expect(html.match(/<link rel="preload"[^>]*as="font"/g)).toHaveLength(4);
+    // Nunito 900, 700 and 600 plus Barlow 700, each in latin and latin-ext; Nunito 800 loads on demand through @font-face.
+    expect(html.match(/<link rel="preload"[^>]*as="font"/g)).toHaveLength(8);
     const declared = new Set([...html.matchAll(/@font-face\{[^}]*font-weight:(\d+)/g)].map((match) => match[1]));
     for (const weight of ['600', '700', '800', '900']) expect(declared).toContain(weight);
   });
