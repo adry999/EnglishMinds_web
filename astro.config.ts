@@ -6,7 +6,8 @@ export default defineConfig({
   site: site.url,
   output: 'static',
   trailingSlash: 'always',
-  build: { format: 'directory' },
+  // Inline all CSS: a separate stylesheet is a render-blocking request that delays the LCP text on mobile.
+  build: { format: 'directory', inlineStylesheets: 'always' },
   vite: {
     server: {
       proxy: { '/api': 'http://localhost:3000' },
