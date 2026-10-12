@@ -122,7 +122,8 @@ test('rate limited (429): alert with contact links, popup never reaches WhatsApp
   });
   await f.submit.click();
   const alert = page.getByRole('alert').filter({ hasText: 'Ai trimis deja mai multe cereri' });
-  await expect(alert).toBeVisible();
+  // The client waits 3.2 s before posting, so the default 5 s is too tight.
+  await expect(alert).toBeVisible({ timeout: 10_000 });
   await expect(page.getByRole('link', { name: 'Scrie pe WhatsApp' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Sună-ne' }).first()).toBeVisible();
   expect(closed).toHaveLength(1);
@@ -142,6 +143,6 @@ test('/lectie-demo/?grupa=movers preselects the age group and sends source landi
   const popupPromise = page.waitForEvent('popup');
   await page.locator('lead-form form').getByRole('button', { name: 'Rezervă lecția gratuită' }).click();
   await popupPromise;
-  await expect(page.getByText(`Mulțumim, ${PARENT}!`)).toBeVisible();
+  await expect(page.getByText(`Mulțumim, ${PARENT}!`)).toBeVisible({ timeout: 10_000 });
   expect(api.requests[0]).toMatchObject({ source: 'landing', childAgeGroup: '9–10 ani' });
 });

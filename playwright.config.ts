@@ -7,7 +7,7 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [['list'], ['html', { open: 'never' }]] : 'list',
   use: {
-    baseURL: 'http://localhost:4321',
+    baseURL: 'http://localhost:4399',
     trace: 'retain-on-failure',
   },
   projects: [
@@ -16,8 +16,8 @@ export default defineConfig({
   ],
   // The tests expect a built dist/ (run `npm run build` first).
   webServer: {
-    command: 'npx astro preview --port 4321',
-    url: 'http://localhost:4321/',
+    command: 'npx astro preview --port 4399',
+    url: 'http://localhost:4399/',
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,
   },

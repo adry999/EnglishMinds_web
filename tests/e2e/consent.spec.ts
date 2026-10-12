@@ -86,6 +86,7 @@ test('footer settings: reopens preferences and refuse-all reloads without new ta
   await page.getByRole('button', { name: 'Setări cookies' }).click();
   const refuseAll = main(page).getByRole('button', { name: 'Refuz toate' });
   await expect(refuseAll).toBeVisible();
+  await expect.poll(() => requested.some((url) => url.includes(FBEVENTS))).toBe(true);
   const before = requested.length;
   const reloaded = page.waitForEvent('load');
   await refuseAll.click();

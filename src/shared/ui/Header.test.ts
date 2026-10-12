@@ -30,6 +30,8 @@ describe('Header', () => {
   });
 
   it('gives the logo link an accessible name', async () => {
-    expect(await render()).toMatch(/aria-label="English Minds Academy"[\s\S]*Acasă/);
+    const html = await render();
+    expect(html).toMatch(/<a class="logo"(?![^>]*aria-label)[^>]*>[\s\S]*?<span class="visually-hidden">Acasă<\/span>\s*<\/a>/);
+    expect(html).toContain('role="img" aria-label="English Minds Academy"');
   });
 });

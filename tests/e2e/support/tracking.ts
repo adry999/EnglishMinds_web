@@ -31,7 +31,7 @@ export async function useTestTracking(page: Page): Promise<string[]> {
     await route.fulfill({ status: 200, contentType: 'application/javascript', body: '' });
   });
   await page.route(
-    (url) => url.origin === 'http://localhost:4321' && (url.pathname.endsWith('/') || url.pathname.endsWith('.html')),
+    (url) => url.origin === 'http://localhost:4399' && (url.pathname.endsWith('/') || url.pathname.endsWith('.html')),
     async (route) => {
       const response = await route.fetch();
       const html = (await response.text()).replace(
