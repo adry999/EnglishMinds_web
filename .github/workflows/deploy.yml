@@ -71,6 +71,7 @@ jobs:
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
           DEPLOY_WEB_ROOT: ${{ vars.DEPLOY_WEB_ROOT }}
           DEPLOY_APP_ROOT: ${{ vars.DEPLOY_APP_ROOT }}
+          # Set DEPLOY_HTPASSWD_FILE only as a variable of the staging environment, never at repository level, or production gets password-protected too.
           DEPLOY_HTPASSWD_FILE: ${{ vars.DEPLOY_HTPASSWD_FILE }}
           DEPLOY_KEY_FILE: /home/runner/.ssh/deploy_key
           DEPLOY_KNOWN_HOSTS_FILE: /home/runner/.ssh/known_hosts

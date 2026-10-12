@@ -9,12 +9,15 @@ if [[ "${1:-}" == "--dry-run" ]]; then DRY_RUN=true; fi
 : "${DEPLOY_HOST:?missing}" "${DEPLOY_USER:?missing}" "${DEPLOY_WEB_ROOT:?missing}" "${DEPLOY_APP_ROOT:?missing}"
 DEPLOY_PORT="${DEPLOY_PORT:-22}"
 
-# mirror --delete wipes whatever is not in dist/, so the roots must be plain absolute paths that cannot overlap.
-BAD_CHARS=$'[[:space:];\'"`$]'
+# mirror --delete wipes whatever is not in dist/, so the roots must be plain, normalised absolute paths that cannot overlap.
 check_path() {
   local name="$1" value="$2" segments
-  if [[ "$value" != /* || "$value" == *..* || "$value" =~ $BAD_CHARS ]]; then
-    echo "deploy: $name must be an absolute path without '..', spaces, quotes, ';' or '\$' (got: $value)" >&2
+  if [[ ! "$value" =~ ^/[A-Za-z0-9._/-]+$ ]]; then
+    echo "deploy: $name may only contain letters, digits, '.', '_', '-' and '/', and must start with '/' (got: $value)" >&2
+    exit 1
+  fi
+  if [[ "$value" == *//* || "$value" == */ || "$value" =~ (^|/)\.\.?(/|$) ]]; then
+    echo "deploy: $name must not have a trailing '/', empty segments or '.' / '..' segments (got: $value)" >&2
     exit 1
   fi
   segments=$(awk -F/ '{ n = 0; for (i = 1; i <= NF; i++) if ($i != "") n++; print n }' <<<"$value")
@@ -25,8 +28,8 @@ check_path() {
 }
 check_path DEPLOY_WEB_ROOT "$DEPLOY_WEB_ROOT"
 check_path DEPLOY_APP_ROOT "$DEPLOY_APP_ROOT"
-WEB_ROOT="${DEPLOY_WEB_ROOT%/}"
-APP_ROOT="${DEPLOY_APP_ROOT%/}"
+WEB_ROOT="$DEPLOY_WEB_ROOT"
+APP_ROOT="$DEPLOY_APP_ROOT"
 if [[ "$WEB_ROOT" == "$APP_ROOT" || "$APP_ROOT/" == "$WEB_ROOT/"* ]]; then
   echo "deploy: DEPLOY_APP_ROOT must not be DEPLOY_WEB_ROOT or inside it, mirror --delete would wipe the app" >&2
   exit 1
@@ -64,7 +67,7 @@ fi
 
 # Passenger restarts the app when the date of tmp/restart.txt changes; uploading an empty file does that.
 : > dist-server/restart.txt
-if [[ -n "$HTPASSWD_FILE" ]]; then
+if [[ -n "$HTPASSWD_FILE" ]] && ! grep -q AuthUserFile dist/.htaccess; then
   # mirror overwrites the docroot .htaccess, so the staging password is injected here instead of relying on cPanel Directory Privacy.
   printf '\nAuthType Basic\nAuthName "Staging"\nAuthUserFile %s\nRequire valid-user\n' "$HTPASSWD_FILE" >> dist/.htaccess
 fi
