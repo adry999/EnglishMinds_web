@@ -16,9 +16,13 @@ describe('renderSitemap', () => {
 
 describe('renderRobots', () => {
   it('allows everything and points to the sitemap', () => {
-    expect(renderRobots('https://englishminds.ro')).toBe(
+    expect(renderRobots('https://englishminds.ro', true)).toBe(
       'User-agent: *\nAllow: /\n\nSitemap: https://englishminds.ro/sitemap.xml\n',
     );
+  });
+
+  it('blocks every crawler on a non-indexable build and omits the sitemap', () => {
+    expect(renderRobots('https://englishminds.ro', false)).toBe('User-agent: *\nDisallow: /\n');
   });
 });
 

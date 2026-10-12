@@ -177,4 +177,15 @@ describe('built pages', () => {
       expect(block?.image).toMatch(/^https:\/\/englishminds\.ro\/_astro\/.+\.jpg$/);
     }
   });
+
+  it('ships the Apache config with the 404 page, HTTPS redirect and security headers, and never rewrites /api', () => {
+    const htaccess = read('.htaccess');
+    expect(htaccess).toContain('ErrorDocument 404 /404.html');
+    expect(htaccess).toContain('Options -Indexes');
+    expect(htaccess).toMatch(/RewriteRule \^ https:\/\/%\{HTTP_HOST\}%\{REQUEST_URI\} \[L,R=301\]/);
+    for (const header of ['Strict-Transport-Security', 'X-Content-Type-Options', 'Referrer-Policy', 'X-Frame-Options']) {
+      expect(htaccess).toContain(header);
+    }
+    expect(htaccess).not.toMatch(/RewriteRule\s+\^?\/?api/);
+  });
 });

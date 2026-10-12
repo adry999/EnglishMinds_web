@@ -69,3 +69,4 @@ Design complet: `docs/superpowers/specs/2026-10-09-site-englishminds-design.md`.
 | 2026-10-09 | Plăți online în pauză | Etapă viitoare |
 | 2026-10-11 | Strat `src/sections/` pentru secțiunile unei pagini | Pagini subțiri fără a umfla `shared/ui` cu piese folosite o singură dată |
 | 2026-10-12 | Consent Mode „basic”: gtag.js și fbevents.js se încarcă doar după acord | Spec: taguri doar cu acord; `default denied` inline, primul în `<head>` |
+| 2026-10-12 | Publicare prin GitHub Actions + SFTP (lftp) după CI verde; staging pe branch-ul `staging`, noindex | Spec §10; fără acces manual pe server la fiecare modificare |

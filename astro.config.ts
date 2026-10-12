@@ -50,6 +50,7 @@ export default defineConfig({
     },
   ],
   vite: {
+    define: { 'import.meta.env.SITE_ENV': JSON.stringify(process.env.SITE_ENV ?? '') },
     server: {
       proxy: { '/api': 'http://localhost:3000' },
     },

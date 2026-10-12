@@ -31,6 +31,10 @@ Cu `TRUST_PROXY=true`, serverul ia ultima (cea mai din dreapta) adresă din `X-F
 
 ## 3. Publicare
 
+Publicarea este automată, prin GitHub Actions după un CI verde: vezi `publicare.md`. Pașii de mai jos sunt doar rezerva, dacă publicarea automată nu funcționează.
+
+### Publicare manuală (rezervă)
+
 1. `npm run build:server` creează două pachete în `dist-server/`: `app.cjs` (serverul) și `purge-expired-leads.cjs` (jobul de curățare).
 2. Urcă `app.cjs` în folderul aplicației Node (punct de pornire: `app.cjs`) și `purge-expired-leads.cjs` în același folder.
 3. Repornește aplicația prin `tmp/restart.txt` (`touch tmp/restart.txt` sau din interfața cPanel).
