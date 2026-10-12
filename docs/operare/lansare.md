@@ -64,7 +64,7 @@ Acestea nu se rezolvă în cod. Fără ele site-ul poate fi corect, dar activita
 
 ## 8. După lansare
 
-- [ ] **Search Console:** adaugă proprietatea și trimite `https://englishminds.ro/sitemap.xml`.
+- [ ] **Search Console:** adaugă proprietatea și trimite `https://englishminds.ro/sitemap.xml`. Pașii compleți (Business Profile, Bing, cele 8 pagini principale) sunt în [`seo.md`](seo.md).
 - [ ] **GA4:** `generate_lead` marcat ca eveniment cheie.
 - [ ] **Google Ads:** conversia „Lead”, cu eticheta din `site.ts`.
 - [ ] **Meta:** evenimentul `Lead` vizibil în Events Manager.

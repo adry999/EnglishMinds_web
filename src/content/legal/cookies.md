@@ -31,6 +31,8 @@ Statisticile și reclamele vin de la Google și Meta. Ele își stabilesc propri
 - [Politica de confidențialitate Google](https://policies.google.com/privacy)
 - [Politica de cookies Meta](https://www.facebook.com/privacy/policies/cookies/)
 
+Tagurile pot fi administrate printr-un container Google Tag Manager. În acest caz se aplică aceleași cookie-uri Google și Meta din tabelul de mai jos, doar cu acordul tău, iar site-ul nu setează cookie-uri proprii în plus.
+
 Mai multe despre datele tale personale găsești în [Politica de confidențialitate](/confidentialitate/).
 
 ## Tabelul cookie-urilor

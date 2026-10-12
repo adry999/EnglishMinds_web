@@ -5,12 +5,30 @@ import GrupeHero from '@sections/grupe/GrupeHero.astro';
 import LevelSection from '@sections/grupe/LevelSection.astro';
 import TestBand from '@sections/grupe/TestBand.astro';
 import { site } from '@shared/content/site';
+import { ageRangeOf, courseJsonLd } from '@shared/seo/json-ld';
+import { canonicalUrl, siteRootUrl } from '@shared/seo/page-meta';
 import Footer from '@shared/ui/Footer.astro';
 import Header from '@shared/ui/Header.astro';
+
+const root = siteRootUrl(Astro.site, site.url, import.meta.env.BASE_URL);
+const pageUrl = canonicalUrl(Astro.url.pathname, root);
+const courses = site.levels.map((level) =>
+  courseJsonLd({
+    name: `Engleză pentru copii, nivel ${level.name}`,
+    description: level.description,
+    url: `${pageUrl}#${level.slug}`,
+    organizationUrl: root,
+    organizationName: site.name,
+    educationalLevel: level.name,
+    typicalAgeRange: ageRangeOf(level.ageGroup),
+  }),
+);
 ---
 <BaseLayout
-  title="Grupe"
+  title="Grupe de engleză pentru copii, 5–14 ani"
   description="Cinci grupe de engleză pe vârste, de la 5 la 14 ani: Starters, Pre A1, Movers, Flyers și A2 Key. Ce învață copilul la fiecare nivel."
+  crumbs={[{ name: 'Grupe', path: '/grupe/' }]}
+  jsonLd={courses}
 >
   <Header active="grupe" />
   <main id="continut">

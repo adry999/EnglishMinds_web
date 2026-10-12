@@ -213,6 +213,71 @@ describe('built pages', () => {
     }
   });
 
+  const SEO_PAGES = ['index.html', 'grupe/index.html', 'metoda-cambridge/index.html', 'test-de-nivel/index.html', 'tabere/index.html', 'blog/index.html', 'lectie-demo/index.html'];
+
+  it('main pages have a title up to 65 characters and a unique 120-160 character description', () => {
+    const descriptions = new Set<string>();
+    for (const page of SEO_PAGES) {
+      const html = read(page);
+      const title = html.match(/<title>([^<]+)<\/title>/)?.[1] ?? '';
+      const description = html.match(/<meta name="description" content="([^"]+)"/)?.[1] ?? '';
+      expect(title.length, `${page} title: ${title}`).toBeLessThanOrEqual(65);
+      expect(title).toContain('English Minds Academy');
+      expect(description.length, `${page} description: ${description}`).toBeGreaterThanOrEqual(120);
+      expect(description.length, `${page} description: ${description}`).toBeLessThanOrEqual(160);
+      descriptions.add(description);
+    }
+    expect(descriptions.size).toBe(SEO_PAGES.length);
+  });
+
+  it('every inner page has a BreadcrumbList starting at Acasa with absolute urls', () => {
+    for (const page of SEO_PAGES.filter((p) => p !== 'index.html').concat(['cookies/index.html', 'termeni/index.html', 'confidentialitate/index.html'])) {
+      const crumbs = jsonLdBlocks(read(page)).find((b) => (b as { '@type': string })['@type'] === 'BreadcrumbList') as
+        | { itemListElement: { position: number; name: string; item: string }[] }
+        | undefined;
+      expect(crumbs, page).toBeDefined();
+      expect(crumbs?.itemListElement[0]).toEqual({ '@type': 'ListItem', position: 1, name: 'Acasă', item: 'https://englishminds.ro/' });
+      for (const entry of crumbs?.itemListElement ?? []) expect(entry.item).toMatch(/^https:\/\/englishminds\.ro\//);
+    }
+    expect(jsonLdBlocks(read('index.html')).some((b) => (b as { '@type': string })['@type'] === 'BreadcrumbList')).toBe(false);
+  });
+
+  it('the groups page describes the five levels as Courses with no offers', () => {
+    const courses = jsonLdBlocks(read('grupe/index.html')).filter((b) => (b as { '@type': string })['@type'] === 'Course') as {
+      url: string;
+      typicalAgeRange: string;
+      offers?: unknown;
+    }[];
+    expect(courses.map((c) => c.url.split('#')[1])).toEqual(['starters', 'pre-a1', 'movers', 'flyers', 'a2-key']);
+    expect(courses.map((c) => c.typicalAgeRange)).toEqual(['5-6', '7-8', '9-10', '11-12', '13-14']);
+    for (const course of courses) expect(course.offers).toBeUndefined();
+  });
+
+  it.each(PAGES)('%s ships no TODO placeholder in its structured data', (page) => {
+    for (const block of jsonLdBlocks(read(page))) expect(JSON.stringify(block)).not.toContain('TODO');
+  });
+
+  it('home ships the organization with a logo and no empty FAQ', () => {
+    const org = jsonLdBlocks(read('index.html')).find((b) => Array.isArray((b as { '@type': unknown })['@type'])) as { logo: string; areaServed: string };
+    expect(org.logo).toMatch(/^https:\/\/englishminds\.ro\/_astro\/.+\.jpg$/);
+    expect(org.areaServed).toBe('Cluj-Napoca');
+  });
+
+  it.each(PAGES)('%s renders no search engine verification tag while the tokens are empty', (page) => {
+    const html = read(page);
+    expect(html).not.toContain('google-site-verification');
+    expect(html).not.toContain('msvalidate.01');
+  });
+
+  it('blog posts link to the level test and the demo lesson', () => {
+    const posts = readdirSync(join(dist, 'blog')).filter((entry) => statSync(join(dist, 'blog', entry)).isDirectory());
+    for (const slug of posts) {
+      const html = read(`blog/${slug}/index.html`);
+      expect(html).toContain('href="/test-de-nivel/"');
+      expect(html).toContain('href="/lectie-demo/"');
+    }
+  });
+
   it('ships the Apache config with the 404 page, HTTPS redirect and security headers, and never rewrites /api', () => {
     const htaccess = read('.htaccess');
     expect(htaccess).toContain('ErrorDocument 404 /404.html');

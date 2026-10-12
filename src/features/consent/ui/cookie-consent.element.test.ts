@@ -3,7 +3,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type * as CookieConsentApi from 'vanilla-cookieconsent';
 import { CONSENT_CHANGED, createLeadSubmitted, type ConsentChangedDetail } from '@shared/contracts/domain-events';
-import { FBEVENTS_SRC, GTAG_URL } from '../model/tag-plan';
+import { FBEVENTS_SRC, GTAG_URL, GTM_URL } from '../model/tag-plan';
 
 const lib = vi.hoisted(() => ({
   config: null as CookieConsentApi.CookieConsentConfig | null,
@@ -31,9 +31,9 @@ const TRACKING = {
 type TestWindow = Window & { dataLayer: unknown[]; gtag: (...args: unknown[]) => void; fbq?: unknown; _fbq?: unknown };
 const win = window as unknown as TestWindow;
 
-function mount(): HTMLElement {
+function mount(tracking: object = TRACKING): HTMLElement {
   const el = document.createElement('cookie-consent');
-  el.dataset.tracking = JSON.stringify(TRACKING);
+  el.dataset.tracking = JSON.stringify(tracking);
   document.body.append(el);
   return el;
 }
@@ -191,5 +191,48 @@ describe('<cookie-consent>', () => {
     lib.accepted = new Set(['analytics', 'marketing']);
     consent();
     expect(scriptSrcs()).toEqual([]);
+  });
+});
+
+describe('<cookie-consent> in GTM mode', () => {
+  const GTM = { ...TRACKING, gtmContainerId: 'GTM-ABC1234' };
+  const events = () => win.dataLayer.filter((e) => !('length' in (e as object))) as Record<string, unknown>[];
+
+  it('loads nothing before consent', () => {
+    mount(GTM);
+    consent();
+    expect(scriptSrcs()).toEqual([]);
+    expect(events()).toEqual([]);
+  });
+
+  it('loads only GTM after consent and reports it through em_consent', () => {
+    mount(GTM);
+    lib.accepted = new Set(['analytics', 'marketing']);
+    consent();
+    change();
+    expect(scriptSrcs()).toEqual([`${GTM_URL}?id=GTM-ABC1234`]);
+    expect(win.fbq).toBeUndefined();
+    expect(commands().filter((c) => c[0] === 'config')).toEqual([]);
+    expect(events().filter((e) => e.event === 'gtm.js')).toHaveLength(1);
+    expect(events()).toContainEqual({ event: 'em_consent', analytics: true, marketing: true });
+  });
+
+  it('pushes generate_lead with the source only, and no name, phone or email', () => {
+    mount(GTM);
+    lib.accepted = new Set(['marketing']);
+    consent();
+    const detail = { source: 'test', ageGroup: null, name: 'Maria Popescu', phone: '0775630680', email: 'maria@example.ro' };
+    document.body.dispatchEvent(new CustomEvent('lead.submitted', { detail, bubbles: true }));
+    expect(events()).toContainEqual({ event: 'generate_lead', lead_source: 'test' });
+    const sent = JSON.stringify(win.dataLayer);
+    for (const secret of ['Maria', '0775630680', 'maria@example.ro']) expect(sent).not.toContain(secret);
+    expect(commands().filter((c) => c[0] === 'event')).toEqual([]);
+  });
+
+  it('sends no lead after a refusal', () => {
+    mount(GTM);
+    consent();
+    document.body.dispatchEvent(createLeadSubmitted({ source: 'home', ageGroup: null }));
+    expect(win.dataLayer).toEqual([]);
   });
 });

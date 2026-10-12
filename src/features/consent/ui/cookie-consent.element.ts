@@ -45,6 +45,7 @@ export class CookieConsentElement extends HTMLElement {
     };
     const plan = planTags(this.ids, choice, this.applied, new Date());
     const target = window as unknown as TrackingWindow;
+    if (plan.gtmSrc) appendScript(document, plan.gtmSrc);
     if (plan.gtagSrc) appendScript(document, plan.gtagSrc);
     if (plan.loadPixel) {
       ensureFbq(target);

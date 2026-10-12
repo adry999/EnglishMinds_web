@@ -11,5 +11,7 @@ Ghiduri pentru cine administrează site-ul, fără cunoștințe tehnice. Începe
 | [`staging.md`](staging.md) | Lista de verificare pe subdomeniul de staging, înainte de lansare. |
 | [`date-personale.md`](date-personale.md) | Ce date personale se păstrează, cât timp, cum se șterg la cerere. |
 | [`taguri.md`](taguri.md) | Google Analytics, Google Ads, Meta Pixel și consimțământul pentru cookie-uri. |
+| [`gtm.md`](gtm.md) | Google Tag Manager opțional: cum îl pornești și cum configurezi tagurile în el. |
+| [`seo.md`](seo.md) | Search Console, Google Business Profile, backlinkuri, plan de conținut, ce urmărești lunar. |
 | [`registru-prelucrare.md`](registru-prelucrare.md) | Registrul activităților de prelucrare a datelor (GDPR). |
 | [`conturi.md`](conturi.md) | Conturile serviciilor folosite, proprietarii și starea 2FA. |

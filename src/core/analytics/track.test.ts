@@ -23,6 +23,12 @@ describe('sendTagCalls', () => {
     expect(target.fbq).toHaveBeenCalledWith('init', '1');
   });
 
+  it('pushes dataLayer calls as plain objects, creating the array when missing', () => {
+    const target: TrackingWindow = {};
+    sendTagCalls(target, [{ sink: 'dataLayer', args: [{ event: 'x' }] }]);
+    expect(target.dataLayer).toEqual([{ event: 'x' }]);
+  });
+
   it('skips a sink that is missing, e.g. blocked by an ad blocker', () => {
     expect(() => sendTagCalls({}, [{ sink: 'fbq', args: ['track', 'Lead'] }])).not.toThrow();
   });

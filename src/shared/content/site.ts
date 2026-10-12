@@ -227,10 +227,17 @@ export const site = {
     registeredOffice: 'TODO: sediul social',
   },
   tracking: {
+    // Optional. Empty = off. With an ID, only GTM loads (after consent) and the direct IDs below are ignored.
+    gtmContainerId: '',
     ga4MeasurementId: 'TODO: ID GA4 (G-…)',
     metaPixelId: 'TODO: ID Meta Pixel',
     googleAdsId: 'TODO: ID Google Ads (AW-…)',
     googleAdsLeadLabel: 'TODO: eticheta conversiei Lead din Google Ads',
+  },
+  /** Optional search engine verification tokens. Empty = no tag rendered. */
+  seo: {
+    googleSiteVerification: '',
+    bingSiteVerification: '',
   },
   faq,
 } as const;

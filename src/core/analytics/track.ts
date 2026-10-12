@@ -1,4 +1,4 @@
-export type TagSink = 'gtag' | 'fbq';
+export type TagSink = 'gtag' | 'fbq' | 'dataLayer';
 
 export type TagCall = {
   readonly sink: TagSink;
@@ -25,6 +25,12 @@ type FbqStub = TagFunction & {
 /** Runs calls already filtered by consent; a missing sink (ad blocker) is skipped. */
 export function sendTagCalls(target: TrackingWindow, calls: readonly TagCall[]): void {
   for (const call of calls) {
+    if (call.sink === 'dataLayer') {
+      // Plain objects (not `arguments`): these are GTM events and variables, not gtag commands.
+      target.dataLayer = target.dataLayer ?? [];
+      target.dataLayer.push(call.args[0]);
+      continue;
+    }
     const fn = target[call.sink];
     if (typeof fn === 'function') fn(...call.args);
   }
