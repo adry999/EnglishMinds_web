@@ -13,6 +13,7 @@ export type BlogPostingInput = {
   readonly url: string;
   readonly image: string;
   readonly datePublished: Date;
+  readonly dateModified?: Date;
   readonly organizationUrl: string;
   readonly organizationName: string;
 };
@@ -65,6 +66,7 @@ export function blogPostingJsonLd(input: BlogPostingInput): object {
     mainEntityOfPage: input.url,
     image: input.image,
     datePublished: input.datePublished.toISOString(),
+    dateModified: (input.dateModified ?? input.datePublished).toISOString(),
     inLanguage: 'ro-RO',
     author: { '@type': 'Organization', '@id': org, name: input.organizationName },
     publisher: { '@id': org, name: input.organizationName },

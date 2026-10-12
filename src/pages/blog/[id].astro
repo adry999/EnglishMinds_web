@@ -35,6 +35,7 @@ const cover = await getImage({ src: post.data.cover, ...ogImageSize(post.data.co
       url: canonicalUrl(Astro.url.pathname, site.url),
       image: new URL(cover.src, site.url).href,
       datePublished: post.data.publishedAt,
+      dateModified: post.data.updatedAt,
       organizationUrl: site.url,
       organizationName: site.name,
     }),
