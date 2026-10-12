@@ -26,11 +26,12 @@
 
 .grupe-hero__nav {
   margin-top: 24px;
-  overflow-x: auto;
 }
 
+/* The five groups wrap onto a second row on phones instead of scrolling sideways. */
 .grupe-hero__nav ul {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   margin: 0;
   padding: 8px var(--gutter) 10px;
