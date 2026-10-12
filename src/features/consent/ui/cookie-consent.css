@@ -1,26 +1,28 @@
 /* Doubled id: the library stylesheet loads after ours and would otherwise reset the font and colours. */
 #cc-main#cc-main {
   --cc-font-family: var(--font-body);
-  --cc-bg: var(--color-white);
+  --cc-bg: var(--color-cream);
   --cc-primary-color: var(--color-navy);
   --cc-secondary-color: var(--color-navy);
   --cc-link-color: var(--color-text-accent);
   --cc-btn-border-radius: var(--radius-pill);
   --cc-modal-border-radius: var(--radius-card);
+  --cc-modal-margin: 16px;
   --cc-btn-primary-bg: var(--color-navy);
   --cc-btn-primary-color: var(--color-white);
   --cc-btn-primary-border-color: var(--color-navy);
   --cc-btn-primary-hover-bg: var(--color-navy-dark);
   --cc-btn-primary-hover-color: var(--color-white);
   --cc-btn-primary-hover-border-color: var(--color-navy-dark);
-  --cc-btn-secondary-bg: var(--color-cream);
+  --cc-btn-secondary-bg: transparent;
   --cc-btn-secondary-color: var(--color-navy);
-  --cc-btn-secondary-border-color: var(--color-cream-border);
+  --cc-btn-secondary-border-color: var(--color-navy);
   --cc-btn-secondary-hover-bg: var(--color-peach);
   --cc-btn-secondary-hover-color: var(--color-navy);
-  --cc-btn-secondary-hover-border-color: var(--color-cream-border);
+  --cc-btn-secondary-hover-border-color: var(--color-navy);
+  --cc-separator-border-color: transparent;
   --cc-toggle-on-bg: var(--color-navy);
-  --cc-cookie-category-block-bg: var(--color-cream);
+  --cc-cookie-category-block-bg: var(--color-white);
   --cc-cookie-category-block-border: var(--color-cream-border);
   --cc-footer-bg: var(--color-cream);
   --cc-footer-color: var(--color-navy);
@@ -32,43 +34,100 @@
   outline-offset: 2px;
 }
 
-/* Phones: the bar would cover half the screen; tighter text and Accept/Refuz side by side (same weight) keep it to about a third. */
+/* The consent card: a chunky navy edge and offset shadow, like the buttons and cards on the rest of the site. */
+#cc-main#cc-main .cm {
+  max-width: 44rem;
+  border: 3px solid var(--color-navy);
+  box-shadow: 0 6px 0 var(--color-navy), 0 18px 40px rgb(20 34 74 / 0.25);
+}
+
+#cc-main#cc-main .cm__title {
+  font-family: var(--font-label);
+  font-size: 1.375rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--color-text-accent);
+}
+
+#cc-main#cc-main .cm__desc {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--color-navy);
+}
+
+#cc-main#cc-main .cm__btns,
+#cc-main#cc-main .cm__footer {
+  border-top: 0;
+}
+
+#cc-main#cc-main .cm__btns {
+  padding-top: 4px;
+}
+
+#cc-main#cc-main .cm__btn {
+  min-height: 46px;
+  border-width: 2px;
+  font-weight: 900;
+  font-size: 1rem;
+}
+
+#cc-main#cc-main .cm__btn:not(.cm__btn--secondary) {
+  box-shadow: 0 4px 0 rgb(0 0 0 / 0.25);
+}
+
+#cc-main#cc-main .cm__footer {
+  padding-block: 0 14px;
+}
+
+#cc-main#cc-main .cm__links {
+  gap: 4px 16px;
+  font-size: 0.8125rem;
+}
+
+/* Phones: a compact card with Accept/Refuz side by side (same weight) and "Aleg eu" below. */
 @media (max-width: 640px) {
-  #cc-main#cc-main .cm--bar .cm__texts {
-    padding-block: 12px 4px;
+  #cc-main#cc-main .cm__texts {
+    padding-block: 14px 2px;
   }
 
-  #cc-main#cc-main .cm--bar .cm__title {
-    font-size: 0.9375rem;
+  #cc-main#cc-main .cm__title {
+    font-size: 1.1875rem;
   }
 
-  #cc-main#cc-main .cm--bar .cm__desc {
+  #cc-main#cc-main .cm__desc {
     font-size: 0.8125rem;
     line-height: 1.4;
   }
 
-  #cc-main#cc-main .cm--bar .cm__btns {
-    padding-block: 8px 12px;
+  #cc-main#cc-main .cm__btns {
     gap: 8px;
+    padding-bottom: 10px;
   }
 
   /* The library forces a column on phones with !important; only !important can put the two choices side by side. */
-  #cc-main#cc-main .cm.cm--bar.cm--inline .cm__btn-group:first-child {
+  #cc-main#cc-main .cm__btn-group:first-child {
     flex-direction: row !important;
     gap: 8px;
   }
 
-  #cc-main#cc-main .cm.cm--bar.cm--inline .cm__btn-group:first-child .cm__btn {
+  #cc-main#cc-main .cm__btn-group:first-child .cm__btn {
     flex: 1 1 0 !important;
     margin: 0 !important;
   }
 
-  #cc-main#cc-main .cm--bar .cm__btn {
-    min-height: 44px;
-    margin: 0;
+  #cc-main#cc-main .cm__btn-group + .cm__btn-group {
+    margin: 0 !important;
   }
 
-  #cc-main#cc-main .cm--bar .cm__footer {
-    padding-block: 6px;
+  #cc-main#cc-main .cm__btn {
+    min-height: 44px;
+    padding-inline: 12px;
+    font-size: 0.9375rem;
+    white-space: nowrap;
+  }
+
+  #cc-main#cc-main .cm__footer {
+    padding-bottom: 10px;
   }
 }

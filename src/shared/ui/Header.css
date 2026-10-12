@@ -5,28 +5,27 @@
 
 .site-header__inner {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto 1fr auto auto;
   align-items: center;
-  gap: 12px 24px;
+  gap: 12px;
   max-width: var(--container);
   margin-inline: auto;
   padding: 16px var(--gutter);
 }
 
+/* Without JavaScript the links wrap under the logo; site-menu.element.ts collapses them behind the toggle. */
 .site-header__nav {
   grid-row: 2;
   grid-column: 1 / -1;
-  margin-inline: -8px;
-  overflow-x: auto;
 }
 
 .site-header__nav ul {
   display: flex;
-  gap: 20px;
+  flex-wrap: wrap;
+  gap: 8px 20px;
   margin: 0;
-  padding: 8px 8px 10px;
+  padding: 0;
   list-style: none;
-  white-space: nowrap;
 }
 
 .site-header__nav a {
@@ -51,14 +50,143 @@
   color: var(--color-white);
   font-weight: 900;
   text-decoration: none;
+  white-space: nowrap;
+}
+
+.site-header__toggle {
+  grid-row: 1;
+  grid-column: 4;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border: 3px solid var(--color-white);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-white);
+  cursor: pointer;
+}
+
+.site-header__toggle[hidden] {
+  display: none;
+}
+
+.site-header__toggle:focus-visible {
+  outline: 3px solid var(--color-white);
+  outline-offset: 2px;
+}
+
+/* Three bars that turn into a cross while the menu is open. */
+.site-header__bars,
+.site-header__bars::before,
+.site-header__bars::after {
+  display: block;
+  width: 20px;
+  height: 3px;
+  border-radius: 2px;
+  background: currentColor;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.site-header__bars {
+  position: relative;
+}
+
+.site-header__bars::before,
+.site-header__bars::after {
+  position: absolute;
+  left: 0;
+  content: '';
+}
+
+.site-header__bars::before {
+  top: -7px;
+}
+
+.site-header__bars::after {
+  top: 7px;
+}
+
+[data-open] .site-header__bars {
+  background-color: transparent;
+}
+
+[data-open] .site-header__bars::before {
+  transform: translateY(7px) rotate(45deg);
+}
+
+[data-open] .site-header__bars::after {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-header__bars,
+  .site-header__bars::before,
+  .site-header__bars::after {
+    transition: none;
+  }
+}
+
+/* Narrow screens with JavaScript: the links live in a panel under the header row. */
+@media (max-width: 1099.98px) {
+  .site-header__inner[data-enhanced] .site-header__nav {
+    display: none;
+  }
+
+  .site-header__inner[data-open] .site-header__nav {
+    display: block;
+    padding-top: 4px;
+  }
+
+  .site-header__inner[data-open] .site-header__nav ul {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .site-header__inner[data-open] .site-header__nav li + li {
+    border-top: 1px solid rgb(255 255 255 / 0.3);
+  }
+
+  .site-header__inner[data-open] .site-header__nav a {
+    display: block;
+    padding: 14px 0;
+    border-bottom: 0;
+  }
+
+  .site-header__inner[data-open] .site-header__nav a[aria-current='page'] {
+    color: var(--color-sun);
+  }
+}
+
+@media (max-width: 419.98px) {
+  .site-header__inner {
+    gap: 8px;
+  }
+
+  .site-header__cta {
+    padding: 10px 14px;
+    font-size: 0.9375rem;
+  }
 }
 
 @media (min-width: 1100px) {
+  .site-header__inner {
+    gap: 12px 24px;
+  }
+
   .site-header__nav {
     grid-row: 1;
     grid-column: 2;
     justify-self: center;
-    margin-inline: 0;
-    overflow-x: visible;
+  }
+
+  .site-header__nav ul {
+    flex-wrap: nowrap;
+    white-space: nowrap;
+  }
+
+  .site-header__toggle {
+    display: none;
   }
 }
