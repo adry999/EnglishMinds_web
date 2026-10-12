@@ -1,6 +1,6 @@
 import * as CookieConsent from 'vanilla-cookieconsent';
 import { appendScript, ensureFbq, sendTagCalls, type TrackingWindow } from '@core/analytics/track';
-import { LEAD_SUBMITTED, type LeadSubmittedDetail } from '@shared/contracts/domain-events';
+import { CONSENT_DATASET_KEY, LEAD_SUBMITTED, createConsentChanged, type LeadSubmittedDetail } from '@shared/contracts/domain-events';
 import { NO_CONSENT, type ConsentChoice } from '../model/consent-signals';
 import { leadConversionCalls } from '../model/lead-conversion';
 import { FBEVENTS_SRC, planTags } from '../model/tag-plan';
@@ -52,7 +52,13 @@ export class CookieConsentElement extends HTMLElement {
     }
     sendTagCalls(target, plan.calls);
     this.applied = choice;
+    this.publish(choice);
   };
+
+  private publish(choice: ConsentChoice): void {
+    document.documentElement.dataset[CONSENT_DATASET_KEY] = [choice.analytics ? 'analytics' : '', choice.marketing ? 'marketing' : ''].filter(Boolean).join(' ');
+    document.dispatchEvent(createConsentChanged(choice));
+  }
 
   private readonly onLead = (event: Event): void => {
     const { detail } = event as CustomEvent<LeadSubmittedDetail>;

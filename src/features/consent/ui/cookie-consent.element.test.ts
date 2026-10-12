@@ -2,7 +2,7 @@
 // @vitest-environment-options { "settings": { "disableJavaScriptFileLoading": true, "handleDisabledFileLoadingAsSuccess": true } }
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type * as CookieConsentApi from 'vanilla-cookieconsent';
-import { createLeadSubmitted } from '@shared/contracts/domain-events';
+import { CONSENT_CHANGED, createLeadSubmitted, type ConsentChangedDetail } from '@shared/contracts/domain-events';
 import { FBEVENTS_SRC, GTAG_URL } from '../model/tag-plan';
 
 const lib = vi.hoisted(() => ({
@@ -53,6 +53,7 @@ beforeEach(() => {
   win.gtag = (...args: unknown[]) => {
     win.dataLayer.push(args);
   };
+  delete document.documentElement.dataset.consent;
   delete win.fbq;
   delete win._fbq;
 });
@@ -82,6 +83,25 @@ describe('<cookie-consent>', () => {
     consent();
     expect(scriptSrcs()).toEqual([]);
     expect(commands()).toEqual([]);
+  });
+
+  it('publishes the accepted categories for other features, as an attribute and as an event', () => {
+    const seen: ConsentChangedDetail[] = [];
+    document.addEventListener(CONSENT_CHANGED, (event) => seen.push((event as CustomEvent<ConsentChangedDetail>).detail), { once: false });
+    mount();
+    consent();
+    expect(document.documentElement.dataset.consent).toBe('');
+    lib.accepted = new Set(['marketing']);
+    change();
+    expect(document.documentElement.dataset.consent).toBe('marketing');
+    lib.accepted = new Set(['analytics', 'marketing']);
+    change();
+    expect(document.documentElement.dataset.consent).toBe('analytics marketing');
+    expect(seen).toEqual([
+      { analytics: false, marketing: false },
+      { analytics: false, marketing: true },
+      { analytics: true, marketing: true },
+    ]);
   });
 
   it('loads gtag.js and the pixel once on accept all, even if onChange repeats the choice', () => {
