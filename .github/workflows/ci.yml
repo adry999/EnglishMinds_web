@@ -55,6 +55,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: browser-reports
+          include-hidden-files: true
           path: |
             playwright-report/
             test-results/

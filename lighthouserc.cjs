@@ -15,7 +15,7 @@ module.exports = {
         'http://localhost/cookies/',
         'http://localhost/termeni/',
       ],
-      numberOfRuns: 1,
+      numberOfRuns: 3,
     },
     assert: {
       assertions: {
