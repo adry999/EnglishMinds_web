@@ -5,7 +5,10 @@ import type { TrackingIds } from './tracking-ids';
 export const GTAG_URL = 'https://www.googletagmanager.com/gtag/js';
 export const FBEVENTS_SRC = 'https://connect.facebook.net/en_US/fbevents.js';
 
+export const GTM_URL = 'https://www.googletagmanager.com/gtm.js';
+
 export type TagPlan = {
+  readonly gtmSrc: string | null;
   readonly gtagSrc: string | null;
   readonly loadPixel: boolean;
   readonly calls: readonly TagCall[];
@@ -22,7 +25,25 @@ function gtagId(ids: TrackingIds, choice: ConsentChoice): string | null {
 
 const pixelOn = (ids: TrackingIds, choice: ConsentChoice): boolean => Boolean(ids.metaPixel && choice.marketing);
 
+const gtmOn = (ids: TrackingIds, choice: ConsentChoice): boolean => Boolean(ids.gtm && (choice.analytics || choice.marketing));
+
+/** GTM mode: only the container loads, consent reaches it as Consent Mode signals and as an `em_consent` event. */
+function planGtm(ids: TrackingIds, choice: ConsentChoice, previous: ConsentChoice, now: Date): TagPlan {
+  const calls: TagCall[] = [];
+  const before = gtmOn(ids, previous);
+  const loaded = gtmOn(ids, choice);
+  if (!loaded && !before) return { gtmSrc: null, gtagSrc: null, loadPixel: false, calls };
+  calls.push(
+    gtag('consent', 'update', toConsentSignals(choice)),
+    { sink: 'dataLayer', args: [{ event: 'em_consent', analytics: choice.analytics, marketing: choice.marketing }] },
+  );
+  const gtmSrc = loaded && !before ? `${GTM_URL}?id=${ids.gtm}` : null;
+  if (gtmSrc) calls.push({ sink: 'dataLayer', args: [{ 'gtm.start': now.getTime(), event: 'gtm.js' }] });
+  return { gtmSrc, gtagSrc: null, loadPixel: false, calls };
+}
+
 export function planTags(ids: TrackingIds, choice: ConsentChoice, previous: ConsentChoice, now: Date): TagPlan {
+  if (ids.gtm) return planGtm(ids, choice, previous, now);
   const calls: TagCall[] = [];
   const gtagNow = gtagId(ids, choice);
   const gtagBefore = gtagId(ids, previous);
@@ -45,5 +66,5 @@ export function planTags(ids: TrackingIds, choice: ConsentChoice, previous: Cons
   }
   if (!pixelNow && pixelBefore) calls.push(fbq('consent', 'revoke'));
 
-  return { gtagSrc, loadPixel: pixelNow && !pixelBefore, calls };
+  return { gtmSrc: null, gtagSrc, loadPixel: pixelNow && !pixelBefore, calls };
 }

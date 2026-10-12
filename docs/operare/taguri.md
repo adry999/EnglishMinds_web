@@ -1,6 +1,6 @@
 # Taguri de măsurare și consimțământ
 
-Site-ul încarcă Google Analytics 4, Google Ads și Meta Pixel doar după acordul vizitatorului, pe categorii. Înainte de acord nu pleacă nicio cerere către aceste servicii. Bannerul se redeschide oricând din butonul „Setări cookies" din subsol.
+Site-ul încarcă Google Analytics 4, Google Ads și Meta Pixel (direct sau, opțional, prin Google Tag Manager, vezi [`gtm.md`](gtm.md)) doar după acordul vizitatorului, pe categorii. Înainte de acord nu pleacă nicio cerere către aceste servicii. Bannerul se redeschide oricând din butonul „Setări cookies" din subsol.
 
 ## Ce cookie-uri folosește site-ul
 
@@ -20,6 +20,7 @@ Tabelul este identic cu `COOKIE_INVENTORY` din `src/features/consent/model/cooki
 
 În `src/shared/content/site.ts`, în `tracking`. Formatul fiecăruia:
 
+- ID-ul containerului Google Tag Manager, opțional: `GTM-…` (gol = oprit). Cât e completat, se încarcă doar GTM, după acord, iar ID-urile de mai jos sunt ignorate. Vezi [`gtm.md`](gtm.md);
 - ID-ul GA4: `G-…`;
 - ID-ul pixelului Meta: 10–20 de cifre;
 - ID-ul Google Ads: `AW-…`;
@@ -28,6 +29,8 @@ Tabelul este identic cu `COOKIE_INVENTORY` din `src/features/consent/model/cooki
 Build-ul de producție eșuează cât timp rămân marcaje `TODO`. Un ID greșit ca format e ignorat în tăcere (tagul nu se încarcă), deci verifică după publicare.
 
 ## Ce evenimente pleacă
+
+Cu GTM activ pleacă un singur eveniment, `generate_lead` cu `lead_source`, în `dataLayer`; tagurile din GTM decid ce fac cu el (vezi [`gtm.md`](gtm.md)). Fără GTM:
 
 - `generate_lead` la GA4; marchează-l ca „key event" în GA4;
 - `conversion` cu `send_to` la Google Ads;
