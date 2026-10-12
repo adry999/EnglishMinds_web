@@ -1,6 +1,5 @@
 ---
 import { site } from '@shared/content/site';
-import Logo from '@shared/ui/Logo.astro';
 import WhatsAppButton from '@shared/ui/WhatsAppButton.astro';
 import './HomeContact.css';
 
@@ -21,15 +20,11 @@ const { contact } = site;
     <div class="home-contact__card">
       <p class="home-contact__label">Adresă</p>
       <p class="home-contact__value">{`${contact.street}, ${contact.city}`}</p>
-      <a class="home-contact__maps" href={contact.mapsUrl}>Deschide în Google Maps</a>
+      <a class="home-contact__maps" href={contact.mapsUrl} target="_blank" rel="noopener noreferrer">Deschide în Google Maps<span class="visually-hidden"> (se deschide într-un tab nou)</span></a>
       <p class="home-contact__label">Telefon</p>
       <a class="home-contact__phone" href={`tel:${contact.phoneE164}`}>{contact.phoneDisplay}</a>
       <p class="home-contact__label">Instagram</p>
-      <a class="home-contact__value" href={contact.instagramUrl}>{contact.instagramHandle}</a>
+      <a class="home-contact__value" href={contact.instagramUrl} target="_blank" rel="noopener noreferrer">{contact.instagramHandle}<span class="visually-hidden"> (se deschide într-un tab nou)</span></a>
     </div>
-  </div>
-  <div class="home-contact__bottom">
-    <Logo />
-    <p>Cursuri de engleză pentru copii după metoda Cambridge · Cluj-Napoca</p>
   </div>
 </section>
