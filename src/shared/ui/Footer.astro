@@ -1,5 +1,6 @@
 ---
 import { site } from '@shared/content/site';
+import { companyLine } from '@shared/lib/company-line';
 import { withBase } from '@shared/lib/with-base';
 import Button from './Button.astro';
 import Logo from './Logo.astro';
@@ -20,6 +21,12 @@ const LEGAL = [
   { label: 'Termeni', href: '/termeni/' },
 ];
 const year = new Date().getFullYear();
+const ANPC_SAL_URL = 'https://reclamatiisal.anpc.ro/';
+const ANPC_SAL_LABEL = 'ANPC – Soluționarea alternativă a litigiilor';
+// The official pictogram is downloaded from anpc.ro by the client and dropped in src/assets/legal/anpc-sal.*; until then a text badge of the same size is shown.
+const anpcPictogram = Object.values(
+  import.meta.glob<{ default: ImageMetadata }>('/src/assets/legal/anpc-sal.*', { eager: true }),
+)[0]?.default;
 ---
 <footer class="site-footer">
   <div class="site-footer__inner">
@@ -57,6 +64,7 @@ const year = new Date().getFullYear();
         <address>
           <ul>
             <li><a href={`tel:${contact.phoneE164}`}>{contact.phoneDisplay}</a></li>
+            <li><a href={`mailto:${contact.email}`}>{contact.email}</a></li>
             <li><a href={contact.whatsappUrl} target="_blank" rel="noopener noreferrer">WhatsApp<span class="visually-hidden"> (se deschide într-un tab nou)</span></a></li>
             <li><a href={contact.instagramUrl} target="_blank" rel="noopener noreferrer">{contact.instagramHandle}<span class="visually-hidden"> pe Instagram (se deschide într-un tab nou)</span></a></li>
             <li>
@@ -68,6 +76,12 @@ const year = new Date().getFullYear();
         </address>
       </div>
     </div>
+    <a class="site-footer__anpc" href={ANPC_SAL_URL} target="_blank" rel="noopener noreferrer">
+      {anpcPictogram
+        ? <img src={anpcPictogram.src} width="250" height="50" alt={ANPC_SAL_LABEL} />
+        : <span>{ANPC_SAL_LABEL}</span>}
+      <span class="visually-hidden"> (se deschide într-un tab nou)</span>
+    </a>
     <div class="site-footer__bottom">
       <p class="site-footer__copy">© {year} {site.name}</p>
       <nav class="site-footer__legal" aria-label="Informații legale">
@@ -76,6 +90,7 @@ const year = new Date().getFullYear();
           <li><button type="button" class="site-footer__cookie-settings" data-cc="show-preferencesModal">Setări cookies</button></li>
         </ul>
       </nav>
+      <p class="site-footer__company">{companyLine(site.company)}</p>
     </div>
   </div>
 </footer>

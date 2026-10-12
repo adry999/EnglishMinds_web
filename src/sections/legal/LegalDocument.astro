@@ -36,10 +36,14 @@ const categoryLabel = { necessary: 'Necesare', analytics: 'Statistici', marketin
       <dd>{site.company.legalName}</dd>
       <dt>CUI</dt>
       <dd>{site.company.cui}</dd>
+      <dt>Nr. Reg. Com.</dt>
+      <dd>{site.company.registrationNumber}</dd>
       <dt>Sediu social</dt>
       <dd>{site.company.registeredOffice}</dd>
       <dt>Telefon</dt>
       <dd><a href={`tel:${site.contact.phoneE164}`}>{site.contact.phoneDisplay}</a></dd>
+      <dt>Email</dt>
+      <dd><a href={`mailto:${site.contact.email}`}>{site.contact.email}</a></dd>
       <dt>Adresa academiei</dt>
       <dd>{`${site.contact.street}, ${site.contact.city}`}</dd>
     </dl>

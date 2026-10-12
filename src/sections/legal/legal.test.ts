@@ -26,6 +26,9 @@ describe('LegalDocument', () => {
     expect(html).toContain(site.company.legalName);
     expect(html).toContain(site.company.cui);
     expect(html).toContain(site.company.registeredOffice);
+    expect(html).toContain('Nr. Reg. Com.');
+    expect(html).toContain(site.company.registrationNumber);
+    expect(html).toContain(`<a href="mailto:${site.contact.email}">${site.contact.email}</a>`);
     expect(html).toContain(`href="tel:${site.contact.phoneE164}"`);
     expect(html).toContain(`${site.contact.street}, ${site.contact.city}`);
     expect(html).toContain('class="legal__draft" role="note"');

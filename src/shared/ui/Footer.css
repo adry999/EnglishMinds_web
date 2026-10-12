@@ -142,6 +142,44 @@
   margin: 0;
 }
 
+.site-footer__company {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.site-footer__anpc {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 250px;
+  max-width: 100%;
+  height: 50px;
+  align-self: flex-start;
+  border: 2px solid var(--color-white);
+  border-radius: 6px;
+  color: var(--color-white);
+  font-size: 0.75rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+}
+
+.site-footer__anpc img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.site-footer__anpc:hover {
+  outline: 2px solid var(--color-sun);
+  outline-offset: 2px;
+}
+
 .site-footer__legal ul {
   display: flex;
   flex-wrap: wrap;

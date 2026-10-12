@@ -38,6 +38,7 @@ const contact = {
   whatsappUrl: 'https://wa.me/40775630680',
   instagramUrl: 'https://www.instagram.com/englishminds_academy/',
   instagramHandle: '@englishminds_academy',
+  email: 'TODO: adresa de email de contact',
   street: 'Str. Observatorului 90, et.2',
   city: 'Cluj-Napoca',
   mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Str.%20Observatorului%2090%2C%20Cluj-Napoca',
@@ -207,6 +208,7 @@ export const site = {
   company: {
     legalName: 'TODO: denumirea firmei',
     cui: 'TODO: CUI',
+    registrationNumber: 'TODO: nr. Registrul Comerțului (J…)',
     registeredOffice: 'TODO: sediul social',
   },
   tracking: {
