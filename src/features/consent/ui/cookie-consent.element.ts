@@ -27,7 +27,9 @@ export class CookieConsentElement extends HTMLElement {
     if (this.started) return;
     this.started = true;
     this.ids = parseTrackingIds(readTracking(this.dataset.tracking));
-    CookieConsent.run(buildConsentConfig({ onConsent: this.apply, onChange: this.apply })).catch((error: unknown) => {
+    // Mounted here, at the top of <body>, so keyboard users reach the banner right after the skip link.
+    const config = { ...buildConsentConfig({ onConsent: this.apply, onChange: this.apply }), root: this };
+    CookieConsent.run(config).catch((error: unknown) => {
       console.error('cookie-consent: banner failed to start', error);
     });
   }

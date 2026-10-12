@@ -17,7 +17,7 @@ export function buildConsentConfig(handlers: Handlers): CookieConsentApi.CookieC
     revision: COOKIE_REVISION,
     cookie: { name: 'em_consent', sameSite: 'Lax', expiresAfterDays: 182 },
     guiOptions: {
-      consentModal: { layout: 'box inline', position: 'bottom left', equalWeightButtons: true, flipButtons: false },
+      consentModal: { layout: 'bar inline', position: 'bottom', equalWeightButtons: true, flipButtons: false },
       preferencesModal: { layout: 'box', equalWeightButtons: true, flipButtons: false },
     },
     onConsent: handlers.onConsent,

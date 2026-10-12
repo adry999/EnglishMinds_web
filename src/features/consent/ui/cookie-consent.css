@@ -1,4 +1,5 @@
-#cc-main {
+/* Doubled id: the library stylesheet loads after ours and would otherwise reset the font and colours. */
+#cc-main#cc-main {
   --cc-font-family: var(--font-body);
   --cc-bg: var(--color-white);
   --cc-primary-color: var(--color-navy);
@@ -29,4 +30,45 @@
 #cc-main :focus-visible {
   outline: 3px solid var(--color-navy);
   outline-offset: 2px;
+}
+
+/* Phones: the bar would cover half the screen; tighter text and Accept/Refuz side by side (same weight) keep it to about a third. */
+@media (max-width: 640px) {
+  #cc-main#cc-main .cm--bar .cm__texts {
+    padding-block: 12px 4px;
+  }
+
+  #cc-main#cc-main .cm--bar .cm__title {
+    font-size: 0.9375rem;
+  }
+
+  #cc-main#cc-main .cm--bar .cm__desc {
+    font-size: 0.8125rem;
+    line-height: 1.4;
+  }
+
+  #cc-main#cc-main .cm--bar .cm__btns {
+    padding-block: 8px 12px;
+    gap: 8px;
+  }
+
+  /* The library forces a column on phones with !important; only !important can put the two choices side by side. */
+  #cc-main#cc-main .cm.cm--bar.cm--inline .cm__btn-group:first-child {
+    flex-direction: row !important;
+    gap: 8px;
+  }
+
+  #cc-main#cc-main .cm.cm--bar.cm--inline .cm__btn-group:first-child .cm__btn {
+    flex: 1 1 0 !important;
+    margin: 0 !important;
+  }
+
+  #cc-main#cc-main .cm--bar .cm__btn {
+    min-height: 44px;
+    margin: 0;
+  }
+
+  #cc-main#cc-main .cm--bar .cm__footer {
+    padding-block: 6px;
+  }
 }
