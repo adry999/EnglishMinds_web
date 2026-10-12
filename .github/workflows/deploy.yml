@@ -7,6 +7,9 @@ on:
     types: [completed]
     branches: [main, staging]
 
+permissions:
+  contents: read
+
 concurrency:
   group: deploy-${{ github.event.workflow_run.head_branch }}
   cancel-in-progress: false
