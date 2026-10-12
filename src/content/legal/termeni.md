@@ -20,11 +20,15 @@ Lecția demo este gratuită și nu te obligă la înscriere. Poți decide după 
 
 ## Testul de nivel și diploma
 
-Testul de nivel și diploma sunt orientative și au rol de joacă și de ghidaj. Nu sunt certificări Cambridge și nu înlocuiesc un examen oficial.
+Testul de nivel și diploma sunt orientative și au rol de joacă și de ghidaj. Diploma este o diplomă de participare English Minds Academy. Nu este un certificat Cambridge și nu înlocuiește un examen oficial.
 
 ## Conținutul site-ului
 
 Textele, fotografiile și logo-ul aparțin English Minds Academy. Nu le poți folosi în scopuri comerciale fără acordul nostru scris.
+
+## Mărci și Cambridge
+
+„Cambridge English” și denumirile examenelor sunt mărci ale Cambridge University Press & Assessment. Academia folosește manuale Cambridge și pregătește copiii pentru examene, dar nu pretinde nicio afiliere oficială cu Cambridge University Press & Assessment. Examenele oficiale Cambridge sunt opționale și se susțin la un centru de examen autorizat.
 
 ## Linkuri externe
 
@@ -40,7 +44,9 @@ Se aplică legea română.
 
 ## Protecția consumatorului
 
-Ai drepturi ca și consumator. Poți contacta ANPC (anpc.ro) oricând.
+Ai drepturi ca și consumator. Poți contacta oricând Autoritatea Națională pentru Protecția Consumatorilor (ANPC, [anpc.ro](https://anpc.ro)).
+
+Dacă ai o reclamație pe care nu am rezolvat-o împreună, poți apela la soluționarea alternativă a litigiilor (SAL), pe platforma ANPC: [reclamatiisal.anpc.ro](https://reclamatiisal.anpc.ro/).
 
 ## Modificări ale termenilor
 

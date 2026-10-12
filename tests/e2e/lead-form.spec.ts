@@ -86,7 +86,7 @@ test('success (201): request payload, WhatsApp popup with the parent name, thank
   expect(api.requests[0]).toMatchObject({
     source: 'home',
     consent: true,
-    policyVersion: '1',
+    policyVersion: '2',
     website: '',
     parentName: PARENT,
     childAgeGroup: '9–10 ani',

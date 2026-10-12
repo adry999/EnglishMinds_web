@@ -14,7 +14,7 @@ const record = (createdAt: string): LeadRecord => ({
   source: 'test',
   testLevel: 'level:movers',
   consent: true,
-  policyVersion: '1',
+  policyVersion: '2',
   utm: { source: 'instagram', medium: 'paid', campaign: 'demo-toamna' },
   consentAt: new Date(createdAt),
   createdAt: new Date(createdAt),

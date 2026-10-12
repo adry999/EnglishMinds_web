@@ -49,7 +49,7 @@ describe('server bundle', () => {
   it('serves /api/health', async () => {
     const response = await fetch(`${base}/api/health`);
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ ok: true, policyVersion: '1' });
+    expect(await response.json()).toEqual({ ok: true, policyVersion: '2' });
   });
 
   it('answers an unknown POST with a JSON 404 without hanging', async () => {
@@ -97,7 +97,7 @@ describe('server bundle', () => {
         source: 'home',
         testLevel: null,
         consent: true,
-        policyVersion: '1',
+        policyVersion: '2',
         utm: { source: null, medium: null, campaign: null },
         website: '',
         elapsedMs: 8400,

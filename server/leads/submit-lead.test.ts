@@ -11,7 +11,7 @@ const body = {
   source: 'landing',
   testLevel: null,
   consent: true,
-  policyVersion: '1',
+  policyVersion: '2',
   utm: { source: 'instagram', medium: 'paid', campaign: 'demo-toamna' },
   website: '',
   elapsedMs: 8400,
@@ -38,7 +38,7 @@ describe('submitLead', () => {
     await expect(submitLead(body, '203.0.113.7', deps)).resolves.toEqual({ status: 201 });
     expect(repository.saved).toHaveLength(1);
     const record = repository.saved[0];
-    expect(record).toMatchObject({ parentName: 'Ștefănescu Ana', phone: '+40722123456', source: 'landing', policyVersion: '1' });
+    expect(record).toMatchObject({ parentName: 'Ștefănescu Ana', phone: '+40722123456', source: 'landing', policyVersion: '2' });
     expect(record?.consentAt.toISOString()).toBe(NOW);
     expect(record?.createdAt.toISOString()).toBe(NOW);
     expect(record).not.toHaveProperty('website');
