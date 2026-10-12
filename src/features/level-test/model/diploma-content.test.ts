@@ -1,9 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { cleanChildName, diplomaFileName, diplomaTexts, fitNameFont, formatDiplomaDate, starPoints } from './diploma-content';
+import { DIPLOMA_NOTE, cleanChildName, diplomaLine, diplomaFileName, diplomaTexts, fitNameFont, formatDiplomaDate, starPoints } from './diploma-content';
 
 const measureByLength = (font: string, text: string) => text.length * Number(/(\d+)px/.exec(font)?.[1] ?? 0) * 0.6;
 
 describe('diploma content', () => {
+  it('reads as an English Minds Academy participation diploma, never as a Cambridge certificate', () => {
+    expect(DIPLOMA_NOTE).toBe('Diplomă de participare English Minds Academy, nu certificat Cambridge');
+    expect(diplomaLine('exam')).toBe('a finalizat testul de pregătire pentru examenul Cambridge');
+  });
+
   it('builds a safe file name from the child name', () => {
     expect(diplomaFileName('Maria Popescu')).toBe('diploma-Maria-Popescu.png');
     expect(diplomaFileName('  Ștefan   Țurcanu ')).toBe('diploma-Ștefan-Țurcanu.png');
@@ -69,7 +74,7 @@ describe('diploma content', () => {
       'a finalizat testul de nivel',
       'Movers',
       '7 din 12 răspunsuri corecte',
-      'Pregătire după metoda Cambridge',
+      'Diplomă de participare English Minds Academy, nu certificat Cambridge',
       'English Minds Academy',
       'Cluj-Napoca · 11.10.2026',
       'Semnătura profesorului',

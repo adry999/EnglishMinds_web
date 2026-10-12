@@ -1,5 +1,5 @@
 import type { ResultSummary } from '../model/describe-result';
-import { diplomaLine, formatDiplomaDate } from '../model/diploma-content';
+import { DIPLOMA_NOTE, diplomaLine, formatDiplomaDate } from '../model/diploma-content';
 import type { TestScore } from '../model/score-test';
 import { choiceLabels, type Mode } from '../model/select-bank';
 import { SKILL_LABELS, SKILLS, type Question } from '../model/types';
@@ -240,7 +240,7 @@ export function resultView(input: ResultViewInput, on: Handlers): Node {
           h('span', { class: 'level-test__diploma-name' }),
           h('span', { class: 'level-test__preview-line' }, diplomaLine(input.mode)),
           h('span', { class: 'level-test__preview-title' }, summary.title),
-          h('span', { class: 'level-test__preview-small' }, 'Pregătire după metoda Cambridge'),
+          h('span', { class: 'level-test__preview-small' }, DIPLOMA_NOTE),
           h('span', { class: 'level-test__preview-small' }, `English Minds Academy · ${formatDiplomaDate(input.date)}`),
         ),
         download,
