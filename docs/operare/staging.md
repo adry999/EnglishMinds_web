@@ -70,6 +70,11 @@ Bifează fiecare punct pe URL-ul de staging înainte de lansare. Înlocuiește `
 - [ ] Fluxul de publicare funcționează: build din ramura `staging`, încărcare prin SFTP, repornire prin `tmp/restart.txt`.
   - Verificare: încarcă un build nou prin SFTP, rulează `touch tmp/restart.txt` în aplicație și confirmă că pagina și `/api/lead` servesc noul build (de exemplu o modificare vizibilă de text).
 
+- [ ] Site-ul nu răspunde cu 500 după prima încărcare.
+  - Verificare: deschide `https://<staging>/`. Dacă apare 500, `AllowOverride` al hostingului poate interzice `Options`: șterge linia `Options -Indexes` din `.htaccess` sau cere hostingului să o permită.
+- [ ] Fișierele din `/_astro/` au cache pe termen lung.
+  - Verificare: `curl -I -u user:parola https://<staging>/_astro/<fișier>` arată `Cache-Control: public, max-age=31536000, immutable`.
+
 ## Paginile legale
 
 - [ ] Datele firmei sunt completate, fără `TODO`.

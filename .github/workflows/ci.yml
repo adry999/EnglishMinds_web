@@ -36,6 +36,7 @@ jobs:
       - run: npm run deps
       - run: npm run build
       - run: npm run test:dist
+      - run: npm run test:staging
       - run: npm run build:server
 
   browser:
