@@ -43,7 +43,7 @@ const callVariant = tone === 'navy' ? 'button--outline-light' : 'button--outline
   </div>
   <form class="lead-form__form" novalidate hidden aria-labelledby={title ? id('title') : undefined}>
     {title && <Heading class="lead-form__title" id={id('title')}>{title}</Heading>}
-    {subtitle && <p class="lead-form__subtitle">{subtitle}</p>}
+    {subtitle && <p class="lead-form__subtitle">{subtitle}<slot name="subtitle-extra" /></p>}
     <div class="lead-form__row">
       <div class="lead-form__field">
         <label for={id('parentName')}>Numele părintelui</label>

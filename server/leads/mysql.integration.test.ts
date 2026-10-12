@@ -14,7 +14,7 @@ const record = (createdAt: string): LeadRecord => ({
   source: 'test',
   testLevel: 'level:movers',
   consent: true,
-  policyVersion: '1',
+  policyVersion: '2',
   utm: { source: 'instagram', medium: 'paid', campaign: 'demo-toamna' },
   consentAt: new Date(createdAt),
   createdAt: new Date(createdAt),
@@ -48,7 +48,7 @@ describe.skipIf(!url)('MySQL adapters', () => {
       utm_source: 'instagram',
       utm_medium: 'paid',
       utm_campaign: 'demo-toamna',
-      policy_version: '1',
+      policy_version: '2',
     });
     expect((rows[0]?.created_at as Date).toISOString()).toBe('2026-10-11T09:30:00.000Z');
     expect((rows[0]?.consent_at as Date).toISOString()).toBe('2026-10-11T09:30:00.000Z');

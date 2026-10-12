@@ -6,12 +6,13 @@ Aproape toate datele sunt într-un singur fișier: `src/shared/content/site.ts`.
 
 | Câmp | Ce conține |
 |---|---|
-| `contact` | Telefon, WhatsApp, Instagram, adresă. |
+| `contact` | Telefon, WhatsApp, Instagram, adresă, email de contact (apare în subsol și în blocul „Operator”). |
 | `levels` | Nivelurile (Starters, Pre A1 etc.), descrierile și rezultatele. |
 | `courseFacts` | Durata, zilele, mărimea grupei, manualul, prețul lunar. |
-| `offer` | Oferta curentă (eticheta, titlul, detaliul). |
+| `offer` | Oferta curentă (eticheta, titlul, detaliul) și `offer.terms`: condițiile ei (valabilitate, cursuri, reducere, cum se numără primii 20). Condițiile apar pe pagina Termeni, secțiunea „Oferte și reduceri”, iar lângă fiecare ofertă de pe site e linkul „Condițiile ofertei”. |
+| `pricing` | `vatNote`: mențiunea TVA („TVA inclus” sau „scutit de TVA”) afișată lângă prețul cursului și al taberei. |
 | `camps` | Tabăra: an, vârste, perioadă, program, preț, ziua tip, ce include. |
-| `company` | Denumirea firmei, CUI, sediul social (apar în paginile legale). |
+| `company` | Denumirea firmei cu forma juridică, CUI, numărul din Registrul Comerțului, sediul social (apar în subsol și în paginile legale). |
 | `tracking` | ID-urile GA4, Meta Pixel și Google Ads (vezi `taguri.md`). |
 | `url` | Adresa site-ului, folosită în sitemap și linkuri canonice. |
 
@@ -44,6 +45,7 @@ Cele 4 articole existente sunt toate `draft: true`, deci nu apar încă. Fiecare
 
 Cele 3 pagini sunt în `src/content/legal/`: `confidentialitate.md`, `termeni.md`, `cookies.md`.
 
+- **Pictograma ANPC – SAL:** `src/assets/legal/anpc-sal.*`. Dacă fișierul există, subsolul îl folosește (250×50 px); altfel arată un buton text.
 - **`POLICY_VERSION`** (`src/shared/contracts/policy.ts`): se crește când se schimbă politica de confidențialitate sau textul bifei de acord. Versiunea se salvează împreună cu fiecare contact.
 - **`COOKIE_REVISION`** (`src/features/consent/ui/consent-config.ts`): se crește când se schimbă politica de cookies. Bannerul reapare pentru toți vizitatorii.
 - **Inventarul de cookie-uri:** `src/features/consent/model/cookie-inventory.ts`. Se actualizează când se adaugă sau se scoate un serviciu.

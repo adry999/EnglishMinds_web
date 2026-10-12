@@ -8,7 +8,7 @@ Vrem să știi exact ce se întâmplă cu datele tale când ne scrii. Am încerc
 
 ## Cine suntem
 
-Site-ul este operat de firma din blocul „Operator" de mai sus. Acolo găsești denumirea, CUI-ul, sediul social și telefonul la care ne poți contacta.
+Site-ul este operat de firma din blocul „Operator" de mai sus. Acolo găsești denumirea, CUI-ul, numărul din Registrul Comerțului, sediul social, telefonul și adresa de email la care ne poți contacta.
 
 ## Ce date colectăm prin formular
 
@@ -52,6 +52,14 @@ O copie a cererii ajunge și prin email la academie. Aceste emailuri nu se șter
 
 Folosim instrumente de statistici și de reclame doar dacă accepți în bannerul de cookies. Ele nu primesc niciodată numele sau telefonul tău. Detalii în [Politica de cookies](/cookies/).
 
+## Transferuri în afara UE
+
+Dacă accepți statisticile sau marketingul în bannerul de cookies, Google (Google Analytics 4 și Google Ads) și Meta (Meta Pixel) pot prelucra date și în Statele Unite ale Americii. Transferul se face în baza Cadrului UE–SUA privind confidențialitatea datelor (Data Privacy Framework), pentru care Comisia Europeană a adoptat decizia de adecvare din 10 iulie 2023, și a clauzelor contractuale standard. Același lucru se întâmplă cu WhatsApp (Meta), dacă tu alegi să trimiți mesajul. Dacă nu accepți aceste categorii, nu pleacă nicio cerere către Google sau Meta.
+
+## Meta Pixel: operatori asociați
+
+Dacă accepți marketingul, academia și Meta Platforms Ireland Limited sunt operatori asociați pentru colectarea și transmiterea către Meta a datelor prin Meta Pixel (hotărârea CJUE C-40/17, Fashion ID). Academia stabilește scopul colectării (măsurarea reclamelor), iar Meta prelucrează apoi datele în scopurile ei. Termenii Meta pentru operatori asociați sunt aici: [Termeni pentru operatori asociați Meta](https://www.facebook.com/legal/controller_addendum). Pentru drepturile tale legate de datele prelucrate de Meta ne poți scrie și nouă, și le transmitem mai departe.
+
 ## Drepturile tale
 
 Poți cere oricând:
@@ -66,7 +74,7 @@ Poți cere oricând:
 
 ## Cum ne contactezi
 
-La numărul de telefon din blocul „Operator". Răspundem cererilor tale cât mai repede.
+Pentru orice cerere legată de datele tale (acces, corectare, ștergere, retragerea acordului) ne poți scrie la adresa de email din blocul „Operator" sau ne poți suna la numărul de telefon de acolo. Răspundem cererilor tale cât mai repede, în cel mult o lună.
 
 ## Versiunea politicii
 

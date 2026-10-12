@@ -9,7 +9,7 @@ const record: LeadRecord = {
   source: 'test',
   testLevel: 'level:movers',
   consent: true,
-  policyVersion: '1',
+  policyVersion: '2',
   utm: { source: 'instagram', medium: null, campaign: 'demo-toamna' },
   consentAt: new Date('2026-10-11T09:30:00.000Z'),
   createdAt: new Date('2026-10-11T09:30:00.000Z'),
@@ -25,7 +25,7 @@ describe('formatLeadEmail', () => {
     expect(text).toContain('Rezultat test: level:movers');
     expect(text).toContain('UTM: instagram / — / demo-toamna');
     expect(text).toContain('Primită: 11.10.2026, 12:30');
-    expect(text).toContain('Acord: politica v1');
+    expect(text).toContain('Acord: politica v2');
     expect(text).toContain('Datele se șterg automat după 12 luni.');
   });
 

@@ -116,6 +116,26 @@ describe('built pages', () => {
     expect(html).toContain(`<meta property="og:image:height" content="${height}"`);
   });
 
+  it.each(PAGES.filter((page) => page !== '404.html'))('%s identifies the company and links the ANPC SAL platform in the footer', (page) => {
+    const html = read(page);
+    expect(html).toContain('class="site-footer__company"');
+    expect(html).toContain('Nr. Reg. Com.');
+    expect(html).toMatch(/<a href="mailto:[^"]+">/);
+    expect(html).toMatch(/<a class="site-footer__anpc" href="https:\/\/reclamatiisal\.anpc\.ro\/" target="_blank" rel="noopener noreferrer">/);
+  });
+
+  it('terms page has the offer conditions section that every offer links to', () => {
+    expect(read('termeni/index.html')).toContain('id="oferte"');
+    for (const page of ['index.html', 'grupe/index.html', 'lectie-demo/index.html']) {
+      expect(read(page)).toContain('href="/termeni/#oferte"');
+    }
+  });
+
+  it('shows the VAT note next to the course and camp prices', () => {
+    expect(read('grupe/index.html')).toContain('class="vat-note"');
+    expect(read('tabere/index.html')).toContain('class="vat-note"');
+  });
+
   it('keeps the 404 page out of search results', () => {
     expect(read('404.html')).toContain('<meta name="robots" content="noindex"');
   });

@@ -24,6 +24,8 @@ describe('groups page sections', () => {
     expect(html).toContain(site.courseFacts.duration);
     expect(html).toContain(site.courseFacts.monthlyPrice);
     expect(html).toContain(site.offer.headline);
+    expect(html).toContain(`<small class="vat-note">${site.pricing.vatNote}</small>`);
+    expect(html).toContain('href="/termeni/#oferte"');
   });
 
   it('every level section is anchored by slug and books the demo for that group', async () => {

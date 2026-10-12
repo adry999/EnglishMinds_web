@@ -34,7 +34,10 @@ describe('method page sections', () => {
       expect(html).toContain(level.ageGroup);
     }
     expect(html).toContain('B1 Preliminary');
-    expect(html).toContain('Examenele Cambridge sunt opționale.');
+    expect(html).toContain('Examenele oficiale Cambridge sunt opționale');
+    expect(html).toContain('centru de examen autorizat');
+    expect(html).toContain('Academia pregătește copiii pentru ele și lucrează cu manuale Cambridge.');
+    expect(html).not.toContain('diplomă recunoscută');
   });
 
   it('keeps the staircase bars decorative', async () => {

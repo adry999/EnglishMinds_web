@@ -28,6 +28,7 @@ describe('home sections', () => {
     expect(html).toContain('Ofertă pre-sale 2026');
     expect(html).toContain('4 + 1 lună cadou');
     expect(html).toContain('Reducere pentru primii 20 înscriși');
+    expect(html).toContain('<a class="offer-terms-link" href="/termeni/#oferte">Condițiile ofertei</a>');
   });
 
   it('links every level card to its anchor on the groups page', async () => {

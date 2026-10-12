@@ -14,7 +14,7 @@ const entry = {
   data: { title: 'Politica de test', description: 'Descriere.', updatedAt: new Date('2026-10-12') },
 } as unknown as Entry;
 
-async function render(props: { showCookies?: boolean; showPolicyVersion?: boolean }) {
+async function render(props: { showCookies?: boolean; showPolicyVersion?: boolean; showOfferTerms?: boolean }) {
   const container = await AstroContainer.create();
   return container.renderToString(LegalDocument, { props: { entry, ...props } });
 }
@@ -26,6 +26,9 @@ describe('LegalDocument', () => {
     expect(html).toContain(site.company.legalName);
     expect(html).toContain(site.company.cui);
     expect(html).toContain(site.company.registeredOffice);
+    expect(html).toContain('Nr. Reg. Com.');
+    expect(html).toContain(site.company.registrationNumber);
+    expect(html).toContain(`<a href="mailto:${site.contact.email}">${site.contact.email}</a>`);
     expect(html).toContain(`href="tel:${site.contact.phoneE164}"`);
     expect(html).toContain(`${site.contact.street}, ${site.contact.city}`);
     expect(html).toContain('class="legal__draft" role="note"');
@@ -40,6 +43,13 @@ describe('LegalDocument', () => {
     expect(html).toContain('<div class="legal__table-wrap" tabindex="0" role="region" aria-labelledby="tabel-cookies-titlu"');
     expect(html).toContain('<caption id="tabel-cookies-titlu"');
     for (const cookie of COOKIE_INVENTORY) expect(html).toContain(cookie.names);
+  });
+
+  it('shows the offer conditions only when asked to', async () => {
+    expect(await render({})).not.toContain('id="oferte"');
+    const html = await render({ showOfferTerms: true });
+    expect(html).toContain('id="oferte"');
+    expect(html).toContain(site.offer.terms.validUntil);
   });
 
   it('without showCookies renders no table', async () => {

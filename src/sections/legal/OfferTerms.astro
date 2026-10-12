@@ -1,0 +1,8 @@
+---
+import { site } from '@shared/content/site';
+import { offerTermsSentences } from './offer-terms';
+---
+<section class="legal__offers" id="oferte" aria-labelledby="oferte-titlu">
+  <h2 id="oferte-titlu">Oferte și reduceri</h2>
+  {offerTermsSentences(site.offer).map((sentence) => <p>{sentence}</p>)}
+</section>

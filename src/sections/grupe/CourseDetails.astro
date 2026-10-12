@@ -1,5 +1,7 @@
 ---
 import { site } from '@shared/content/site';
+import OfferTermsLink from '@shared/ui/OfferTermsLink.astro';
+import VatNote from '@shared/ui/VatNote.astro';
 import '@shared/ui/Eyebrow.css';
 import './CourseDetails.css';
 
@@ -18,12 +20,13 @@ const FACTS = [
     {FACTS.map((fact) => (
       <div class="course-details__row">
         <dt>{fact.label}</dt>
-        <dd>{fact.value}</dd>
+        <dd>{fact.value}{fact.label === 'Preț' && <VatNote />}</dd>
       </div>
     ))}
   </dl>
   <div class="course-details__offer">
     <p class="course-details__offer-label">{offer.label}</p>
     <p class="course-details__offer-headline">{offer.headline}</p>
+    <p class="course-details__offer-terms"><OfferTermsLink /></p>
   </div>
 </section>

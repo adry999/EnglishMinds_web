@@ -4,15 +4,17 @@ import { render } from 'astro:content';
 import { COOKIE_INVENTORY, COOKIE_REVISION } from '@features/consent';
 import { site } from '@shared/content/site';
 import { POLICY_VERSION } from '@shared/contracts/policy';
+import OfferTerms from './OfferTerms.astro';
 import './legal.css';
 
 type Props = {
   entry: CollectionEntry<'legal'>;
   showCookies?: boolean;
   showPolicyVersion?: boolean;
+  showOfferTerms?: boolean;
 };
 
-const { entry, showCookies = false, showPolicyVersion = false } = Astro.props;
+const { entry, showCookies = false, showPolicyVersion = false, showOfferTerms = false } = Astro.props;
 const { Content } = await render(entry);
 const { updatedAt } = entry.data;
 const updatedLabel = updatedAt.toLocaleDateString('ro-RO', {
@@ -36,10 +38,14 @@ const categoryLabel = { necessary: 'Necesare', analytics: 'Statistici', marketin
       <dd>{site.company.legalName}</dd>
       <dt>CUI</dt>
       <dd>{site.company.cui}</dd>
+      <dt>Nr. Reg. Com.</dt>
+      <dd>{site.company.registrationNumber}</dd>
       <dt>Sediu social</dt>
       <dd>{site.company.registeredOffice}</dd>
       <dt>Telefon</dt>
       <dd><a href={`tel:${site.contact.phoneE164}`}>{site.contact.phoneDisplay}</a></dd>
+      <dt>Email</dt>
+      <dd><a href={`mailto:${site.contact.email}`}>{site.contact.email}</a></dd>
       <dt>Adresa academiei</dt>
       <dd>{`${site.contact.street}, ${site.contact.city}`}</dd>
     </dl>
@@ -47,6 +53,7 @@ const categoryLabel = { necessary: 'Necesare', analytics: 'Statistici', marketin
   <div class="legal__body">
     <Content />
   </div>
+  {showOfferTerms && <OfferTerms />}
   {
     showCookies && (
       <div class="legal__cookies">

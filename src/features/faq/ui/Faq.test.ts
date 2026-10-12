@@ -41,4 +41,13 @@ describe('Faq.astro', () => {
     expect(html).toContain('Ce ne întreabă părinții');
     expect(html).toContain('<p>Sună-ne</p>');
   });
+
+  it('adds a link after the answer that has one, with the base path', async () => {
+    const container = await AstroContainer.create();
+    const html = await container.renderToString(Faq, {
+      props: { items: [{ question: 'Oferta?', answer: 'Da', link: { label: 'Condițiile ofertei', href: '/termeni/#oferte' } }, ...items] },
+    });
+    expect(html).toContain('<a href="/termeni/#oferte">Condițiile ofertei</a>');
+    expect(html.match(/<a href="\/termeni/g)).toHaveLength(1);
+  });
 });

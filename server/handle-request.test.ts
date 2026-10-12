@@ -11,7 +11,7 @@ const lead = {
   source: 'home',
   testLevel: null,
   consent: true,
-  policyVersion: '1',
+  policyVersion: '2',
   utm: { source: null, medium: null, campaign: null },
   website: '',
   elapsedMs: 8400,
@@ -44,7 +44,7 @@ describe('handle request', () => {
     expect(response.headers.get('content-type')).toBe('application/json; charset=utf-8');
     expect(response.headers.get('cache-control')).toBe('no-store');
     expect(response.headers.get('x-content-type-options')).toBe('nosniff');
-    expect(await response.json()).toEqual({ ok: true, policyVersion: '1' });
+    expect(await response.json()).toEqual({ ok: true, policyVersion: '2' });
   });
 
   it('answers unknown routes with a JSON 404', async () => {

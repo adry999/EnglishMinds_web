@@ -8,7 +8,7 @@ const valid: LeadRequest = {
   source: 'home',
   testLevel: null,
   consent: true,
-  policyVersion: '1',
+  policyVersion: '2',
   utm: { source: 'instagram', medium: 'paid', campaign: 'demo-toamna' },
   website: '',
   elapsedMs: 8400,

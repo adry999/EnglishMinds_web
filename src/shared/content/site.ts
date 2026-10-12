@@ -30,7 +30,11 @@ export type Level = {
 export type FaqEntry = {
   readonly question: string;
   readonly answer: string;
+  /** Optional internal link shown after the answer (root-absolute path, the base is added when rendering). */
+  readonly link?: { readonly label: string; readonly href: string };
 };
+
+export const OFFER_TERMS_HREF = '/termeni/#oferte';
 
 const contact = {
   phoneE164: '+40775630680',
@@ -38,6 +42,7 @@ const contact = {
   whatsappUrl: 'https://wa.me/40775630680',
   instagramUrl: 'https://www.instagram.com/englishminds_academy/',
   instagramHandle: '@englishminds_academy',
+  email: 'TODO: adresa de email de contact',
   street: 'Str. Observatorului 90, et.2',
   city: 'Cluj-Napoca',
   mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Str.%20Observatorului%2090%2C%20Cluj-Napoca',
@@ -149,6 +154,7 @@ const faq: readonly FaqEntry[] = [
   {
     question: 'Ce include oferta pre-sale 2026?',
     answer: `4 + 1 lună cadou. Detalii la ${contact.phoneDisplay}.`,
+    link: { label: 'Condițiile ofertei', href: OFFER_TERMS_HREF },
   },
   { question: 'Unde au loc cursurile?', answer: `${contact.street}, ${contact.city}.` },
 ];
@@ -163,6 +169,16 @@ export const site = {
     label: 'Ofertă pre-sale 2026',
     headline: '4 + 1 lună cadou',
     detail: 'Reducere pentru primii 20 înscriși',
+    // Conditions of the offers above, shown in full on the terms page (Legea 363/2007).
+    terms: {
+      validUntil: 'TODO: data până la care e valabilă oferta',
+      appliesTo: 'TODO: pentru ce cursuri se aplică',
+      discount: 'TODO: valoarea reducerii pentru primii 20 de înscriși',
+      howCounted: 'TODO: cum se numără primii 20 (ex. după data plății)',
+    },
+  },
+  pricing: {
+    vatNote: 'TODO: „TVA inclus” sau „scutit de TVA”',
   },
   values: [
     {
@@ -207,6 +223,7 @@ export const site = {
   company: {
     legalName: 'TODO: denumirea firmei',
     cui: 'TODO: CUI',
+    registrationNumber: 'TODO: nr. Registrul Comerțului (J…)',
     registeredOffice: 'TODO: sediul social',
   },
   tracking: {

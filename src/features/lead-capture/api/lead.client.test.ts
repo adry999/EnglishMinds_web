@@ -9,7 +9,7 @@ const request: LeadRequest = {
   source: 'home',
   testLevel: null,
   consent: true,
-  policyVersion: '1',
+  policyVersion: '2',
   utm: { source: null, medium: null, campaign: null },
   website: '',
   elapsedMs: 5000,

@@ -1,1 +1,1 @@
-export const POLICY_VERSION = '1';
+export const POLICY_VERSION = '2';

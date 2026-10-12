@@ -27,6 +27,7 @@ describe('camp page sections', () => {
     for (const value of [site.camps.period, site.camps.schedule, site.contact.street, site.camps.price]) {
       expect(html).toContain(value);
     }
+    expect(html).toContain(`${site.camps.price}<small class="vat-note">${site.pricing.vatNote}</small>`);
   });
 
   it('day lists every slot with time, title and text', async () => {

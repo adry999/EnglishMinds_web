@@ -35,8 +35,10 @@ export function cleanChildName(name: string): string {
   return name.normalize('NFC').trim().replace(/\s+/g, ' ');
 }
 
+export const DIPLOMA_NOTE = 'Diplomă de participare English Minds Academy, nu certificat Cambridge';
+
 export function diplomaLine(mode: Mode): string {
-  return mode === 'level' ? 'a finalizat testul de nivel' : 'a finalizat testul de pregătire Cambridge';
+  return mode === 'level' ? 'a finalizat testul de nivel' : 'a finalizat testul de pregătire pentru examenul Cambridge';
 }
 
 export function diplomaFileName(name: string): string {
@@ -92,7 +94,7 @@ export function diplomaTexts(data: DiplomaData, measure: Measure): DiplomaText[]
     text(diplomaLine(data.mode), '700 40px', NAVY, 590),
     text(data.title, '900 84px', ACCENT, 700),
     text(`${data.score} din ${data.total} răspunsuri corecte`, '800 34px', NAVY, 770),
-    text('Pregătire după metoda Cambridge', '800 24px', ACCENT, 820),
+    text(DIPLOMA_NOTE, '800 24px', ACCENT, 820),
     text('English Minds Academy', '900 44px', NAVY, 900),
     text(`${site.contact.city} · ${formatDiplomaDate(data.date)}`, '700 28px', NAVY, 950),
     text('Semnătura profesorului', '700 24px', NAVY, 995, 355),

@@ -1,5 +1,7 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
+import { site } from '@shared/content/site';
+import { companyLine } from '@shared/lib/company-line';
 import Footer from './Footer.astro';
 
 async function render() {
@@ -53,6 +55,29 @@ describe('Footer', () => {
 
   it('lets the visitor reopen the cookie settings', async () => {
     expect(await render()).toMatch(/<button[^>]*type="button"[^>]*data-cc="show-preferencesModal"[^>]*>Setări cookies<\/button>/);
+  });
+
+  it('identifies the company in the bottom bar with CUI, trade register number and registered office', async () => {
+    const html = await render();
+    const bottom = html.match(/<div class="site-footer__bottom">[\s\S]*?<\/footer>/)?.[0] ?? '';
+    expect(bottom).toContain(`<p class="site-footer__company">${companyLine(site.company)}</p>`);
+    expect(bottom).toContain(`CUI ${site.company.cui}`);
+    expect(bottom).toContain(`Nr. Reg. Com. ${site.company.registrationNumber}`);
+  });
+
+  it('offers the contact email as a mailto link', async () => {
+    const html = await render();
+    expect(html).toContain(`<a href="mailto:${site.contact.email}">${site.contact.email}</a>`);
+  });
+
+  it('links the ANPC alternative dispute resolution platform in a new tab, announced, as a 250x50 badge', async () => {
+    const html = await render();
+    const badge = html.match(/<a class="site-footer__anpc"([^>]*)>([\s\S]*?)<\/a>/);
+    expect(badge?.[1]).toContain('href="https://reclamatiisal.anpc.ro/"');
+    expect(badge?.[1]).toContain('target="_blank"');
+    expect(badge?.[1]).toContain('rel="noopener noreferrer"');
+    expect(badge?.[2]).toContain('ANPC – Soluționarea alternativă a litigiilor');
+    expect(badge?.[2]).toContain('(se deschide într-un tab nou)');
   });
 
   it('can hide the call to action block', async () => {

@@ -56,4 +56,17 @@ describe('site content', () => {
     const answer = site.faq.find((entry) => entry.question === 'După ce metodă predați?')?.answer;
     expect(answer).toContain(site.courseFacts.textbook);
   });
+
+  it('identifies the company with the legal form, CUI, trade register number, registered office and a contact email', () => {
+    const { company, contact } = site;
+    for (const value of [company.legalName, company.cui, company.registrationNumber, company.registeredOffice, contact.email]) {
+      expect(value.trim()).not.toBe('');
+    }
+  });
+
+  it('keeps the VAT note and the offer conditions in site.ts', () => {
+    expect(site.pricing.vatNote.trim()).not.toBe('');
+    for (const value of Object.values(site.offer.terms)) expect(value.trim()).not.toBe('');
+    expect(Object.keys(site.offer.terms).sort()).toEqual(['appliesTo', 'discount', 'howCounted', 'validUntil']);
+  });
 });
