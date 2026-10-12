@@ -7,7 +7,7 @@ Completează `—` pe măsură ce afli informația.
 | Serviciu | Pentru ce | Cine e proprietar | Unde se administrează | 2FA activat (da/nu) | Observații |
 |---|---|---|---|---|---|
 | GitHub (repository + Actions) | Codul site-ului și publicarea automată | — | github.com, repository-ul proiectului | — | Secretele și variabilele de publicare sunt la Settings → Environments |
-| Hosting cPanel | Găzduiește site-ul, aplicația Node și baza de date MySQL | — | Panoul cPanel al hostingului | — | Node ≥ 22.22.3 necesar |
+| Hosting cPanel | Găzduiește site-ul, aplicația Node și baza de date MySQL | — | Panoul cPanel al hostingului | — | Node 22.22.3 sau mai nou din seria 22.x, sau 24.16+ necesar |
 | Registrar domeniu | Domeniul `englishminds.ro` și DNS-ul | — | — | — | DNS-ul trebuie să arate spre hosting |
 | Email pe domeniu | Căsuța `MAIL_TO` (primește contactele) și contul SMTP | — | cPanel → Email Accounts | — | Valorile sunt în variabilele aplicației Node |
 | Google Analytics 4 | Măsurarea vizitelor și a evenimentului `generate_lead` | — | analytics.google.com | — | |

@@ -30,8 +30,8 @@ Se face o singură dată, în repository, la **Settings**.
    - `DEPLOY_APP_ROOT`: folderul aplicației Node, în afara lui `DEPLOY_WEB_ROOT`;
    - `DEPLOY_PORT`: portul SSH (opțional, implicit 22).
 4. Doar în environment-ul `staging`, adaugă și variabila `DEPLOY_HTPASSWD_FILE`: calea fișierului de parole creat de cPanel (vezi §3, pasul 6). Nu o pune niciodată în `production` sau la nivel de repository, altfel și producția primește parolă.
-5. Opțional: la environment-ul `production`, bifează **Required reviewers**, ca fiecare publicare pe producție să ceară o aprobare.
-6. Ultimul pas: Settings → Secrets and variables → Actions → **Variables** → New repository variable: `DEPLOY_ENABLED` = `true`.
+5. La environment-ul `production`, bifează **Required reviewers** și adaugă proprietarul site-ului, ca fiecare publicare pe producție să ceară o aprobare (obligatoriu înainte de pasul 6).
+6. Doar după pasul 5 (cu **Required reviewers** setat pe `production`) și după ce secretele și variabilele sunt complete: Settings → Secrets and variables → Actions → **Variables** → New repository variable: `DEPLOY_ENABLED` = `true`. Din acest moment orice push pe `staging` se publică pe staging, iar orice push pe `main` așteaptă aprobarea ta înainte să ajungă pe producție.
 
 Căile trebuie să înceapă cu `/`, fără `/` la sfârșit, să aibă cel puțin 3 segmente și să conțină doar litere, cifre, `.`, `_`, `-`. Altfel publicarea se oprește cu eroare, ca să nu șteargă fișiere din greșeală.
 
@@ -40,7 +40,7 @@ Căile trebuie să înceapă cu `/`, fără `/` la sfârșit, să aibă cel puț
 1. **Cheia SSH.** Creează o pereche de chei (local: `ssh-keygen -t ed25519`). În cPanel → SSH Access → **Import Key**, importă cheia publică, apoi apasă **Manage** → **Authorize**. Cheia privată merge în secretul `DEPLOY_SSH_KEY`.
 2. **`known_hosts`.** Rulează `ssh-keyscan -p <port> <host>` și pune rezultatul în secretul `DEPLOY_KNOWN_HOSTS`.
 3. **Aplicația Node.** cPanel → Setup Node.js App → Create Application:
-   - versiunea Node: `22.22.3` sau mai nouă (conform `engines` din `package.json`);
+   - versiunea Node: 22.22.3 sau mai nouă din seria 22.x, sau 24.16+ (conform `engines` din `package.json`);
    - Application root: aceeași valoare ca `DEPLOY_APP_ROOT`;
    - Application URL: `/api`;
    - Application startup file: `app.cjs`;
@@ -64,7 +64,7 @@ Nu șterge și nu înlocui nimic manual pe server.
 
 ## 6. Publicare manuală (rezervă)
 
-Dacă GitHub Actions nu funcționează: construiește local (`npm run build` și `npm run build:server`), setează în terminal variabilele `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_WEB_ROOT`, `DEPLOY_APP_ROOT` (și opțional `DEPLOY_PORT`, `DEPLOY_KEY_FILE`, `DEPLOY_KNOWN_HOSTS_FILE`, `DEPLOY_HTPASSWD_FILE`), apoi rulează `bash scripts/deploy.sh`. Cu `--dry-run` doar arată ce ar face, fără să urce nimic. Pașii complet manuali sunt în `server.md` §3.
+Dacă GitHub Actions nu funcționează: construiește local (`npm run build` și `npm run build:server`), setează în terminal variabilele `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_WEB_ROOT`, `DEPLOY_APP_ROOT` `DEPLOY_KEY_FILE` (calea cheii private) și `DEPLOY_KNOWN_HOSTS_FILE` (calea fișierului `known_hosts`), plus opțional `DEPLOY_PORT` și `DEPLOY_HTPASSWD_FILE`, apoi rulează `bash scripts/deploy.sh`. `DEPLOY_KEY_FILE` și `DEPLOY_KNOWN_HOSTS_FILE` sunt obligatorii la o publicare reală; doar `--dry-run` le sare și doar arată ce ar face, fără să urce nimic. Pe calculator trebuie instalat `lftp`. Pentru staging construiește cu `SITE_ENV=staging`, pentru producție cu `SITE_ENV=production` (de exemplu `SITE_ENV=staging npm run build`). Pașii complet manuali sunt în `server.md` §3.
 
 ## 7. Unde se văd erorile
 
