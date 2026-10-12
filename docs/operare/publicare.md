@@ -64,7 +64,7 @@ Nu șterge și nu înlocui nimic manual pe server.
 
 ## 6. Publicare manuală (rezervă)
 
-Dacă GitHub Actions nu funcționează: construiește local (`npm run build` și `npm run build:server`), setează în terminal variabilele `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_WEB_ROOT`, `DEPLOY_APP_ROOT` `DEPLOY_KEY_FILE` (calea cheii private) și `DEPLOY_KNOWN_HOSTS_FILE` (calea fișierului `known_hosts`), plus opțional `DEPLOY_PORT` și `DEPLOY_HTPASSWD_FILE`, apoi rulează `bash scripts/deploy.sh`. `DEPLOY_KEY_FILE` și `DEPLOY_KNOWN_HOSTS_FILE` sunt obligatorii la o publicare reală; doar `--dry-run` le sare și doar arată ce ar face, fără să urce nimic. Pe calculator trebuie instalat `lftp`. Pentru staging construiește cu `SITE_ENV=staging`, pentru producție cu `SITE_ENV=production` (de exemplu `SITE_ENV=staging npm run build`). Pașii complet manuali sunt în `server.md` §3.
+Dacă GitHub Actions nu funcționează: construiește local (`npm run build` și `npm run build:server`), setează în terminal variabilele `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_WEB_ROOT`, `DEPLOY_APP_ROOT`, `DEPLOY_KEY_FILE` (calea cheii private) și `DEPLOY_KNOWN_HOSTS_FILE` (calea fișierului `known_hosts`), plus opțional `DEPLOY_PORT` și `DEPLOY_HTPASSWD_FILE`, apoi rulează `bash scripts/deploy.sh`. `DEPLOY_KEY_FILE` și `DEPLOY_KNOWN_HOSTS_FILE` sunt obligatorii la o publicare reală; doar `--dry-run` le sare și doar arată ce ar face, fără să urce nimic. Pe calculator trebuie instalat `lftp`. Pentru staging construiește cu `SITE_ENV=staging`, pentru producție cu `SITE_ENV=production` (de exemplu `SITE_ENV=staging npm run build`). Pașii complet manuali sunt în `server.md` §3.
 
 ## 7. Unde se văd erorile
 
