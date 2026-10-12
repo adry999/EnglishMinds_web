@@ -227,6 +227,24 @@ describe('<level-test>', () => {
     expect(button('Scrie numele ca să descarci').disabled).toBe(true);
   });
 
+  it('makes the booking form the main next step and keeps WhatsApp as the secondary one', () => {
+    finishWithName('Ana');
+    const book = button('Rezervă lecția demo');
+    expect(book.classList.contains('button--sun')).toBe(true);
+    const whatsapp = card().querySelector<HTMLAnchorElement>('a.level-test__whatsapp')!;
+    expect(whatsapp.classList.contains('button--outline-light')).toBe(true);
+    expect(card().querySelector('.level-test__cta-actions')!.firstElementChild).toBe(book);
+  });
+
+  it('asks the booking form to come into view when the main button is pressed', () => {
+    const requested = vi.fn();
+    document.addEventListener('lead-form.requested', requested);
+    finishWithName('Ana');
+    button('Rezervă lecția demo').click();
+    document.removeEventListener('lead-form.requested', requested);
+    expect(requested).toHaveBeenCalledTimes(1);
+  });
+
   it('emits a second completed event after restarting and finishing again', () => {
     const events = collectCompleted();
     finishWithName('Ana');
@@ -252,7 +270,7 @@ describe('<level-test>', () => {
     expect(bubble()).toContain('Bravo, <img src=x onerror=alert(1)>!');
     expect(button('Descarcă diploma (PNG)').disabled).toBe(false);
     expect(document.activeElement).toBe(input);
-    const whatsapp = card().querySelector<HTMLAnchorElement>('a.button--whatsapp')!;
+    const whatsapp = card().querySelector<HTMLAnchorElement>('a.level-test__whatsapp')!;
     expect(whatsapp.target).toBe('_blank');
     expect(whatsapp.rel).toBe('noopener');
     expect(decodeURIComponent(whatsapp.href)).toContain('<img src=x onerror=alert(1)> a făcut testul pe site');

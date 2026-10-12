@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MIN_ELAPSED_MS } from '@shared/contracts/lead.schema';
-import { LEAD_SUBMITTED, createLevelTestCompleted } from '@shared/contracts/domain-events';
+import { LEAD_SUBMITTED, createLeadFormRequested, createLevelTestCompleted } from '@shared/contracts/domain-events';
 import type { SubmitLeadResult } from '../api/lead.client';
 import { submitLead } from '../api/lead.client';
 import { defineLeadForm } from './lead-form.element';
@@ -86,19 +86,22 @@ afterEach(() => {
 });
 
 describe('<lead-form> in demo mode', () => {
-  it('shows the demo notice instead of sending, opening WhatsApp or announcing a lead', async () => {
+  it('shows the thank-you state with a demo line, without sending, opening WhatsApp or announcing a lead', async () => {
     const host = mount('home', { demo: true });
     const announced = vi.fn();
     host.addEventListener(LEAD_SUBMITTED, announced);
     fill();
     submit();
     await flush();
-    expect(el('.lead-form__status').textContent).toBe('Aceasta este o versiune demo a site-ului. Trimiterea formularului este dezactivată.');
     expect(submitMock).not.toHaveBeenCalled();
     expect(openSpy).not.toHaveBeenCalled();
     expect(announced).not.toHaveBeenCalled();
-    expect(el<HTMLElement>('.lead-form__done').hidden).toBe(true);
-    expect(el<HTMLFormElement>('form').hidden).toBe(false);
+    expect(el<HTMLFormElement>('form').hidden).toBe(true);
+    expect(el<HTMLElement>('.lead-form__done').hidden).toBe(false);
+    expect(el('[data-name]').textContent).toBe('Ana Pop');
+    expect(el('[data-done-text]').textContent).toContain('Am primit datele tale și te sunăm în curând.');
+    expect(el('[data-done-text]').textContent).toContain('versiune demo');
+    expect(decodeURIComponent(el<HTMLAnchorElement>('[data-whatsapp]').href)).toContain('Sunt Ana Pop (0722 123 456)');
   });
 
   it('keeps the validation errors for an incomplete form', async () => {
@@ -348,5 +351,47 @@ describe('<lead-form>', () => {
     expect(popup?.close).toHaveBeenCalled();
     expect(el('.lead-form__alert').textContent).toBe('Nu am putut trimite cererea. Scrie-ne pe WhatsApp sau sună-ne.');
     expect(el<HTMLButtonElement>('.lead-form__submit').disabled).toBe(false);
+  });
+});
+
+describe('<lead-form source="test"> when the result asks for the booking form', () => {
+  let scrollSpy: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    scrollSpy = vi.fn();
+    (HTMLElement.prototype as { scrollIntoView: unknown }).scrollIntoView = scrollSpy;
+    window.matchMedia = ((query: string) => ({ matches: query.includes('reduce') && reduced, addEventListener: vi.fn(), removeEventListener: vi.fn() })) as unknown as typeof window.matchMedia;
+    reduced = false;
+  });
+
+  let reduced = false;
+
+  it('unhides the form, scrolls it into view and focuses the parent name field', () => {
+    const host = mount('test', { hidden: true });
+    document.dispatchEvent(createLeadFormRequested());
+    expect(host.hidden).toBe(false);
+    expect(scrollSpy).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' });
+    expect(document.activeElement).toBe(input('parentName'));
+  });
+
+  it('scrolls without animation when the visitor prefers reduced motion', () => {
+    reduced = true;
+    mount('test', { hidden: true });
+    document.dispatchEvent(createLeadFormRequested());
+    expect(scrollSpy).toHaveBeenCalledWith({ behavior: 'auto', block: 'start' });
+  });
+
+  it('focuses the thank-you message instead when the form was already sent', () => {
+    mount('test');
+    el<HTMLFormElement>('form').hidden = true;
+    el<HTMLElement>('.lead-form__done').hidden = false;
+    document.dispatchEvent(createLeadFormRequested());
+    expect(document.activeElement).toBe(el('.lead-form__done'));
+  });
+
+  it('is ignored by forms of other pages', () => {
+    mount('home');
+    document.dispatchEvent(createLeadFormRequested());
+    expect(scrollSpy).not.toHaveBeenCalled();
   });
 });

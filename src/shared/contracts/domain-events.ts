@@ -39,3 +39,10 @@ export const CONSENT_DATASET_KEY = 'consent';
 export function createConsentChanged(detail: ConsentChangedDetail): CustomEvent<ConsentChangedDetail> {
   return new CustomEvent(CONSENT_CHANGED, { detail, bubbles: true, composed: true });
 }
+
+export const LEAD_FORM_REQUESTED = 'lead-form.requested';
+
+/** Asks the booking form of the level-test page to come into view and take focus. */
+export function createLeadFormRequested(): CustomEvent<null> {
+  return new CustomEvent(LEAD_FORM_REQUESTED, { detail: null, bubbles: true, composed: true });
+}

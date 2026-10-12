@@ -540,6 +540,12 @@
   font-size: 1rem;
 }
 
+.level-test__cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
 .level-test__cta .button:focus-visible {
   outline-color: var(--color-sun);
 }

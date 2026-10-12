@@ -1,4 +1,4 @@
-import { createLevelTestCompleted } from '@shared/contracts/domain-events';
+import { createLeadFormRequested, createLevelTestCompleted } from '@shared/contracts/domain-events';
 import { createDiplomaCanvas, downloadDiploma, printDiploma } from '../diploma/render-diploma';
 import { describeResult } from '../model/describe-result';
 import { cleanChildName } from '../model/diploma-content';
@@ -27,6 +27,7 @@ export class LevelTest extends HTMLElement {
     answer: (option) => this.dispatch({ type: 'answer', option }),
     replay: () => this.speakCurrent(),
     restart: () => this.dispatch({ type: 'restart' }),
+    bookDemo: () => void this.dispatchEvent(createLeadFormRequested()),
     nameInput: (value) => this.updateName(value),
     download: () => void this.exportDiploma('download'),
     print: () => void this.exportDiploma('print'),
@@ -159,7 +160,7 @@ export class LevelTest extends HTMLElement {
       print.hidden = !hasName;
       print.disabled = this.exporting;
     }
-    const whatsapp = region.querySelector<HTMLAnchorElement>('a.button--whatsapp');
+    const whatsapp = region.querySelector<HTMLAnchorElement>('a.level-test__whatsapp');
     if (whatsapp) whatsapp.href = resultWhatsappUrl(data.summary, data.score.score, data.score.total, cleanName);
   }
 

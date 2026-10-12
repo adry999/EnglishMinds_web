@@ -13,6 +13,7 @@ export type Handlers = {
   answer(option: number): void;
   replay(): void;
   restart(): void;
+  bookDemo(): void;
   nameInput(value: string): void;
   download(): void;
   print(): void;
@@ -199,6 +200,9 @@ export function resultView(input: ResultViewInput, on: Handlers): Node {
   const print = h('button', { type: 'button', class: 'button level-test__print' }, 'Tipărește / salvează PDF (A4)');
   print.addEventListener('click', on.print);
 
+  const book = h('button', { type: 'button', class: 'button button--sun level-test__book' }, 'Rezervă lecția demo');
+  book.addEventListener('click', on.bookDemo);
+
   const restart = h('button', { type: 'button', class: 'level-test__link' }, 'Fă un alt test');
   restart.addEventListener('click', on.restart);
 
@@ -256,9 +260,14 @@ export function resultView(input: ResultViewInput, on: Handlers): Node {
         'div',
         {},
         h('h3', {}, 'Următorul pas: lecția demo gratuită'),
-        h('p', {}, 'Trimitem rezultatul pe WhatsApp și stabilim ziua lecției.'),
+        h('p', {}, 'Lasă-ne numele și telefonul în formularul de mai jos și te sunăm să stabilim ziua lecției. Poți trimite rezultatul și pe WhatsApp.'),
       ),
-      h('a', { class: 'button button--whatsapp', href: input.whatsappUrl, target: '_blank', rel: 'noopener' }, 'Trimite rezultatul pe WhatsApp'),
+      h(
+        'div',
+        { class: 'level-test__cta-actions' },
+        book,
+        h('a', { class: 'button button--outline-light level-test__whatsapp', href: input.whatsappUrl, target: '_blank', rel: 'noopener' }, 'Trimite rezultatul pe WhatsApp'),
+      ),
     ),
     restart,
   );
