@@ -52,3 +52,7 @@
     background: var(--color-navy);
   }
 }
+
+.offer-strip__terms {
+  margin-top: 2px;
+}

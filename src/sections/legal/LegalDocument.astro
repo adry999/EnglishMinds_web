@@ -4,15 +4,17 @@ import { render } from 'astro:content';
 import { COOKIE_INVENTORY, COOKIE_REVISION } from '@features/consent';
 import { site } from '@shared/content/site';
 import { POLICY_VERSION } from '@shared/contracts/policy';
+import OfferTerms from './OfferTerms.astro';
 import './legal.css';
 
 type Props = {
   entry: CollectionEntry<'legal'>;
   showCookies?: boolean;
   showPolicyVersion?: boolean;
+  showOfferTerms?: boolean;
 };
 
-const { entry, showCookies = false, showPolicyVersion = false } = Astro.props;
+const { entry, showCookies = false, showPolicyVersion = false, showOfferTerms = false } = Astro.props;
 const { Content } = await render(entry);
 const { updatedAt } = entry.data;
 const updatedLabel = updatedAt.toLocaleDateString('ro-RO', {
@@ -51,6 +53,7 @@ const categoryLabel = { necessary: 'Necesare', analytics: 'Statistici', marketin
   <div class="legal__body">
     <Content />
   </div>
+  {showOfferTerms && <OfferTerms />}
   {
     showCookies && (
       <div class="legal__cookies">

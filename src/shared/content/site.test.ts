@@ -63,4 +63,10 @@ describe('site content', () => {
       expect(value.trim()).not.toBe('');
     }
   });
+
+  it('keeps the VAT note and the offer conditions in site.ts', () => {
+    expect(site.pricing.vatNote.trim()).not.toBe('');
+    for (const value of Object.values(site.offer.terms)) expect(value.trim()).not.toBe('');
+    expect(Object.keys(site.offer.terms).sort()).toEqual(['appliesTo', 'discount', 'howCounted', 'validUntil']);
+  });
 });

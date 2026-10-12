@@ -1,5 +1,6 @@
 ---
 import type { FaqEntry } from '@shared/content/site';
+import { withBase } from '@shared/lib/with-base';
 import Eyebrow from '@shared/ui/Eyebrow.astro';
 import './faq.css';
 
@@ -23,7 +24,7 @@ const { items, heading = 'Întrebări frecvente', id = 'faq', eyebrow } = Astro.
       <div class="faq__item">
         <h3 class="faq__question">{item.question}</h3>
         <div class="faq__answer" id={`${id}-answer-${index}`}>
-          <p>{item.answer}</p>
+          <p>{item.answer}{item.link && <>{' '}<a href={withBase(item.link.href)}>{item.link.label}</a></>}</p>
         </div>
       </div>
     ))}

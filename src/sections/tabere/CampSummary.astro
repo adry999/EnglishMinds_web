@@ -1,5 +1,6 @@
 ---
 import { site } from '@shared/content/site';
+import VatNote from '@shared/ui/VatNote.astro';
 import './CampSummary.css';
 
 const ITEMS = [
@@ -15,7 +16,7 @@ const ITEMS = [
     {ITEMS.map((item) => (
       <div class="camp-summary__card">
         <dt>{item.label}</dt>
-        <dd>{item.value}</dd>
+        <dd>{item.value}{item.label === 'Preț' && <VatNote />}</dd>
       </div>
     ))}
   </dl>

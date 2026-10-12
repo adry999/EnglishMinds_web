@@ -2,6 +2,7 @@
 import { LeadForm } from '@features/lead-capture';
 import { site } from '@shared/content/site';
 import Badge from '@shared/ui/Badge.astro';
+import OfferTermsLink from '@shared/ui/OfferTermsLink.astro';
 import EmaPortrait from '@shared/ui/EmaPortrait.astro';
 import './lectie-demo.css';
 ---
@@ -17,7 +18,9 @@ import './lectie-demo.css';
       </div>
     </div>
     <div class="landing-hero__card">
-      <LeadForm source="landing" tone="cream" title="Rezervă locul acum" subtitle={site.offer.detail} submitLabel="Rezervă lecția gratuită" />
+      <LeadForm source="landing" tone="cream" title="Rezervă locul acum" subtitle={site.offer.detail} submitLabel="Rezervă lecția gratuită">
+        <Fragment slot="subtitle-extra">{' '}<OfferTermsLink /></Fragment>
+      </LeadForm>
     </div>
   </div>
 </section>

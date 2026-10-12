@@ -32,6 +32,7 @@ describe('demo landing sections', () => {
     expect(html).toContain('Rezervă locul acum');
     expect(html).toContain('Rezervă lecția gratuită');
     expect(html).toContain(site.offer.detail);
+    expect(html).toContain('href="/termeni/#oferte"');
   });
 
   it('steps list the three steps', async () => {
@@ -52,6 +53,7 @@ describe('demo landing sections', () => {
   it('band shows the offer, the address and the WhatsApp button', async () => {
     const html = await render(LandingBand);
     expect(html).toContain('Ofertă pre-sale 2026: 4 + 1 lună cadou');
+    expect(html).toContain('href="/termeni/#oferte"');
     expect(html).toContain(`${site.contact.street}, ${site.contact.city}`);
     expect(html).toContain('Scrie-ne pe WhatsApp');
     expect(html).toContain(`href="${site.contact.whatsappUrl}"`);
