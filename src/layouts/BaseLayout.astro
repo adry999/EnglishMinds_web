@@ -74,8 +74,8 @@ const hidden = noindex || !isIndexable(siteEnv(import.meta.env.SITE_ENV));
   </head>
   <body>
     <a class="skip-link" href="#continut">Sari la conținut</a>
+    <CookieConsent />
     <slot />
     <UtmCapture />
-    <CookieConsent />
   </body>
 </html>
