@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { BLOG_CATEGORY_IDS, categoryLabel } from './categories';
 import { formatPostDate } from './format-post-date';
+import { lastModified } from './last-modified';
 import { readingMinutes } from './reading-minutes';
 import { sortNewestFirst } from './sort-newest-first';
 
@@ -20,6 +21,13 @@ describe('blog model', () => {
 
   it('formats dates the Romanian way', () => {
     expect(formatPostDate(new Date('2026-09-01T12:00:00Z'))).toBe('1 septembrie 2026');
+  });
+
+  it('uses updatedAt as the last modification when present, else publishedAt', () => {
+    const publishedAt = new Date('2026-09-01');
+    const updatedAt = new Date('2026-09-20');
+    expect(lastModified({ publishedAt })).toBe(publishedAt);
+    expect(lastModified({ publishedAt, updatedAt })).toBe(updatedAt);
   });
 
   it('sorts posts newest first without mutating the input', () => {

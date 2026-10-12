@@ -120,6 +120,12 @@ describe('built pages', () => {
     expect(read('404.html')).toContain('<meta name="robots" content="noindex"');
   });
 
+  it('gives the 404 page no canonical and no og:url', () => {
+    const html = read('404.html');
+    expect(html).not.toContain('rel="canonical"');
+    expect(html).not.toContain('og:url');
+  });
+
   it('ships optimized images, not the original jpgs', () => {
     const home = read('index.html');
     expect(home).toMatch(/type="image\/avif"/);
