@@ -14,7 +14,7 @@ if (!entry) throw new Error('Lipsește src/content/legal/confidentialitate.md');
   crumbs={[{ name: entry.data.title, path: '/confidentialitate/' }]}
 >
   <Header />
-  <main id="continut">
+  <main id="continut" tabindex="-1">
     <LegalDocument entry={entry} showPolicyVersion />
   </main>
   <Footer />
