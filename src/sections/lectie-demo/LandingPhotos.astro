@@ -14,7 +14,7 @@ const PHOTOS: { photo: PhotoKey; alt: string }[] = [
   <ul class="landing-photos__grid" role="list">
     {PHOTOS.map((item) => (
       <li class="landing-photos__item">
-        <Photo photo={item.photo} alt={item.alt} sizes="(min-width: 1100px) 280px, 50vw" widths={[360, 640]} />
+        <Photo photo={item.photo} alt={item.alt} sizes="(min-width: 1100px) 280px, calc(50vw - 20px)" widths={[320, 640]} />
       </li>
     ))}
   </ul>

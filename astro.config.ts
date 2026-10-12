@@ -32,6 +32,8 @@ export default defineConfig({
   site: process.env.SITE_URL || site.url,
   base,
   output: 'static',
+  // Measured on the real photos: AVIF 45 and WebP 70 cut the image bytes by about a quarter against the sharp defaults (AVIF 50, WebP 80) with no visible loss.
+  image: { service: { entrypoint: 'astro/assets/services/sharp', config: { avif: { quality: 45 }, webp: { quality: 70 } } } },
   trailingSlash: 'always',
   // Inline all CSS: a separate stylesheet is a render-blocking request that delays the LCP text on mobile.
   build: { format: 'directory', inlineStylesheets: 'always' },

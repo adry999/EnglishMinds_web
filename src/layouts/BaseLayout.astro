@@ -49,8 +49,9 @@ const hidden = noindex || !isIndexable(siteEnv(import.meta.env.SITE_ENV));
   <head>
     <meta charset="utf-8" />
     <ConsentDefaults />
-    <Font cssVariable="--font-nunito" preload />
-    <Font cssVariable="--font-barlow-condensed" preload />
+    {/* Preload only the weights used by the hero (900 headings, 700 body); the other faces load on demand. Barlow is a small label font and loads on demand too. */}
+    <Font cssVariable="--font-nunito" preload={[{ weight: 900 }, { weight: 700 }]} />
+    <Font cssVariable="--font-barlow-condensed" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
@@ -77,5 +78,9 @@ const hidden = noindex || !isIndexable(siteEnv(import.meta.env.SITE_ENV));
     <CookieConsent />
     <slot />
     <UtmCapture />
+    <script>
+      import { fadeInImages } from '@core/ui/image-fade';
+      fadeInImages();
+    </script>
   </body>
 </html>
