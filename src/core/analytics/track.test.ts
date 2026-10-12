@@ -40,6 +40,30 @@ describe('ensureFbq', () => {
     expect(target._fbq).toBe(target.fbq);
   });
 
+  it('queues through push like the official snippet, and sets _fbq only with the stub', () => {
+    const target: TrackingWindow = {};
+    expect(target._fbq).toBeUndefined();
+    ensureFbq(target);
+    target.fbq?.('track', 'PageView');
+    (target.fbq as unknown as { push: (...args: unknown[]) => void }).push('track', 'Lead');
+    expect((target.fbq as unknown as { queue: unknown[][] }).queue).toEqual([
+      ['track', 'PageView'],
+      ['track', 'Lead'],
+    ]);
+  });
+
+  it('hands calls to callMethod once the real library replaces it, instead of queueing', () => {
+    const target: TrackingWindow = {};
+    ensureFbq(target);
+    const stub = target.fbq as unknown as { queue: unknown[][]; callMethod?: ReturnType<typeof vi.fn>; push: (...a: unknown[]) => void };
+    stub.callMethod = vi.fn();
+    target.fbq?.('init', '1');
+    stub.push('track', 'Lead');
+    expect(stub.callMethod).toHaveBeenNthCalledWith(1, 'init', '1');
+    expect(stub.callMethod).toHaveBeenNthCalledWith(2, 'track', 'Lead');
+    expect(stub.queue).toEqual([]);
+  });
+
   it('keeps an existing fbq', () => {
     const existing = vi.fn();
     const target: TrackingWindow = { fbq: existing };

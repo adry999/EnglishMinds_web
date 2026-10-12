@@ -99,6 +99,29 @@ describe('<cookie-consent>', () => {
     expect(queue).toContainEqual(['init', '123456789012345']);
   });
 
+  it('loads only gtag.js with analytics consent alone, with no Ads config and no Meta', () => {
+    mount();
+    lib.accepted = new Set(['analytics']);
+    consent();
+    expect(scriptSrcs()).toEqual([`${GTAG_URL}?id=G-ABC123XYZ`]);
+    expect(commands().filter((c) => c[0] === 'config')).toEqual([['config', 'G-ABC123XYZ']]);
+    expect(win.fbq).toBeUndefined();
+    expect(win._fbq).toBeUndefined();
+  });
+
+  it('does not load Meta or define fbq with marketing consent but no pixel id', () => {
+    const el = document.createElement('cookie-consent');
+    el.dataset.tracking = JSON.stringify({ ...TRACKING, metaPixelId: 'TODO: ID pixel' });
+    document.body.append(el);
+    lib.accepted = new Set(['marketing']);
+    consent();
+    expect(scriptSrcs()).toEqual([`${GTAG_URL}?id=AW-1234567890`]);
+    expect(win.fbq).toBeUndefined();
+    expect(win._fbq).toBeUndefined();
+    document.body.dispatchEvent(createLeadSubmitted({ source: 'home', ageGroup: null }));
+    expect(win.fbq).toBeUndefined();
+  });
+
   it('turns lead.submitted into GA4, Ads and Meta Lead events when everything is accepted', () => {
     const el = mount();
     lib.accepted = new Set(['analytics', 'marketing']);
@@ -109,6 +132,18 @@ describe('<cookie-consent>', () => {
     expect(commands()).toContainEqual(['event', 'generate_lead', { send_to: 'G-ABC123XYZ', lead_source: 'landing' }]);
     expect(commands()).toContainEqual(['event', 'conversion', { send_to: 'AW-1234567890/AbC-dEf_123' }]);
     expect((win.fbq as { queue: unknown[][] }).queue).toContainEqual(['track', 'Lead', { content_name: 'landing' }]);
+  });
+
+  it('never sends name, phone or email to the tags', () => {
+    mount();
+    lib.accepted = new Set(['analytics', 'marketing']);
+    consent();
+    const detail = { source: 'home', ageGroup: null, name: 'Maria Popescu', phone: '0775630680', email: 'maria@example.ro' };
+    document.body.dispatchEvent(new CustomEvent('lead.submitted', { detail, bubbles: true }));
+    const sent = JSON.stringify([commands(), (win.fbq as { queue: unknown[][] }).queue]);
+    expect(sent).toContain('generate_lead');
+    expect(sent).toContain('"Lead"');
+    for (const secret of ['Maria', '0775630680', 'maria@example.ro']) expect(sent).not.toContain(secret);
   });
 
   it('sends no Lead anywhere after a refusal', () => {
