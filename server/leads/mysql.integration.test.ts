@@ -88,6 +88,30 @@ describe.skipIf(!url)('MySQL adapters', () => {
     expect(columns.map((row) => row.COLUMN_NAME as string).sort()).toEqual(['notified_at', 'notify_attempts']);
   });
 
+  it('backfills leads that existed before the notification columns, once', async () => {
+    const repository = createMysqlLeadRepository(pool);
+    await repository.save(record('2026-10-09T08:00:00.000Z'));
+    await repository.save(record('2026-10-10T08:00:00.000Z'));
+    await pool.query('ALTER TABLE leads DROP KEY leads_pending_notification, DROP COLUMN notified_at, DROP COLUMN notify_attempts');
+
+    await runMigrations(pool);
+    const [rows] = await pool.query<RowDataPacket[]>('SELECT created_at, notified_at, notify_attempts FROM leads ORDER BY created_at');
+    expect(rows).toHaveLength(2);
+    for (const row of rows) {
+      expect((row.notified_at as Date).toISOString()).toBe((row.created_at as Date).toISOString());
+      expect(row.notify_attempts).toBe(0);
+    }
+    await expect(
+      repository.findPendingNotification({ olderThan: new Date('2026-10-11T12:00:00.000Z'), newerThan: new Date('2026-10-01T00:00:00.000Z'), maxAttempts: 3, limit: 50 }),
+    ).resolves.toEqual([]);
+
+    // A second run must not mark leads that arrived after the migration.
+    const fresh = await repository.save(record('2026-10-11T09:00:00.000Z'));
+    await runMigrations(pool);
+    const [after] = await pool.query<RowDataPacket[]>('SELECT notified_at FROM leads WHERE id = ?', [fresh]);
+    expect(after[0]?.notified_at).toBeNull();
+  });
+
   it('stores consent and policy version, and starts with no notification', async () => {
     const id = await createMysqlLeadRepository(pool).save(record('2026-10-11T09:30:00.000Z'));
     expect(id).toBeGreaterThan(0);
@@ -106,6 +130,17 @@ describe.skipIf(!url)('MySQL adapters', () => {
     [rows] = await pool.query<RowDataPacket[]>('SELECT notified_at, notify_attempts FROM leads WHERE id = ?', [id]);
     expect(rows[0]?.notify_attempts).toBe(2);
     expect((rows[0]?.notified_at as Date).toISOString()).toBe('2026-10-11T09:32:00.000Z');
+  });
+
+  it('claims a retry only for the run that saw the same attempt count', async () => {
+    const repository = createMysqlLeadRepository(pool);
+    const id = await repository.save(record('2026-10-11T09:00:00.000Z'));
+    await expect(repository.claimNotifyAttempt(id, 0)).resolves.toBe(true);
+    await expect(repository.claimNotifyAttempt(id, 0)).resolves.toBe(false);
+    await repository.markNotified(id, new Date('2026-10-11T09:10:00.000Z'));
+    const [rows] = await pool.query<RowDataPacket[]>('SELECT notified_at, notify_attempts FROM leads WHERE id = ?', [id]);
+    expect(rows[0]?.notify_attempts).toBe(1);
+    expect((rows[0]?.notified_at as Date).toISOString()).toBe('2026-10-11T09:10:00.000Z');
   });
 
   it('finds unnotified leads inside the retry window with attempts left', async () => {

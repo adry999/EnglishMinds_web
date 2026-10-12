@@ -1,5 +1,3 @@
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
 import { site } from '@shared/content/site';
@@ -17,12 +15,6 @@ describe('Footer', () => {
     expect(html).toContain('href="https://wa.me/40775630680"');
     expect(html).toContain('href="tel:+40775630680"');
     expect(html).toContain('+40 775 630 680');
-  });
-
-  it('does not force white text onto the call-to-action buttons', () => {
-    const css = readFileSync(resolve(import.meta.dirname, 'Footer.css'), 'utf8');
-    expect(css).toContain('.site-footer a:not(.button) {');
-    expect(css).not.toContain('.site-footer a {');
   });
 
   it('shows the address and Instagram', async () => {

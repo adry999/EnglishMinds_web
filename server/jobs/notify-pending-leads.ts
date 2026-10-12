@@ -1,4 +1,4 @@
-import { readEnvironment } from '../config/environment';
+import { ConfigError, readEnvironment } from '../config/environment';
 import { createDatabasePool } from '../db/pool';
 import { createChannels } from '../leads/channels';
 import { createMysqlLeadRepository } from '../leads/lead.repository';
@@ -23,6 +23,6 @@ async function main(): Promise<void> {
 }
 
 main().catch((error: unknown) => {
-  consoleLogger.error('[notify] failed', safeError(error));
+  consoleLogger.error('[notify] failed', error instanceof ConfigError ? { ...safeError(error), variable: error.variable } : safeError(error));
   process.exitCode = 1;
 });

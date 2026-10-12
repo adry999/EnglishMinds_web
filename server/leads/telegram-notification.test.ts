@@ -44,6 +44,14 @@ describe('createTelegramNotifier', () => {
     expect(init?.signal).toBeInstanceOf(AbortSignal);
   });
 
+  it('disables the link preview and releases the response body', async () => {
+    const cancel = vi.fn<() => Promise<void>>().mockResolvedValue(undefined);
+    const fetchImpl = vi.fn<FetchLike>().mockResolvedValue({ ok: true, status: 200, body: { cancel } });
+    await createTelegramNotifier(config, fetchImpl).notify(record);
+    expect(JSON.parse(fetchImpl.mock.calls[0]?.[1].body ?? '{}')).toMatchObject({ link_preview_options: { is_disabled: true } });
+    expect(cancel).toHaveBeenCalledOnce();
+  });
+
   it('fails with a generic error on a non-2xx answer', async () => {
     const fetchImpl: FetchLike = async () => ({ ok: false, status: 401 });
     await expect(createTelegramNotifier(config, fetchImpl).notify(record)).rejects.toMatchObject({ code: 'TELEGRAM_HTTP_401' });

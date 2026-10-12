@@ -1,7 +1,7 @@
 import type { Environment } from '../config/environment';
 import type { LeadNotifier, LeadRecord } from './ports';
 
-export type FetchLike = (url: string, init: { method: string; headers: Record<string, string>; body: string; signal: AbortSignal }) => Promise<{ ok: boolean; status: number }>;
+export type FetchLike = (url: string, init: { method: string; headers: Record<string, string>; body: string; signal: AbortSignal }) => Promise<{ ok: boolean; status: number; body?: { cancel(): Promise<void> } | null }>;
 
 export const TELEGRAM_TIMEOUT_MS = 5_000;
 
@@ -39,17 +39,19 @@ function failure(code: string): Error {
 export function createTelegramNotifier(config: NonNullable<Environment['telegram']>, fetchImpl: FetchLike = fetch): LeadNotifier {
   return {
     async notify(record) {
-      let response: { ok: boolean; status: number };
+      let response: Awaited<ReturnType<FetchLike>>;
       try {
         response = await fetchImpl(`https://api.telegram.org/bot${config.botToken}/sendMessage`, {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ chat_id: config.chatId, text: formatLeadTelegram(record), disable_web_page_preview: true }),
+          body: JSON.stringify({ chat_id: config.chatId, text: formatLeadTelegram(record), link_preview_options: { is_disabled: true } }),
           signal: AbortSignal.timeout(TELEGRAM_TIMEOUT_MS),
         });
       } catch (error) {
         throw failure(error instanceof Error && error.name === 'TimeoutError' ? 'TELEGRAM_TIMEOUT' : 'TELEGRAM_NETWORK');
       }
+      // Release the connection without reading the body, which is not needed.
+      await response.body?.cancel().catch(() => undefined);
       if (!response.ok) throw failure(`TELEGRAM_HTTP_${response.status}`);
     },
   };

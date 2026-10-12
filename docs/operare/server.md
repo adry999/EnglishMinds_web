@@ -24,7 +24,7 @@ Serverul nu pornește dacă lipsește o variabilă sau are valoare invalidă.
 
 ### Adresa IP a vizitatorului
 
-Limita de trimiteri se calculează pe adresa IP a vizitatorului, iar adresa corectă depinde de lanțul de proxy-uri al hostingului. Regula este una singură: cu `TRUST_PROXY_HOPS=N`, serverul ia a N-a adresă numărând din dreapta în `X-Forwarded-For`. Tot ce e mai în stânga este scris de client și se ignoră. Dacă antetul are mai puține adrese decât N sau lipsește, se folosește adresa conexiunii directe.
+Limita de trimiteri se calculează pe adresa IP a vizitatorului, iar adresa corectă depinde de lanțul de proxy-uri al hostingului. Regula este una singură: cu `TRUST_PROXY_HOPS=N`, serverul ia a N-a adresă numărând din dreapta în `X-Forwarded-For`. Tot ce e mai în stânga este scris de client și se ignoră. Dacă antetul are mai puține adrese decât N sau lipsește, serverul nu folosește nicio adresă: cererea nu intră în limita pe vizitator (ar însemna adresa proxy-ului, comună tuturor) și se aplică doar limita generală a site-ului. Verifică atunci `TRUST_PROXY_HOPS`.
 
 - `0`: local, fără proxy.
 - `1`: un proxy (Apache/Passenger) care adaugă adresa de la care a primit conexiunea. Valoarea probabilă pe cPanel, dar **trebuie verificată pe staging**.
@@ -83,16 +83,18 @@ Notificările (email și Telegram) pleacă după ce răspunsul a ajuns la vizita
 Curățare, o dată pe zi:
 
 ```
-/calea/completa/node /calea/aplicatiei/purge-expired-leads.cjs
+0 3 * * * /calea/completa/node --env-file=/cale/.env /calea/aplicatiei/purge-expired-leads.cjs >> ~/logs/purge.log 2>&1
 ```
 
 Reîncercarea notificărilor, la fiecare 10 minute:
 
 ```
-*/10 * * * * /calea/completa/node --env-file=/cale/.env /calea/aplicatiei/notify-pending-leads.cjs
+*/10 * * * * /calea/completa/node --env-file=/cale/.env /calea/aplicatiei/notify-pending-leads.cjs >> ~/logs/notify.log 2>&1
 ```
 
-Jobul are nevoie de exactamente aceleași variabile de mediu ca aplicația, toate (nu doar cele `DB_*`): configurarea se validează integral la pornire, iar dacă lipsește ceva jobul se oprește fără să șteargă nimic. Rulează-l cu același fișier de mediu (`node --env-file=/cale/.env /cale/purge-expired-leads.cjs`) sau cu variabilele setate în panou. Șterge contactele mai vechi de 12 luni și limitele de trimitere mai vechi de 24 de ore.
+Redirecționarea (`>> ~/logs/... 2>&1`) este necesară: cPanel trimite pe email tot ce scrie un cron, iar altfel ai primi un email la fiecare rulare cu eroare. Creează folderul o dată (`mkdir -p ~/logs`). Jobul scrie în log doar când a găsit cereri de retrimis sau a eșuat; când renunță la o cerere după a treia încercare scrie o eroare cu numărul cererii (id), ca să suni părintele din baza de date.
+
+Jobul are nevoie de exactamente aceleași variabile de mediu ca aplicația, toate (nu doar cele `DB_*`): configurarea se validează integral la pornire, iar dacă lipsește ceva jobul se oprește fără să șteargă nimic. Rulează-l cu același fișier de mediu (`--env-file=/cale/.env`, ca în linia de mai sus) sau cu variabilele setate în panou. Șterge contactele mai vechi de 12 luni și limitele de trimitere mai vechi de 24 de ore.
 
 ## 5. Local
 

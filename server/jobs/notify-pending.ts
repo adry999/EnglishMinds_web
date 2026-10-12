@@ -23,10 +23,17 @@ export async function notifyPending(deps: NotifyPendingDeps): Promise<{ found: n
   });
   let delivered = 0;
   for (const lead of pending) {
+    if (!(await deps.repository.claimNotifyAttempt(lead.id, lead.notifyAttempts))) continue;
     const ok = await deps.dispatcher.dispatch(lead);
-    await deps.repository.recordNotifyAttempt(lead.id, ok, deps.clock.now());
-    if (ok) delivered += 1;
+    if (ok) {
+      await deps.repository.markNotified(lead.id, deps.clock.now());
+      delivered += 1;
+    } else if (lead.notifyAttempts + 1 >= MAX_NOTIFY_ATTEMPTS) {
+      // Id only: the lead is still in the database, call the parent from there.
+      deps.logger.error('[notify] lead gave up after the last attempt, call the parent', { leadId: lead.id, attempts: lead.notifyAttempts + 1 });
+    }
   }
-  deps.logger.info('[notify] pending leads retried', { found: pending.length, delivered });
+  // Silent when there was nothing to do: cPanel mails every line of cron output.
+  if (pending.length > 0) deps.logger.info('[notify] pending leads retried', { found: pending.length, delivered });
   return { found: pending.length, delivered };
 }

@@ -22,6 +22,18 @@ export class FakeLeadRepository implements LeadRepository {
     if (delivered) state.notifiedAt = at;
   }
 
+  async claimNotifyAttempt(id: number, expectedAttempts: number): Promise<boolean> {
+    const state = this.state[id - 1];
+    if (!state || state.attempts !== expectedAttempts) return false;
+    state.attempts += 1;
+    return true;
+  }
+
+  async markNotified(id: number, at: Date): Promise<void> {
+    const state = this.state[id - 1];
+    if (state) state.notifiedAt = at;
+  }
+
   async findPendingNotification(query: PendingNotificationQuery): Promise<StoredLead[]> {
     return this.saved
       .map((record, index) => ({ record, state: this.state[index], id: index + 1 }))

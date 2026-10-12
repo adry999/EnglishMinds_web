@@ -24,10 +24,10 @@ describe('clientIpOf', () => {
     expect(clientIpOf(spoofed, '127.0.0.1', 1)).toBe('172.16.0.1');
   });
 
-  it('falls back to the socket address when the header is missing, empty or shorter than the hops', () => {
-    expect(clientIpOf(undefined, '127.0.0.1', 1)).toBe('127.0.0.1');
-    expect(clientIpOf(' , ', '127.0.0.1', 1)).toBe('127.0.0.1');
-    expect(clientIpOf('203.0.113.7', '127.0.0.1', 2)).toBe('127.0.0.1');
+  it('returns null, not the socket address, when the header is missing, empty or shorter than the hops', () => {
+    expect(clientIpOf(undefined, '127.0.0.1', 1)).toBeNull();
+    expect(clientIpOf(' , ', '127.0.0.1', 1)).toBeNull();
+    expect(clientIpOf('203.0.113.7', '127.0.0.1', 2)).toBeNull();
   });
 
   it('keeps IPv6 addresses intact', () => {

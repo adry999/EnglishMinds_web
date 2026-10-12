@@ -67,6 +67,28 @@ describe('notifyPending', () => {
     await expect(run()).resolves.toEqual({ found: 0, delivered: 0 });
   });
 
+  it('does not log anything when there is nothing to retry', async () => {
+    await expect(run()).resolves.toEqual({ found: 0, delivered: 0 });
+    expect(logger.entries).toEqual([]);
+  });
+
+  it('skips a lead another run has already claimed', async () => {
+    await repository.save(lead('2026-10-11T11:00:00.000Z'));
+    const claim = repository.claimNotifyAttempt.bind(repository);
+    repository.claimNotifyAttempt = async (id) => claim(id, 99);
+    await expect(run()).resolves.toEqual({ found: 1, delivered: 0 });
+    expect(dispatcher.sent).toHaveLength(0);
+  });
+
+  it('logs an error with the lead id only when the last attempt fails', async () => {
+    dispatcher.delivered = false;
+    await repository.save(lead('2026-10-11T11:00:00.000Z'));
+    await repository.claimNotifyAttempt(1, 0);
+    await repository.claimNotifyAttempt(1, 1);
+    await run();
+    expect(logger.entries).toContainEqual({ level: 'error', message: '[notify] lead gave up after the last attempt, call the parent', context: { leadId: 1, attempts: 3 } });
+  });
+
   it('logs counts only', async () => {
     await repository.save(lead('2026-10-11T11:00:00.000Z'));
     await run();

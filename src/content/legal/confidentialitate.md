@@ -55,9 +55,9 @@ Folosim instrumente de statistici și de reclame doar dacă accepți în banneru
 
 ## Transferuri în afara UE
 
-Dacă accepți statisticile sau marketingul în bannerul de cookies, Google (Google Analytics 4 și Google Ads) și Meta (Meta Pixel) pot prelucra date și în Statele Unite ale Americii. Transferul se face în baza Cadrului UE–SUA privind confidențialitatea datelor (Data Privacy Framework), pentru care Comisia Europeană a adoptat decizia de adecvare din 10 iulie 2023, și a clauzelor contractuale standard. Același lucru se întâmplă cu WhatsApp (Meta), dacă tu alegi să trimiți mesajul.
+Dacă accepți statisticile sau marketingul în bannerul de cookies, Google (Google Analytics 4 și Google Ads) și Meta (Meta Pixel) pot prelucra date și în Statele Unite ale Americii. Transferul se face în baza Cadrului UE–SUA privind confidențialitatea datelor (Data Privacy Framework), pentru care Comisia Europeană a adoptat decizia de adecvare din 10 iulie 2023, și a clauzelor contractuale standard. Același lucru se întâmplă cu WhatsApp (Meta), dacă tu alegi să trimiți mesajul. Dacă nu accepți aceste categorii, nu pleacă nicio cerere către Google sau Meta.
 
-Mesajul de notificare trimis academiei pe Telegram (doar numele, telefonul, grupa de vârstă și pagina) este prelucrat pe serverele Telegram Messenger, care se află în afara Uniunii Europene. Folosim acest canal doar pentru ca echipa să te poată suna repede; mesajele se șterg în aceleași 12 luni. Dacă nu accepți aceste categorii, nu pleacă nicio cerere către Google sau Meta. Notificarea Telegram către academie nu depinde de bannerul de cookies, pentru că face parte din prelucrarea cererii tale.
+Mesajul de notificare trimis academiei pe Telegram (doar numele, telefonul, grupa de vârstă și pagina) este prelucrat pe serverele Telegram Messenger, care se află în afara Uniunii Europene. Transferul este necesar pentru a anunța academia despre cererea ta, adică pentru a face demersuri la cererea ta înainte de încheierea unui contract (art. 6 alin. (1) lit. b din GDPR), iar Telegram prelucrează mesajul în afara Uniunii Europene. Folosim acest canal doar pentru ca echipa să te poată suna repede; mesajele se șterg în aceleași 12 luni. Notificarea Telegram către academie nu depinde de bannerul de cookies, pentru că face parte din prelucrarea cererii tale.
 
 ## Meta Pixel: operatori asociați
 

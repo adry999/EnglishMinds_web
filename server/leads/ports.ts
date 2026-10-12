@@ -20,6 +20,13 @@ export interface LeadRepository {
   deleteCreatedBefore(cutoff: Date): Promise<number>;
   /** Counts one notification attempt; sets `notified_at` when it reached at least one channel. */
   recordNotifyAttempt(id: number, delivered: boolean, at: Date): Promise<void>;
+  /**
+   * Reserves a retry: counts one attempt only if the lead still has `expectedAttempts`, so two overlapping cron runs
+   * cannot both take the same lead. `false` when another run got there first.
+   */
+  claimNotifyAttempt(id: number, expectedAttempts: number): Promise<boolean>;
+  /** Sets `notified_at` once a claimed attempt reached at least one channel. */
+  markNotified(id: number, at: Date): Promise<void>;
   findPendingNotification(query: PendingNotificationQuery): Promise<StoredLead[]>;
 }
 

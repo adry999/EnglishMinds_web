@@ -48,6 +48,13 @@ export function createMysqlLeadRepository(pool: Pool): LeadRepository {
     async recordNotifyAttempt(id, delivered, at) {
       await pool.execute('UPDATE leads SET notify_attempts = notify_attempts + 1, notified_at = IF(?, ?, notified_at) WHERE id = ?', [delivered ? 1 : 0, at, id]);
     },
+    async claimNotifyAttempt(id, expectedAttempts) {
+      const [result] = await pool.execute<ResultSetHeader>('UPDATE leads SET notify_attempts = notify_attempts + 1 WHERE id = ? AND notify_attempts = ?', [id, expectedAttempts]);
+      return result.affectedRows === 1;
+    },
+    async markNotified(id, at) {
+      await pool.execute('UPDATE leads SET notified_at = ? WHERE id = ?', [at, id]);
+    },
     async findPendingNotification(query) {
       const [rows] = await pool.execute<RowDataPacket[]>(
         `SELECT * FROM leads

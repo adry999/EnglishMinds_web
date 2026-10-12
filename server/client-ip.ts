@@ -9,12 +9,14 @@ function forwardedAddresses(forwardedFor: string | string[] | undefined): string
 /**
  * `hops` is the number of proxies in front of the app that each append the address they received the
  * connection from. The visitor is therefore the `hops`-th entry from the right; everything further left
- * was written by the client and is ignored. With 0 hops only the socket address is trusted.
+ * was written by the client and is ignored. With 0 hops only the socket address is trusted. With fewer entries than hops there is no trustworthy address and the result is `null`.
  */
 export function clientIpOf(forwardedFor: string | string[] | undefined, remoteAddress: string | undefined, hops: number): string | null {
   if (hops > 0) {
-    const resolved = forwardedAddresses(forwardedFor).at(-hops);
-    if (resolved) return resolved;
+    // Fewer entries than hops means the proxy chain is not what was configured: refuse to guess, because the
+    // socket address would then be a proxy shared by every visitor. Only the site-wide cap applies.
+    const entries = forwardedAddresses(forwardedFor);
+    return entries.length < hops ? null : (entries.at(-hops) ?? null);
   }
   return remoteAddress ?? null;
 }

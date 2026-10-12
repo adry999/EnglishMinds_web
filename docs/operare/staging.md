@@ -47,7 +47,7 @@ Staging-ul se publică automat din branch-ul `staging` (vezi `publicare.md`). Ar
 ## Cron
 
 - [ ] `notify-pending-leads` rulează la 10 minute, cu calea completă către `node`.
-  - Verificare: programarea cron conține jobul (`server.md` §4); în log apare linia „pending leads retried”.
+  - Verificare: programarea cron conține jobul (`server.md` §4); `~/logs/notify.log` există și nu conține erori (jobul scrie „pending leads retried” doar când a retrimis ceva).
 - [ ] `purge-expired-leads` rulează zilnic.
   - Verificare: programarea cron a hostingului (sau `crontab -l`) conține jobul zilnic.
 - [ ] În log apare numărul de rânduri șterse.
