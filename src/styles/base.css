@@ -82,6 +82,11 @@ a {
   top: 16px;
 }
 
+/* The skip link target takes focus (tabindex="-1") without showing a ring around the whole page. */
+#continut:focus {
+  outline: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

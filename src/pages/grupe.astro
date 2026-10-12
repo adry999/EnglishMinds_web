@@ -31,7 +31,7 @@ const courses = site.levels.map((level) =>
   jsonLd={courses}
 >
   <Header active="grupe" />
-  <main id="continut">
+  <main id="continut" tabindex="-1">
     <GrupeHero />
     <CourseDetails />
     {site.levels.map((level) => <LevelSection level={level} />)}

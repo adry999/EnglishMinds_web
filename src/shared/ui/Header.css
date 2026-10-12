@@ -130,7 +130,7 @@
 
 /* Narrow screens with JavaScript: the links live in a panel under the header row. */
 @media (max-width: 1099.98px) {
-  .site-header__inner[data-enhanced] .site-header__nav {
+  .site-header__inner[data-enhanced]:not([data-open]) .site-header__nav {
     display: none;
   }
 
@@ -156,6 +156,17 @@
 
   .site-header__inner[data-open] .site-header__nav a[aria-current='page'] {
     color: var(--color-sun);
+  }
+}
+
+/* Collapse before the element upgrades, so the header doesn't shrink after load (layout shift). */
+@media (max-width: 1099.98px) and (scripting: enabled) {
+  .site-header__inner:not([data-open]) .site-header__nav {
+    display: none;
+  }
+
+  .site-header__toggle[hidden] {
+    display: grid;
   }
 }
 

@@ -14,7 +14,7 @@ if (!entry) throw new Error('Lipsește src/content/legal/cookies.md');
   crumbs={[{ name: entry.data.title, path: '/cookies/' }]}
 >
   <Header />
-  <main id="continut">
+  <main id="continut" tabindex="-1">
     <LegalDocument entry={entry} showCookies />
   </main>
   <Footer />
