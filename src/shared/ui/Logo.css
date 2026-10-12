@@ -7,6 +7,11 @@
   text-decoration: none;
 }
 
+.logo__mark {
+  display: flex;
+  flex-direction: column;
+}
+
 .logo__line {
   display: flex;
   align-items: center;
@@ -23,7 +28,7 @@
 }
 
 .logo__academy {
-  margin: 4px 0 0 21px;
-  font-size: 0.875rem;
-  letter-spacing: 0.03em;
+  margin: 2px 0 0 21px;
+  font-size: 1.1875rem;
+  letter-spacing: 0;
 }

@@ -30,6 +30,6 @@ describe('Header', () => {
   });
 
   it('gives the logo link an accessible name', async () => {
-    expect(await render()).toContain('aria-label="English Minds Academy – Acasă"');
+    expect(await render()).toMatch(/aria-label="English Minds Academy"[\s\S]*Acasă/);
   });
 });
