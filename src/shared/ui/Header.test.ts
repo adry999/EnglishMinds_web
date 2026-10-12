@@ -31,7 +31,11 @@ describe('Header', () => {
 
   it('gives the logo link an accessible name', async () => {
     const html = await render();
-    expect(html).toMatch(/<a class="logo"(?![^>]*aria-label)[^>]*>[\s\S]*?<span class="visually-hidden">Acasă<\/span>\s*<\/a>/);
+    const logo = html.match(/<a class="logo"([^>]*)>([\s\S]*?)<\/a>/);
+    expect(logo?.[1]).toContain('href="/"');
+    expect(logo?.[1]).not.toContain('aria-label');
+    const hidden = [...(logo?.[2] ?? '').matchAll(/<span class="visually-hidden"[^>]*>([^<]*)<\/span>/g)].map((m) => m[1]);
+    expect(hidden).toEqual(['Acasă']);
     expect(html).toContain('role="img" aria-label="English Minds Academy"');
   });
 });
