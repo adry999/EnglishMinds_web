@@ -19,7 +19,7 @@ export type BlogPostingInput = {
 };
 
 const CONTEXT = 'https://schema.org';
-const organizationId = (url: string): string => new URL('/#organizatie', url).href;
+const organizationId = (url: string): string => new URL('./#organizatie', url).href;
 
 export function serializeJsonLd(data: object): string {
   return JSON.stringify(data).replace(/</g, '\\u003c');
@@ -31,7 +31,7 @@ export function organizationJsonLd(input: OrganizationInput): object {
     '@type': ['EducationalOrganization', 'LocalBusiness'],
     '@id': organizationId(input.url),
     name: input.name,
-    url: new URL('/', input.url).href,
+    url: new URL('./', input.url).href,
     telephone: input.telephone,
     address: {
       '@type': 'PostalAddress',

@@ -19,6 +19,7 @@ const GENERAL_ERROR = 'Verifică datele și încearcă din nou.';
 const MIN_FILL_MS = MIN_ELAPSED_MS + 200;
 const SEND_FAILED = 'Nu am putut trimite cererea. Scrie-ne pe WhatsApp sau sună-ne.';
 const SENDING = 'Se trimite…';
+const DEMO_NOTICE = 'Aceasta este o versiune demo a site-ului. Trimiterea formularului este dezactivată.';
 const DONE_OPENED = 'Ți-am deschis WhatsApp cu mesajul completat. Trimite-l și te sunăm să stabilim ziua lecției.';
 const DONE_BLOCKED = 'Am primit datele tale și te sunăm în curând. Dacă vrei, scrie-ne și pe WhatsApp.';
 const DONE_UNSAVED = 'Nu am putut salva cererea pe site. Trimite mesajul din WhatsApp și rezervarea se finalizează acolo.';
@@ -121,6 +122,10 @@ export class LeadForm extends HTMLElement {
       this.showFieldErrors(form, local.fields);
       return;
     }
+    if (this.dataset.demo !== undefined) {
+      this.setStatus(form, DEMO_NOTICE);
+      return;
+    }
     const popup = window.open('', '_blank');
     if (popup) popup.opener = null;
     this.setSubmitting(form, true);
@@ -165,8 +170,12 @@ export class LeadForm extends HTMLElement {
     const button = form.querySelector<HTMLButtonElement>('.lead-form__submit');
     if (button) button.disabled = submitting;
     form.toggleAttribute('aria-busy', submitting);
+    this.setStatus(form, submitting ? SENDING : '');
+  }
+
+  private setStatus(form: HTMLFormElement, message: string): void {
     const status = form.querySelector('.lead-form__status');
-    if (status) status.textContent = submitting ? SENDING : '';
+    if (status) status.textContent = message;
   }
 
   private showFieldErrors(form: HTMLFormElement, fields: readonly string[]): void {

@@ -1,5 +1,6 @@
 ---
 import { render } from 'astro:content';
+import { withBase } from '@shared/lib/with-base';
 import Eyebrow from '@shared/ui/Eyebrow.astro';
 import Photo from '@shared/ui/Photo.astro';
 import type { BlogPost } from '../data/posts';
@@ -32,5 +33,5 @@ const { Content } = await render(post);
     <Content />
   </div>
   <EmaTip />
-  <a class="post__back" href="/blog/">← Toate articolele</a>
+  <a class="post__back" href={withBase('/blog/')}>← Toate articolele</a>
 </article>

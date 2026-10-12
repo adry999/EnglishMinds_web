@@ -10,6 +10,7 @@ import TestTeaser from '@sections/home/TestTeaser.astro';
 import ValueCards from '@sections/home/ValueCards.astro';
 import { site } from '@shared/content/site';
 import { faqJsonLd, organizationJsonLd } from '@shared/seo/json-ld';
+import { siteRootUrl } from '@shared/seo/page-meta';
 import Footer from '@shared/ui/Footer.astro';
 import Header from '@shared/ui/Header.astro';
 import StickyContact from '@shared/ui/StickyContact.astro';
@@ -20,7 +21,7 @@ import StickyContact from '@shared/ui/StickyContact.astro';
   jsonLd={[
     organizationJsonLd({
       name: site.name,
-      url: site.url,
+      url: siteRootUrl(Astro.site, site.url, import.meta.env.BASE_URL),
       telephone: site.contact.phoneE164,
       streetAddress: site.contact.street,
       addressLocality: site.contact.city,

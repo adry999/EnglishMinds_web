@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canonicalUrl, fullTitle, ogImageSize } from './page-meta';
+import { canonicalUrl, fullTitle, ogImageSize, siteRootUrl } from './page-meta';
 
 describe('canonicalUrl', () => {
   it('joins the base and the path with a trailing slash', () => {
@@ -14,6 +14,17 @@ describe('canonicalUrl', () => {
 
   it('drops query and hash', () => {
     expect(canonicalUrl('/blog/?categorie=sfaturi#x', 'https://englishminds.ro')).toBe('https://englishminds.ro/blog/');
+  });
+});
+
+describe('siteRootUrl', () => {
+  it('falls back to the configured address when Astro gives no site', () => {
+    expect(siteRootUrl(undefined, 'https://englishminds.ro', '/')).toBe('https://englishminds.ro/');
+  });
+
+  it('joins the Astro site and the base path, always ending in a slash', () => {
+    expect(siteRootUrl(new URL('https://adry999.github.io'), 'https://englishminds.ro', '/EnglishMinds_web')).toBe('https://adry999.github.io/EnglishMinds_web/');
+    expect(siteRootUrl(new URL('https://adry999.github.io'), 'https://englishminds.ro', '/EnglishMinds_web/')).toBe('https://adry999.github.io/EnglishMinds_web/');
   });
 });
 

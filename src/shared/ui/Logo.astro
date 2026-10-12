@@ -1,4 +1,5 @@
 ---
+import { withBase } from '@shared/lib/with-base';
 import './Logo.css';
 
 interface Props {
@@ -7,7 +8,7 @@ interface Props {
 
 const { href = '/' } = Astro.props;
 ---
-<a class="logo" href={href}>
+<a class="logo" href={withBase(href)}>
   <span class="logo__mark" role="img" aria-label="English Minds Academy">
     <span class="logo__line">english</span>
     <span class="logo__line"><span class="logo__star"></span>minds</span>

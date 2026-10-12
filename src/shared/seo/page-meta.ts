@@ -4,6 +4,12 @@ export function canonicalUrl(pathname: string, base: string): string {
   return new URL(withSlash, base).href;
 }
 
+/** Address the site is served from, with its base path and a trailing slash: `https://host/` or `https://host/base/`. */
+export function siteRootUrl(astroSite: URL | undefined, fallback: string, base: string): string {
+  const prefix = base.replace(/\/+$/, '');
+  return new URL(`${prefix}/`, astroSite ?? fallback).href;
+}
+
 export function fullTitle(title: string, siteName: string): string {
   return title === siteName ? title : `${title} · ${siteName}`;
 }
