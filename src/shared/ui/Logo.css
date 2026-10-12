@@ -7,6 +7,11 @@
   text-decoration: none;
 }
 
+.logo__mark {
+  display: flex;
+  flex-direction: column;
+}
+
 .logo__line {
   display: flex;
   align-items: center;
@@ -22,6 +27,8 @@
   clip-path: polygon(50% 0, 64.5% 24.9%, 93.3% 25%, 79% 50%, 93.3% 75%, 64.5% 75.1%, 50% 100%, 35.5% 75.1%, 6.7% 75%, 21% 50%, 6.7% 25%, 35.5% 24.9%);
 }
 
+/* Logotype text is exempt from WCAG 1.4.3 (contrast), so the axe color-contrast
+   hit on .logo__academy is expected. Keep the designed proportions. */
 .logo__academy {
   margin: 4px 0 0 21px;
   font-size: 0.875rem;

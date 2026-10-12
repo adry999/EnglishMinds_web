@@ -7,8 +7,11 @@ interface Props {
 
 const { href = '/' } = Astro.props;
 ---
-<a class="logo" href={href} aria-label="English Minds Academy – Acasă">
-  <span class="logo__line" aria-hidden="true">english</span>
-  <span class="logo__line" aria-hidden="true"><span class="logo__star"></span>minds</span>
-  <span class="logo__academy" aria-hidden="true">ACADEMY</span>
+<a class="logo" href={href}>
+  <span class="logo__mark" role="img" aria-label="English Minds Academy">
+    <span class="logo__line">english</span>
+    <span class="logo__line"><span class="logo__star"></span>minds</span>
+    <span class="logo__academy">ACADEMY</span>
+  </span>
+  <span class="visually-hidden">Acasă</span>
 </a>

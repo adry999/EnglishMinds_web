@@ -30,7 +30,7 @@ export default defineConfig(
     },
   },
   {
-    files: ['server/config/environment.ts', 'astro.config.ts', 'server/**/*.test.ts', 'tests/support/mysql.ts'],
+    files: ['server/config/environment.ts', 'astro.config.ts', 'server/**/*.test.ts', 'tests/support/mysql.ts', 'playwright.config.ts'],
     rules: { 'no-restricted-properties': 'off' },
   },
   {
