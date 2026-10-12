@@ -14,7 +14,7 @@ Există o singură activitate de prelucrare: „Cereri pentru lecția demo".
 | Temei legal | Consimțământul persoanei, art. 6 alin. (1) lit. a GDPR. |
 | Scop și temei: securitate | Securitate și prevenirea abuzurilor — interes legitim, art. 6(1)(f) GDPR. Date: amprenta IP (hash cu sare, în `rate_limits`) și jurnalele serverului de găzduire. |
 | Categorii de persoane | Părinți care completează formularul. |
-| Categorii de date | Numele părintelui, telefonul, grupa de vârstă a copilului, pagina de proveniență, nivelul recomandat de test (dacă există), parametrii UTM, momentul acordului, versiunea politicii. |
+| Categorii de date | Numele părintelui, telefonul, grupa de vârstă a copilului, formularul din care a venit cererea (pagina principală, lecția demo sau testul de nivel), nivelul recomandat de test (dacă există), parametrii UTM, momentul acordului, versiunea politicii. |
 | Date care NU se prelucrează | Numele copilului, răspunsurile la test, IP în clar în baza de date (serverul îl primește la cerere; se stochează doar amprenta), user-agent. |
 | Destinatari / persoane împuternicite | Furnizorul de găzduire, locație UE (de confirmat cu furnizorul ales la lansare); serviciul de email (serverul SMTP al domeniului), care trimite notificarea; furnizorul căsuței de email a academiei, care primește notificarea; WhatsApp (Meta), doar dacă persoana alege să trimită mesajul. |
 | Transferuri în afara UE | Niciunul de către academie, cu hosting în UE (de confirmat cu furnizorul ales la lansare). WhatsApp/Meta se supun politicii proprii. |
