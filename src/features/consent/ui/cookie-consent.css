@@ -9,9 +9,9 @@
   --cc-btn-primary-bg: var(--color-navy);
   --cc-btn-primary-color: var(--color-white);
   --cc-btn-primary-border-color: var(--color-navy);
-  --cc-btn-primary-hover-bg: #0b1530;
+  --cc-btn-primary-hover-bg: var(--color-navy-dark);
   --cc-btn-primary-hover-color: var(--color-white);
-  --cc-btn-primary-hover-border-color: #0b1530;
+  --cc-btn-primary-hover-border-color: var(--color-navy-dark);
   --cc-btn-secondary-bg: var(--color-cream);
   --cc-btn-secondary-color: var(--color-navy);
   --cc-btn-secondary-border-color: var(--color-cream-border);
