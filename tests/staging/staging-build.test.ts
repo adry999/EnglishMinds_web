@@ -1,19 +1,12 @@
-import { execFileSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { readFileSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { buildSiteOnSameDrive } from '../support/astro-build';
 
 let outDir = '';
 
 beforeAll(() => {
-  // Inside the project: Astro renames files out of .astro/, which fails across drives (EXDEV) for an OS temp dir.
-  const parent = join(process.cwd(), 'node_modules', '.cache');
-  mkdirSync(parent, { recursive: true });
-  outDir = mkdtempSync(join(parent, 'em-staging-'));
-  execFileSync(process.execPath, ['node_modules/astro/bin/astro.mjs', 'build', '--outDir', outDir], {
-    env: { ...process.env, SITE_ENV: 'staging' },
-    stdio: 'inherit',
-  });
+  outDir = buildSiteOnSameDrive('staging', { SITE_ENV: 'staging' });
 }, 300_000);
 
 afterAll(() => {

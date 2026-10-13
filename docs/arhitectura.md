@@ -162,6 +162,8 @@ Corpul JSON: `parentName`, `phone`, `childAgeGroup`, `source` (`home`, `landing`
 - **Previzualizare imagini sociale:** `ogImageSize` dă cel mai mare decupaj 1,91:1 care încape în sursă; Astro nu mărește imaginile, deci o copertă mică nu trebuie să declare 1200×630.
 - **Fereastra de tipărire:** `openPrintWindowSynchronously` (`level-test.element.ts`) se apelează înainte de orice `await`; Safari blochează altfel fereastra, fiind considerată neinițiată de utilizator.
 - **Google tag:** `GTAG_STUB` (`consent-defaults.ts`) pune în `dataLayer` obiectul `arguments`, nu un array; altfel `gtag.js` ignoră comanda. Evenimentele GTM (`generate_lead`, `em_consent`) sunt obiecte simple, nu comenzi gtag.
+- **Teste de build (`staging`, `preview`):** `buildSiteOnSameDrive` construiește în `node_modules/.cache`, nu în directorul temporar al sistemului: Astro mută fișiere din `.astro/`, ceea ce pe Windows eșuează între unități diferite (EXDEV). Vitest setează `BASE_URL=/`, iar Vite lasă variabila să suprascrie `base`, deci helperul o scoate din mediu.
+- **Migrația 003:** folosește variabile de sesiune și `PREPARE`, care trăiesc pe o singură conexiune; testele o rulează prin `runMigrationsOnOneConnection`.
 - **Teste în happy-dom:** `connectedCallback` rulează înainte ca descendenții din `innerHTML` să existe, deci testele de elemente parsează într-un container detașat și abia apoi atașează (`attachAfterParsing`).
 
 ## Teste

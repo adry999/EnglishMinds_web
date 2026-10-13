@@ -1,9 +1,6 @@
 import { spawnSync } from 'node:child_process';
 import { join, resolve } from 'node:path';
-import { describe, expect, it, vi } from 'vitest';
-
-// The first cruise on a cold start can exceed the default 5s.
-vi.setConfig({ testTimeout: 60_000 });
+import { describe, expect, it } from 'vitest';
 
 const root = resolve(import.meta.dirname, '../..');
 const fixture = join(import.meta.dirname, 'fixture');

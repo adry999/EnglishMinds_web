@@ -16,25 +16,24 @@ const testEnv: Record<string, string> = {
 };
 
 describe.skipIf(!hasBash)('scripts/deploy.sh --dry-run', () => {
-  // The script only checks that the build outputs exist, so a stub tree keeps the test independent of the build order in `verify`.
-  let work = '';
+  let stubBuildTree = '';
   beforeAll(() => {
-    work = mkdtempSync(join(tmpdir(), 'em-deploy-'));
-    mkdirSync(join(work, 'dist'));
-    mkdirSync(join(work, 'dist-server'));
+    stubBuildTree = mkdtempSync(join(tmpdir(), 'em-deploy-'));
+    mkdirSync(join(stubBuildTree, 'dist'));
+    mkdirSync(join(stubBuildTree, 'dist-server'));
     for (const file of ['dist/index.html', 'dist-server/app.cjs', 'dist-server/purge-expired-leads.cjs', 'dist-server/notify-pending-leads.cjs']) {
-      writeFileSync(join(work, file), '');
+      writeFileSync(join(stubBuildTree, file), '');
     }
   });
-  afterAll(() => rmSync(work, { recursive: true, force: true }));
+  afterAll(() => rmSync(stubBuildTree, { recursive: true, force: true }));
 
   const fails = (override: Record<string, string>) =>
-    spawnSync('bash', [script, '--dry-run'], { env: { ...testEnv, ...override }, cwd: work, encoding: 'utf8' }).status;
+    spawnSync('bash', [script, '--dry-run'], { env: { ...testEnv, ...override }, cwd: stubBuildTree, encoding: 'utf8' }).status;
 
   const run = (env: Record<string, string>) =>
-    execFileSync('bash', [script, '--dry-run'], { env, cwd: work, encoding: 'utf8' });
+    execFileSync('bash', [script, '--dry-run'], { env, cwd: stubBuildTree, encoding: 'utf8' });
 
-  it('mirrors dist/ to the web root in two passes, the second with --delete, and protects host-owned folders', () => {
+  it('mirrors dist/ to the web root in two passes, the second with --delete, and protects host-owned files and folders', () => {
     const mirrors = run(testEnv)
       .split('\n')
       .filter((line) => line.startsWith('mirror '));
@@ -42,7 +41,7 @@ describe.skipIf(!hasBash)('scripts/deploy.sh --dry-run', () => {
     expect(mirrors[0]).not.toContain('--delete');
     expect(mirrors[1]).toContain('--delete');
     for (const mirror of mirrors) {
-      for (const glob of ['api/', '.well-known/', 'cgi-bin/']) {
+      for (const glob of ['api/', '.well-known/', 'cgi-bin/', '.user.ini', 'error_log', '.htpasswds/']) {
         expect(mirror).toContain(`--exclude-glob ${glob}`);
       }
       expect(mirror.endsWith(' dist/ /home/u/public_html')).toBe(true);
@@ -65,21 +64,12 @@ describe.skipIf(!hasBash)('scripts/deploy.sh --dry-run', () => {
     expect(failExit).toBeGreaterThan(mkdir);
   });
 
-  it('excludes host-managed files from the mirror', () => {
-    const mirrors = run(testEnv).split('\n').filter((line) => line.startsWith('mirror '));
-    for (const mirror of mirrors) {
-      for (const glob of ['.user.ini', 'error_log', '.htpasswds/']) {
-        expect(mirror).toContain(`--exclude-glob ${glob}`);
-      }
-    }
-  });
-
   it('announces the staging auth block when DEPLOY_HTPASSWD_FILE is set, without touching dist/', () => {
     const output = run({ ...testEnv, DEPLOY_HTPASSWD_FILE: '/home/u/.htpasswds/staging/passwd' });
     expect(output).toContain('Basic auth block');
     expect(output).toContain('/home/u/.htpasswds/staging/passwd');
-    expect(existsSync(join(work, 'dist/.htaccess'))).toBe(false);
-    expect(existsSync(join(work, 'dist-server/restart.txt'))).toBe(false);
+    expect(existsSync(join(stubBuildTree, 'dist/.htaccess'))).toBe(false);
+    expect(existsSync(join(stubBuildTree, 'dist-server/restart.txt'))).toBe(false);
   });
 
   it('does not mention the auth block without DEPLOY_HTPASSWD_FILE', () => {
@@ -112,18 +102,19 @@ describe.skipIf(!hasBash)('scripts/deploy.sh --dry-run', () => {
     expect(fails(override)).not.toBe(0);
   });
 
-  it('accepts a valid pair of roots', () => {
-    expect(() => run(testEnv)).not.toThrow();
-  });
-
   it('fails with a "missing" message when DEPLOY_HOST is not set', () => {
     const env = { ...testEnv };
     delete env.DEPLOY_HOST;
-    const result = spawnSync('bash', [script, '--dry-run'], { env, cwd: work, encoding: 'utf8' });
+    const result = spawnSync('bash', [script, '--dry-run'], { env, cwd: stubBuildTree, encoding: 'utf8' });
     expect(result.status).not.toBe(0);
     expect(result.stderr).toContain('missing');
   });
 });
+
+function writeLftpStub(path: string): void {
+  writeFileSync(path, '#!/usr/bin/env bash\nprintf "%s\\n" "$@" > lftp-args.txt\ncp dist/.htaccess htaccess-seen.txt 2>/dev/null || true\n');
+  chmodSync(path, 0o755);
+}
 
 describe.skipIf(!hasBash)('scripts/deploy.sh real run with a stub lftp', () => {
   const originalHtaccess = 'Options -Indexes\n';
@@ -139,13 +130,7 @@ describe.skipIf(!hasBash)('scripts/deploy.sh real run with a stub lftp', () => {
     for (const file of ['dist/index.html', 'dist-server/app.cjs', 'dist-server/purge-expired-leads.cjs', 'dist-server/notify-pending-leads.cjs', 'key', 'known_hosts']) {
       writeFileSync(join(work, file), '');
     }
-    // The stub records its arguments and the .htaccess it sees at call time, then succeeds.
-    const stub = join(work, 'bin', 'lftp');
-    writeFileSync(
-      stub,
-      '#!/usr/bin/env bash\nprintf "%s\\n" "$@" > lftp-args.txt\ncp dist/.htaccess htaccess-seen.txt 2>/dev/null || true\n',
-    );
-    chmodSync(stub, 0o755);
+    writeLftpStub(join(work, 'bin', 'lftp'));
     env = {
       ...testEnv,
       PATH: `${join(work, 'bin')}${delimiter}${process.env.PATH ?? ''}`,
