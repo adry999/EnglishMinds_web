@@ -230,17 +230,20 @@
   }
 }
 
-/* Reserve the form's height until lead-form.element.ts upgrades it (it swaps the short no-JS fallback for the form),
-   so the sections below do not jump. Values are the rendered form heights, rounded down. Without JS nothing is reserved. */
+.landing-hero__card {
+  --lead-form-reserved-height-narrow: 800px;
+  --lead-form-reserved-height: 700px;
+}
+
 @media (scripting: enabled) {
   .landing-hero__card lead-form:not(:defined) {
-    min-height: 800px;
+    min-height: var(--lead-form-reserved-height-narrow);
   }
 }
 
 @media (scripting: enabled) and (min-width: 340px) {
   .landing-hero__card lead-form:not(:defined) {
-    min-height: 700px;
+    min-height: var(--lead-form-reserved-height);
   }
 }
 

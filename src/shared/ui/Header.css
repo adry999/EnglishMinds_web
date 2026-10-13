@@ -13,7 +13,6 @@
   padding: 16px var(--gutter);
 }
 
-/* Without JavaScript the links wrap under the logo; site-menu.element.ts collapses them behind the toggle. */
 .site-header__nav {
   grid-row: 2;
   grid-column: 1 / -1;
@@ -77,7 +76,6 @@
   outline-offset: 2px;
 }
 
-/* Three bars that turn into a cross while the menu is open. */
 .site-header__bars,
 .site-header__bars::before,
 .site-header__bars::after {
@@ -128,7 +126,6 @@
   }
 }
 
-/* Narrow screens with JavaScript: the links live in a panel under the header row. */
 @media (max-width: 1099.98px) {
   .site-header__inner[data-enhanced]:not([data-open]) .site-header__nav {
     display: none;
@@ -159,7 +156,6 @@
   }
 }
 
-/* Collapse before the element upgrades, so the header doesn't shrink after load (layout shift). */
 @media (max-width: 1099.98px) and (scripting: enabled) {
   .site-header__inner:not([data-open]) .site-header__nav {
     display: none;

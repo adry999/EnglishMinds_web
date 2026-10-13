@@ -7,7 +7,6 @@
   outline-color: var(--color-sun);
 }
 
-/* :where() keeps this at zero specificity, so the footer's own link rules (social button, legal links, hovers) win. */
 .site-footer :where(a:not(.button)) {
   color: var(--color-white);
 }
@@ -69,7 +68,6 @@
   line-height: 1.5;
 }
 
-/* Instagram as a pill in the brand style: white outline that fills with sun yellow on hover. */
 .site-footer__social {
   display: inline-flex;
   align-items: center;
@@ -242,7 +240,6 @@
   text-decoration: underline;
 }
 
-/* Without the call to action (home page, after its own contact section) a rule separates the columns from the page. */
 .site-footer__columns:first-child {
   padding-top: 40px;
   border-top: 1px solid rgb(255 255 255 / 0.18);

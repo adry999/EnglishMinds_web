@@ -24,7 +24,6 @@ export class BlogFilter extends HTMLElement {
     for (const pill of this.pills()) {
       pill.setAttribute('aria-pressed', String((pill.dataset.category ?? '') === category));
     }
-    // 'shown' counts visible items so far; the first one becomes the featured card.
     let shown = 0;
     for (const item of this.items()) {
       const show = category === '' || item.dataset.category === category;

@@ -1,4 +1,3 @@
-/** Collapses the main navigation behind a toggle on narrow screens. Without JavaScript the links stay visible. */
 export class SiteMenu extends HTMLElement {
   private toggle: HTMLButtonElement | null = null;
 
