@@ -71,7 +71,6 @@ fi
 
 : "${DEPLOY_KEY_FILE:?missing}" "${DEPLOY_KNOWN_HOSTS_FILE:?missing}"
 
-
 : > "$RESTART_TRIGGER"
 if [[ -n "$HTPASSWD_FILE" ]]; then
   HTACCESS_BACKUP="$(mktemp)"

@@ -32,7 +32,11 @@ export function createSpeech(win: Window): Speech {
       }
     },
     cancel() {
-      synth?.cancel();
+      try {
+        synth?.cancel();
+      } catch {
+        return;
+      }
     },
   };
 }

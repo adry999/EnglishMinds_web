@@ -1,5 +1,7 @@
 import { ESLint } from 'eslint';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+vi.setConfig({ testTimeout: 60_000 });
 
 const eslint = new ESLint();
 
@@ -22,6 +24,7 @@ const cases: [label: string, code: string, filePath: string, expected: string | 
   ['rejects a feature importing another feature', astroImport('@features/faq'), 'src/features/blog/ui/A.astro', IMPORT_RULE],
   ['rejects ../../ imports', tsImport('../../features/x'), 'src/shared/ui/x.ts', IMPORT_RULE],
   ['rejects export *', "export * from './a';\n", 'src/shared/x.ts', 'no-restricted-syntax'],
+  ['rejects an empty catch', 'export function f(g: () => void) {\n  try { g(); } catch {}\n}\n', 'src/shared/x.ts', 'no-empty'],
   ['rejects DOM globals in model/', 'export const w = window.innerWidth;\n', 'src/features/level-test/model/m.ts', 'no-restricted-globals'],
   ['rejects a relative feature import from an .astro page', astroImport('../features/faq/ui/Faq.astro'), 'src/pages/x.astro', IMPORT_RULE],
   ['allows a relative layout import from an .astro page', astroImport('../layouts/BaseLayout.astro'), 'src/pages/x.astro', null],

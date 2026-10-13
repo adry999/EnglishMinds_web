@@ -53,7 +53,7 @@ Mesajul conține doar numele părintelui, telefonul, grupa de vârstă, pagina �
 
 Notificările (email și Telegram) pleacă după ce răspunsul a ajuns la vizitator. Dacă un canal eșuează, contactul rămâne salvat, iar eroarea apare în loguri ca avertisment, fără date personale.
 
-Fiecare cerere salvată are în baza de date `notified_at` (momentul în care cel puțin un canal a reușit) și `notify_attempts`. Dacă niciun canal nu a reușit (SMTP căzut, parola de email schimbată, aplicația repornită în timpul trimiterii), jobul `notify-pending-leads` o retrimite: cererile mai vechi de 5 minute și mai noi de 7 zile, de cel mult 3 ori în total (prima încercare se numără). Dacă o cerere rămâne cu `notified_at` gol în phpMyAdmin, ea nu a ajuns la nimeni: sună părintele din baza de date.
+Fiecare cerere salvată are în baza de date `notified_at` (momentul în care cel puțin un canal a reușit) și `notify_attempts`. Dacă niciun canal nu a reușit (SMTP căzut, parola de email schimbată, aplicația repornită în timpul trimiterii), jobul `notify-pending-leads` o retrimite: cererile mai vechi de 5 minute și mai noi de 7 zile, de cel mult 3 ori în total (prima încercare se numără). Două rulări ale jobului nu iau niciodată aceeași cerere, deci nu o retrimit împreună; o retrimitere tot e posibilă dacă prima trimitere durează mai mult de 5 minute sau dacă marcarea ca notificată eșuează după livrare. Dacă o cerere rămâne cu `notified_at` gol în phpMyAdmin, ea nu a ajuns la nimeni: sună părintele din baza de date.
 
 ## 2. Baza de date
 
@@ -83,7 +83,7 @@ Reîncercarea notificărilor, la fiecare 10 minute:
 
 Redirecționarea (`>> ~/logs/... 2>&1`) este necesară: cPanel trimite pe email tot ce scrie un cron, iar altfel ai primi un email la fiecare rulare cu eroare. Creează folderul o dată (`mkdir -p ~/logs`). Jobul scrie în log doar când a găsit cereri de retrimis sau a eșuat; când renunță la o cerere după a treia încercare scrie o eroare cu numărul cererii (id), ca să suni părintele din baza de date.
 
-Jobul are nevoie de exactamente aceleași variabile de mediu ca aplicația, toate (nu doar cele `DB_*`): configurarea se validează integral la pornire, iar dacă lipsește ceva jobul se oprește fără să șteargă nimic. Rulează-l cu același fișier de mediu (`--env-file=/cale/.env`, ca în linia de mai sus) sau cu variabilele setate în panou. Rulările pot să se suprapună fără probleme: nu există risc de dublă trimitere. Curățarea șterge contactele mai vechi de 12 luni și limitele de trimitere mai vechi de 24 de ore.
+Jobul are nevoie de exactamente aceleași variabile de mediu ca aplicația, toate (nu doar cele `DB_*`): configurarea se validează integral la pornire, iar dacă lipsește ceva jobul se oprește fără să șteargă nimic. Rulează-l cu același fișier de mediu (`--env-file=/cale/.env`, ca în linia de mai sus) sau cu variabilele setate în panou. Curățarea șterge contactele mai vechi de 12 luni și limitele de trimitere mai vechi de 24 de ore.
 
 ## 4. Local
 

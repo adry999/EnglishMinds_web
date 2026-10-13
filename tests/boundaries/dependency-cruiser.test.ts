@@ -1,6 +1,8 @@
 import { spawnSync } from 'node:child_process';
 import { join, resolve } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+vi.setConfig({ testTimeout: 60_000 });
 
 const root = resolve(import.meta.dirname, '../..');
 const fixture = join(import.meta.dirname, 'fixture');

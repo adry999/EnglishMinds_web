@@ -76,7 +76,7 @@ export class LeadForm extends HTMLElement {
     form.hidden = false;
     form.addEventListener('submit', (event) => {
       event.preventDefault();
-      void this.submit(form);
+      this.submit(form).catch((error: unknown) => console.error('[lead-form] submit failed', error));
     });
     form.addEventListener('input', (event) => this.clearError(form, event.target));
     form.addEventListener('change', (event) => this.clearError(form, event.target));

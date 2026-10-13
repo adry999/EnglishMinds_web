@@ -30,7 +30,7 @@ export async function runMigrationsOnOneConnection(pool: Pool): Promise<void> {
       const statements = readFileSync(join(MIGRATIONS, file), 'utf8')
         .split(/;[ \t]*\r?\n/)
         .map((statement) => statement.trim())
-        .filter((statement) => statement !== '');
+        .filter((statement) => statement.replace(/^--.*$/gm, '').trim() !== '');
       for (const statement of statements) await connection.query(statement);
     }
   } finally {

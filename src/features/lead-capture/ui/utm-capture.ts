@@ -5,21 +5,23 @@ function consentGiven(): boolean {
   return (document.documentElement.dataset[CONSENT_DATASET_KEY] ?? '').trim() !== '';
 }
 
-function saveUtmToSession(): void {
+function saveUtmToSession(): boolean {
   const utm = parseUtm(window.location.search);
-  if (!utm) return;
+  if (!utm) return false;
   try {
     sessionStorage.setItem(UTM_STORAGE_KEY, JSON.stringify(utm));
+    return true;
   } catch {
-    return;
+    return false;
   }
 }
 
-function clearSavedUtm(): void {
+function clearSavedUtm(): boolean {
   try {
     sessionStorage.removeItem(UTM_STORAGE_KEY);
+    return true;
   } catch {
-    return;
+    return false;
   }
 }
 

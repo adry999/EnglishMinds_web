@@ -188,4 +188,4 @@ Biblioteca de cookie-uri ascunde bannerul de browserele automate; testele E2E î
 
 ## Publicare
 
-CI-ul rulează la fiecare push. După un CI verde, GitHub Actions publică prin SFTP: `main` în producție (cu aprobare), `staging` pe subdomeniul de staging. Detalii: [`operare/publicare.md`](operare/publicare.md).
+CI-ul rulează la fiecare push pe `main`/`staging` și la fiecare pull request. După un CI verde, GitHub Actions publică prin SFTP: `main` în producție (cu aprobare), `staging` pe subdomeniul de staging. Detalii: [`operare/publicare.md`](operare/publicare.md).

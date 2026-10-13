@@ -231,48 +231,47 @@
 }
 
 .landing-hero__card {
-  --lead-form-reserved-height-narrow: 800px;
-  --lead-form-reserved-height: 700px;
+  --lead-form-reserved-height: 800px;
 }
 
 @media (scripting: enabled) {
-  .landing-hero__card lead-form:not(:defined) {
-    min-height: var(--lead-form-reserved-height-narrow);
-  }
-}
-
-@media (scripting: enabled) and (min-width: 340px) {
   .landing-hero__card lead-form:not(:defined) {
     min-height: var(--lead-form-reserved-height);
   }
 }
 
-@media (scripting: enabled) and (min-width: 370px) {
-  .landing-hero__card lead-form:not(:defined) {
-    min-height: 636px;
+@media (min-width: 340px) {
+  .landing-hero__card {
+    --lead-form-reserved-height: 700px;
   }
 }
 
-@media (scripting: enabled) and (min-width: 470px) {
-  .landing-hero__card lead-form:not(:defined) {
-    min-height: 593px;
+@media (min-width: 370px) {
+  .landing-hero__card {
+    --lead-form-reserved-height: 636px;
   }
 }
 
-@media (scripting: enabled) and (min-width: 560px) {
-  .landing-hero__card lead-form:not(:defined) {
-    min-height: 436px;
+@media (min-width: 470px) {
+  .landing-hero__card {
+    --lead-form-reserved-height: 593px;
   }
 }
 
-@media (scripting: enabled) and (min-width: 700px) {
-  .landing-hero__card lead-form:not(:defined) {
-    min-height: 414px;
+@media (min-width: 560px) {
+  .landing-hero__card {
+    --lead-form-reserved-height: 436px;
   }
 }
 
-@media (scripting: enabled) and (min-width: 1100px) {
-  .landing-hero__card lead-form:not(:defined) {
-    min-height: 593px;
+@media (min-width: 700px) {
+  .landing-hero__card {
+    --lead-form-reserved-height: 414px;
+  }
+}
+
+@media (min-width: 1100px) {
+  .landing-hero__card {
+    --lead-form-reserved-height: 593px;
   }
 }
