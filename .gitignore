@@ -8,3 +8,6 @@ dist-server/
 test-results/
 playwright-report/
 .lighthouseci/
+
+# Local notes
+CASE_STUDY_BRIEF_EnglishMinds_web.md
