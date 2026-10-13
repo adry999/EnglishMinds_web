@@ -40,7 +40,7 @@ Toate pleacă doar la răspunsul `201` al formularului și doar cu acordul pentr
 
 ## Setări obligatorii în conturile Google și Meta
 
-Checklist de bifat la configurarea conturilor. Am promis că nu trimitem nume sau telefon, iar consimțământul trebuie respectat; setările automate ale furnizorilor pot încălca ambele.
+Checklist de bifat la configurarea conturilor. Site-ul nu trimite nume sau telefon și respectă consimțământul; setările automate ale furnizorilor pot încălca ambele.
 
 - [ ] Meta Events Manager: „Automatic Advanced Matching" OFF și „Configurare automată a evenimentelor" OFF. De ce: altfel pixelul citește numele și telefonul din formular și le trimite hashuite.
 - [ ] Google Ads: „Enhanced conversions" (automatic) OFF. De ce: altfel Google colectează date din formular.
@@ -53,10 +53,6 @@ Checklist de bifat la configurarea conturilor. Am promis că nu trimitem nume sa
 - Google Tag Assistant și Meta Pixel Helper, după „Accept toate".
 - DevTools → Network: după „Refuz" nu apare nicio cerere la `googletagmanager.com` sau `facebook.net`.
 
-## Pentru testele E2E (etapa 7)
-
-Biblioteca de consimțământ ascunde bannerul pentru boți detectați (`hideFromBots`, implicit true), deci Playwright nu îl va vedea fără o suprascriere de test.
-
 ## Când se schimbă politica de cookies
 
-Crește `COOKIE_REVISION` în `src/features/consent/ui/consent-config.ts`, ca toți vizitatorii să fie întrebați din nou.
+Vezi `COOKIE_REVISION` în [`continut.md`](continut.md) §3.

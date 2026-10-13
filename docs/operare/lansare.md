@@ -15,19 +15,17 @@ Bifează în ordine. Fiecare punct spune unde se face.
 - [ ] **Pictograma oficială ANPC – SAL:** se descarcă de pe anpc.ro (Ordinul ANPC 449/2022, modificat prin Ordinul 270/2026) și se salvează ca `src/assets/legal/anpc-sal.png` (sau `.svg`, `.webp`). Subsolul o folosește automat, la 250×50 px. Până atunci apare un buton text de aceeași mărime. Nu desena pictograma singur.
 - [ ] **ID-urile de măsurare (GA4, Meta Pixel, Google Ads și eticheta conversiei Lead):** `src/shared/content/site.ts` → `tracking`.
 - [ ] **Verificarea juridică** a celor 3 pagini (`src/content/legal/`), a bannerului de cookie-uri și a textului bifei de acord din formular. Jurist: baza legală a transferului către Telegram (art. 6 alin. (1) lit. b GDPR, prelucrare în afara UE) din secțiunea „Transferuri în afara UE” a politicii de confidențialitate.
-- [ ] **Articole de blog (opțional):** `src/content/blog/`, toate sunt acum `draft: true`; fiecare are nevoie de copertă de cel puțin 1200 px lățime (`continut.md` §2).
+- [ ] **Articole de blog (opțional):** `src/content/blog/`, vezi `continut.md` §2 (draft și coperți).
 
 ## 1b. Obligații legale în afara site-ului
 
-Acestea nu se rezolvă în cod. Fără ele site-ul poate fi corect, dar activitatea nu.
+Acestea nu se rezolvă în cod. Fără ele site-ul poate fi corect, dar activitatea nu. Pictograma ANPC și verificarea juridică sunt la §1.
 
 - [ ] **Contracte de prelucrare (DPA, GDPR art. 28)** cu furnizorul de găzduire și cu furnizorul de email.
 - [ ] **Acord scris al părinților** pentru fiecare fotografie în care copilul poate fi recunoscut (site și Instagram), plus acordul profesorilor pentru pozele în care apar.
 - [ ] **CAEN 8559** autorizat la sediul unde se predă, plus avizele DSP/ISU cerute de primărie.
 - [ ] **Tabere:** autorizație sanitară DSP și, dacă includ cazare sau transport, licență de turism.
 - [ ] **Contract de înscriere** cu prețuri, condiții de anulare și rambursare.
-- [ ] **Pictograma oficială ANPC – SAL** pusă în `src/assets/legal/` (vezi §1).
-- [ ] **Verificare juridică** a site-ului și a documentelor de mai sus.
 
 ## 2. Build de producție local
 
