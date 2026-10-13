@@ -1,6 +1,5 @@
 name: Deploy
 
-# Triggers on the whole CI workflow (verify + browser), so deploy runs only if the browser tests and Lighthouse pass too.
 on:
   workflow_run:
     workflows: [CI]
@@ -15,14 +14,35 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  tip:
+    runs-on: ubuntu-latest
+    outputs:
+      current: ${{ steps.tip.outputs.current }}
+    steps:
+      - name: Skip when a newer commit exists
+        id: tip
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          tip=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/$BRANCH" --jq .object.sha)
+          if [ "$tip" = "$HEAD_SHA" ]; then
+            echo "current=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::Skipping deploy: $HEAD_SHA is no longer the tip of $BRANCH"
+            echo "current=false" >> "$GITHUB_OUTPUT"
+          fi
+
   deploy:
+    needs: tip
     if: >-
+      needs.tip.outputs.current == 'true' &&
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.event == 'push' &&
       github.event.workflow_run.head_repository.full_name == github.repository &&
       vars.DEPLOY_ENABLED == 'true'
     runs-on: ubuntu-latest
-    # Environment branch rules see the default branch ref under workflow_run: do not restrict the staging environment to the staging branch.
     environment: ${{ github.event.workflow_run.head_branch == 'main' && 'production' || 'staging' }}
     env:
       SITE_ENV: ${{ github.event.workflow_run.head_branch == 'main' && 'production' || 'staging' }}
@@ -30,34 +50,15 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
-      - name: Skip when a newer commit exists
-        id: tip
-        env:
-          BRANCH: ${{ github.event.workflow_run.head_branch }}
-          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
-        run: |
-          tip=$(git ls-remote origin "refs/heads/$BRANCH" | cut -f1)
-          if [ "$tip" = "$HEAD_SHA" ]; then
-            echo "current=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "::notice::Skipping deploy: $HEAD_SHA is no longer the tip of $BRANCH"
-            echo "current=false" >> "$GITHUB_OUTPUT"
-          fi
-      - if: steps.tip.outputs.current == 'true'
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
           cache: npm
-      - if: steps.tip.outputs.current == 'true'
-        run: npm ci
-      - if: steps.tip.outputs.current == 'true'
-        run: npm run build
-      - if: steps.tip.outputs.current == 'true'
-        run: npm run build:server
-      - if: steps.tip.outputs.current == 'true'
-        run: sudo apt-get update && sudo apt-get install -y lftp
-      - if: steps.tip.outputs.current == 'true'
-        name: Write SSH credentials
+      - run: npm ci
+      - run: npm run build
+      - run: npm run build:server
+      - run: sudo apt-get update && sudo apt-get install -y lftp
+      - name: Write SSH credentials
         run: |
           install -m 700 -d ~/.ssh
           printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
@@ -66,15 +67,13 @@ jobs:
         env:
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
           DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
-      - if: steps.tip.outputs.current == 'true'
-        run: bash scripts/deploy.sh
+      - run: bash scripts/deploy.sh
         env:
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
           DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
           DEPLOY_WEB_ROOT: ${{ vars.DEPLOY_WEB_ROOT }}
           DEPLOY_APP_ROOT: ${{ vars.DEPLOY_APP_ROOT }}
-          # Set DEPLOY_HTPASSWD_FILE only as a variable of the staging environment, never at repository level, or production gets password-protected too.
           DEPLOY_HTPASSWD_FILE: ${{ vars.DEPLOY_HTPASSWD_FILE }}
           DEPLOY_KEY_FILE: /home/runner/.ssh/deploy_key
           DEPLOY_KNOWN_HOSTS_FILE: /home/runner/.ssh/known_hosts

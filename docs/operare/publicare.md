@@ -60,6 +60,8 @@ Căile trebuie să înceapă cu `/`, fără `/` la sfârșit, să aibă cel puț
 
 La fiecare rulare se șterge din folderul site-ului tot ce nu există în build, cu excepția acestor căi, care rămân neatinse: `api/`, `.well-known/`, `cgi-bin/`, `.user.ini`, `error_log` și `.htpasswds/`. Nu pune fișiere proprii în folderul site-ului în afara lor.
 
+Site-ul se urcă în două treceri: întâi se copiază tot ce e nou, fără ștergere, apoi se șterge ce nu mai există în build. Astfel vizitatorii nu găsesc, nici pentru o clipă, o pagină al cărei fișier lipsește.
+
 ## 5. Întoarcerea la versiunea anterioară
 
 1. Pe GitHub, anulează modificarea: butonul **Revert** din pull request-ul îmbinat, sau `git revert <commit>`.

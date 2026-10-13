@@ -2,8 +2,11 @@ name: CI
 
 on:
   push:
-    branches: ['**']
+    branches: [main, staging]
   pull_request:
+
+permissions:
+  contents: read
 
 jobs:
   verify:
@@ -30,15 +33,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      - run: npm run lint
-      - run: npm run check
-      - run: npm test
-      - run: npm run deps
-      - run: npm run build
-      - run: npm run test:dist
-      - run: npm run test:staging
-      - run: npm run test:preview
-      - run: npm run build:server
+      - run: npm run verify
 
   browser:
     runs-on: ubuntu-latest

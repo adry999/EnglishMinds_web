@@ -1,4 +1,3 @@
-# English Minds Academy — Apache (cPanel). /api is served by the Node app (Passenger) and is never rewritten here.
 Options -Indexes
 DirectoryIndex index.html
 ErrorDocument 404 /404.html

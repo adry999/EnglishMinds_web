@@ -6,7 +6,6 @@ import { site } from './src/shared/content/site';
 
 type Variant = { weight: number; style: 'normal'; unicodeRange: [string]; src: [string] };
 
-// Unicode ranges copied from the @fontsource CSS: latin covers ASCII, latin-ext covers the Romanian ș/ț/ă.
 const LATIN =
   'U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD';
 const LATIN_EXT =
@@ -25,20 +24,19 @@ const variants = (pkg: string, weights: number[]): [Variant, ...Variant[]] =>
     })),
   ) as [Variant, ...Variant[]];
 
-// The client preview is served from https://adry999.github.io/EnglishMinds_web/; production has neither variable.
+const IMAGE_QUALITY = { avif: 45, webp: 70 };
+
 const base = process.env.SITE_BASE || '/';
+
+const markdown = base === '/' ? {} : { markdown: { processor: satteri({ hastPlugins: [prefixBasePlugin(base)] }) } };
 
 export default defineConfig({
   site: process.env.SITE_URL || site.url,
   base,
   output: 'static',
-  // Measured on the real photos: AVIF 45 and WebP 70 cut the image bytes by about a quarter against the sharp defaults (AVIF 50, WebP 80) with no visible loss.
-  image: { service: { entrypoint: 'astro/assets/services/sharp', config: { avif: { quality: 45 }, webp: { quality: 70 } } } },
+  image: { service: { entrypoint: 'astro/assets/services/sharp', config: { avif: { quality: IMAGE_QUALITY.avif }, webp: { quality: IMAGE_QUALITY.webp } } } },
   trailingSlash: 'always',
-  // Inline all CSS: a separate stylesheet is a render-blocking request that delays the LCP text on mobile.
   build: { format: 'directory', inlineStylesheets: 'always' },
-  // Self-hosted fonts (GDPR): the local provider reads the woff2 files shipped by @fontsource, nothing is fetched at runtime.
-  // Astro also emits metric-matched fallback faces (size-adjust and overrides), so the swap does not shift the layout.
   fonts: [
     {
       name: 'Nunito',
@@ -57,8 +55,7 @@ export default defineConfig({
       options: { variants: variants('barlow-condensed', [700]) },
     },
   ],
-  // Only a base path needs a custom Markdown processor; without one the default pipeline (and the output) stays untouched.
-  ...(base === '/' ? {} : { markdown: { processor: satteri({ hastPlugins: [prefixBasePlugin(base)] }) } }),
+  ...markdown,
   vite: {
     define: { 'import.meta.env.SITE_ENV': JSON.stringify(process.env.SITE_ENV ?? '') },
     server: {

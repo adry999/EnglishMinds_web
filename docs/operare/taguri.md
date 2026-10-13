@@ -28,6 +28,8 @@ Tabelul este identic cu `COOKIE_INVENTORY` din `src/features/consent/model/cooki
 
 Build-ul de producție eșuează cât timp rămân marcaje `TODO`. Un ID greșit ca format e ignorat în tăcere (tagul nu se încarcă), deci verifică după publicare.
 
+Fonturile sunt locale (livrate cu `@fontsource`), nu se cer de la Google: site-ul nu face nicio cerere către servicii de fonturi.
+
 ## Ce evenimente pleacă
 
 Cu GTM activ pleacă un singur eveniment, `generate_lead` cu `lead_source`, în `dataLayer`; tagurile din GTM decid ce fac cu el (vezi [`gtm.md`](gtm.md)). Fără GTM:
