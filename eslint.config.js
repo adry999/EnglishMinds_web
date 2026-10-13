@@ -10,7 +10,7 @@ const noDeepRelative = {
 };
 
 export default defineConfig(
-  { ignores: ['dist/', 'dist-server/', '.astro/', 'design/', 'tests/boundaries/fixture/', 'node_modules/'] },
+  { ignores: ['dist/', 'dist-server/', '.astro/', 'tests/boundaries/fixture/', 'node_modules/'] },
   js.configs.recommended,
   tseslint.configs.recommended,
   astro.configs.recommended,
