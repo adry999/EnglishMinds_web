@@ -6,14 +6,16 @@ Orice modificare ajunge pe site astfel:
 
 1. Se face push pe GitHub, pe branch-ul `main` sau `staging`.
 2. Pornește workflow-ul **CI** (joburile `verify` și `browser`: teste, build, Lighthouse).
-3. Dacă CI-ul a trecut, pornește workflow-ul **Deploy**, care construiește site-ul și serverul, le urcă prin SFTP (`lftp`) și repornește aplicația Node.
+3. Dacă CI-ul a trecut (și a fost un push, nu un pull request), pornește workflow-ul **Deploy**, care construiește site-ul și serverul, le urcă prin SFTP (`lftp`) și repornește aplicația Node.
 
 | Branch | Unde se publică | `SITE_ENV` |
 |---|---|---|
 | `main` | Producție | `production` |
 | `staging` | Subdomeniul de staging (cu `noindex`, ascuns de Google) | `staging` |
 
-Publicarea rămâne oprită cât timp variabila de repository `DEPLOY_ENABLED` nu este `true`.
+Publicarea rămâne oprită cât timp variabila de repository `DEPLOY_ENABLED` nu este `true`. Dacă între timp a apărut un commit mai nou pe același branch, Deploy-ul vechi se sare singur.
+
+Separat de acest flux, workflow-ul **Pages** publică preview-ul pentru client (§8).
 
 ## 2. Configurarea inițială pe GitHub
 
@@ -49,10 +51,10 @@ Căile trebuie să înceapă cu `/`, fără `/` la sfârșit, să aibă cel puț
    - Application URL: pe domeniul principal, `/api` pentru producție; pe subdomeniul de staging, `/api` (adică `<staging>/api`);
    - Application startup file: `app.cjs`;
    - **Application mode: Production.** cPanel propune uneori Development, iar în acel mod Passenger afișează la o eroare de pornire pagini care includ variabilele de mediu (`DB_PASSWORD`, `SMTP_PASSWORD`, `IP_HASH_SALT`), vizibile oricui. Verifică modul la fiecare aplicație (producție și staging) și după fiecare modificare a ei;
-   - variabilele de mediu din `server.md` §1, separate pentru fiecare aplicație (inclusiv `DB_*` către baza ei de date);
+   - variabilele de mediu din [`server.md`](server.md) §1, separate pentru fiecare aplicație (inclusiv `DB_*` către baza ei de date);
    - în folderul aplicației (Application root), în fișierul `.htaccess` creat de cPanel pentru aplicație, adaugă linia `PassengerFriendlyErrorPages off`. Publicarea automată nu atinge acest fișier (urcă doar `app.cjs`, `purge-expired-leads.cjs` și `notify-pending-leads.cjs`), deci setarea rămâne. Serverul, la rândul lui, se oprește la o configurare greșită cu un mesaj generic, fără valori.
-4. **Bazele de date.** Creează două baze de date MySQL, una pentru producție și una pentru staging (fiecare cu utilizatorul ei), și importă migrațiile în amândouă, conform `server.md` §2. Variabilele de mediu ale fiecărei aplicații Node trimit către baza ei.
-5. **Cron.** Adaugă jobul zilnic de curățare și jobul de reîncercare a notificărilor (la 10 minute), conform `server.md` §3.
+4. **Bazele de date.** Creează două baze de date MySQL, una pentru producție și una pentru staging (fiecare cu utilizatorul ei), și importă migrațiile în amândouă, conform [`server.md`](server.md) §2. Variabilele de mediu ale fiecărei aplicații Node trimit către baza ei.
+5. **Cron.** Adaugă jobul zilnic de curățare și jobul de reîncercare a notificărilor (la 10 minute), conform [`server.md`](server.md) §3.
 6. **Subdomeniul de staging.** cPanel → Domains: creează subdomeniul, cu folderul lui (acesta este `DEPLOY_WEB_ROOT` pentru staging). Folderul trebuie să fie **în afara** lui `public_html`, de exemplu `/home/utilizator/staging.englishminds.ro`: cPanel propune implicit `public_html/<subdomeniu>`, iar publicarea pe producție șterge din `public_html` tot ce nu e în build, deci ar șterge și staging-ul. Apoi cPanel → **Directory Privacy**: protejează folderul cu parolă, creează utilizatorul și parola. Calea fișierului de parole generat (de exemplu `/home/utilizator/.htpasswds/staging/passwd`) merge în `DEPLOY_HTPASSWD_FILE` (§2, pasul 4). Publicarea adaugă singură blocul de autentificare în `.htaccess` la fiecare rulare, cu `/.well-known/` exceptat ca AutoSSL să poată valida domeniul, și restaurează `dist/.htaccess` local după rulare. Nu te baza pe `.htaccess`-ul scris de cPanel: publicarea îl suprascrie.
 7. **SSL.** cPanel → SSL/TLS Status: rulează **AutoSSL** (Let's Encrypt) pentru domeniu și pentru subdomeniul de staging.
 
@@ -83,7 +85,9 @@ Dacă GitHub Actions nu funcționează: construiește local (`npm run build` și
 
 Clientul poate vedea o versiune de probă a site-ului la **https://adry999.github.io/EnglishMinds_web/**. Nu înlocuiește publicarea de la §1 și nu atinge serverul real.
 
-- Se reconstruiește singură după fiecare rulare **CI** reușită pe `main` (workflow-ul **Pages**). Se poate porni și manual: GitHub → Actions → **Pages** → Run workflow.
+- Articolele de blog cu `draft: true` sunt vizibile aici, ca clientul să le poată aproba. Pe staging și producție nu apar.
+
+- Se reconstruiește singură după fiecare rulare **CI** reușită pe `main`, după un push (workflow-ul **Pages**, fără aprobare). Se poate porni și manual: GitHub → Actions → **Pages** → Run workflow.
 - Are `noindex` și `robots.txt` care interzice tot, deci Google nu o indexează. Canonical-urile și sitemap-ul arată spre adresa de preview.
 - Formularul de contact este dezactivat: după validare apare starea de mulțumire, cu mențiunea „Aceasta este o versiune demo a site-ului: nu am trimis și nu am salvat nimic.”, fără apel către server, fără fereastra WhatsApp și fără evenimente de măsurare.
 - Se construiește cu `SITE_ENV=preview`, `SITE_BASE=/EnglishMinds_web` și `SITE_URL=https://adry999.github.io`. Cât timp aceste variabile lipsesc (producție, staging, dezvoltare locală), site-ul rămâne exact ca până acum.

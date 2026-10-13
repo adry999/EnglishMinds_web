@@ -24,7 +24,7 @@ Rulează mai întâi `SELECT`-ul de mai sus ca să vezi ce se șterge. Șterge �
 
 ## Păstrare
 
-Jobul zilnic (vezi `server.md`, secțiunea Cron) șterge contactele mai vechi de 12 luni și limitele de trimitere mai vechi de 24 de ore (rulând o dată pe zi, o amprentă IP dispare în cel mult 2 zile).
+Jobul zilnic (vezi [`server.md`](server.md) §3) șterge contactele mai vechi de 12 luni și limitele de trimitere mai vechi de 24 de ore (rulând o dată pe zi, o amprentă IP dispare în cel mult 2 zile).
 
 Jobul nu atinge emailurile de notificare din căsuța `MAIL_TO`. Șterge manual, cel puțin lunar, emailurile de notificare mai vechi de 12 luni.
 

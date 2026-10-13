@@ -1,6 +1,6 @@
 # Google Tag Manager (opțional)
 
-Site-ul funcționează fără Google Tag Manager (GTM): `taguri.md` descrie varianta directă. GTM e pentru cine vrea să administreze singur tagurile (Google Analytics 4, Google Ads, Meta Pixel) fără să modifice codul site-ului.
+Site-ul funcționează fără Google Tag Manager (GTM): [`taguri.md`](taguri.md) descrie varianta directă. GTM e pentru cine vrea să administreze singur tagurile (Google Analytics 4, Google Ads, Meta Pixel) fără să modifice codul site-ului.
 
 Regula rămâne aceeași: înainte de acord nu pleacă nicio cerere către Google sau Meta. GTM se încarcă doar după ce vizitatorul acceptă statisticile sau marketingul.
 
@@ -37,7 +37,7 @@ Consent Mode v2 e deja setat de site (`default denied`, apoi `update` la alegere
 1. Tags → New → „Google tag". Tag ID: `G-…` din GA4.
 2. Trigger: „Initialization - All Pages".
 3. Advanced Settings → Consent Settings → „Require additional consent for tag to fire": `analytics_storage`.
-4. Nu activa colectarea de date furnizate de utilizator (user-provided data) și nici „Enhanced conversions”, conform `taguri.md`.
+4. Nu activa colectarea de date furnizate de utilizator (user-provided data) și nici „Enhanced conversions”, conform [`taguri.md`](taguri.md).
 
 ### 4.2. Evenimentul GA4 `generate_lead`
 
@@ -56,7 +56,7 @@ Consent Mode v2 e deja setat de site (`default denied`, apoi `update` la alegere
 
 1. Variables → New → „Data Layer Variable", nume `marketing`, tip Data Layer Variable Version 2.
 2. Triggers → New → Custom Event, Event name `em_consent`, „This trigger fires on: Some Custom Events", condiția `marketing` egal cu `true`. Îl numești „Consimțământ marketing".
-3. Tags → New → „Custom HTML" cu codul de bază Meta Pixel (sau un șablon „Facebook Pixel" din Community Template Gallery). Trigger: „Consimțământ marketing". Dezactivează Automatic Advanced Matching și configurarea automată a evenimentelor (vezi `taguri.md`).
+3. Tags → New → „Custom HTML" cu codul de bază Meta Pixel (sau un șablon „Facebook Pixel" din Community Template Gallery). Trigger: „Consimțământ marketing". Dezactivează Automatic Advanced Matching și configurarea automată a evenimentelor (vezi [`taguri.md`](taguri.md)).
 4. Tag nou pentru `Lead`: aceeași metodă (șablon sau Custom HTML cu `fbq('track','Lead')`), trigger Custom Event `generate_lead`, plus condiția `marketing` egal cu `true`, ca să nu pornească dacă vizitatorul a acceptat doar statisticile.
 5. Pentru retragerea acordului nu e nevoie de nimic: site-ul șterge cookie-urile și reîncarcă pagina.
 
@@ -73,5 +73,5 @@ Consent Mode v2 e deja setat de site (`default denied`, apoi `update` la alegere
 
 - Nu adăuga niciodată taguri care pornesc înainte de acord (de exemplu cu trigger „All Pages" fără condiție de consimțământ). Fiecare tag nou are Consent Settings sau un trigger bazat pe `em_consent`.
 - Nu trimite nume, telefon sau email în `dataLayer` și nu cere GTM să le citească din formular.
-- Cookie-urile sunt aceleași ca în `taguri.md` (Google și Meta); site-ul nu adaugă cookie-uri proprii noi.
-- Cine are acces la container poate schimba ce se trimite: dă acces doar persoanelor de încredere și cu 2FA (`conturi.md`).
+- Cookie-urile sunt aceleași ca în [`taguri.md`](taguri.md) (Google și Meta); site-ul nu adaugă cookie-uri proprii noi.
+- Cine are acces la container poate schimba ce se trimite: dă acces doar persoanelor de încredere și cu 2FA ([`conturi.md`](conturi.md)).

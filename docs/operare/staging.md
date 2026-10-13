@@ -2,7 +2,7 @@
 
 Bifează fiecare punct pe URL-ul de staging înainte de lansare. Înlocuiește `<staging>` cu domeniul real. Staging-ul este protejat cu parolă, deci comenzile `curl` folosesc `-u user:parola`.
 
-Staging-ul se publică automat din branch-ul `staging` (vezi `publicare.md`). Are propria aplicație Node (Application URL `/api` pe subdomeniul de staging), propria bază de date și propriul folder, în afara lui `public_html` (`publicare.md` §3). Parola se creează în cPanel, la Directory Privacy (`publicare.md` §3, pasul 6).
+Staging-ul se publică automat din branch-ul `staging` (vezi [`publicare.md`](publicare.md)). Are propria aplicație Node (Application URL `/api` pe subdomeniul de staging), propria bază de date și propriul folder, în afara lui `public_html` ([`publicare.md`](publicare.md) §3). Parola se creează în cPanel, la Directory Privacy ([`publicare.md`](publicare.md) §3, pasul 6).
 
 ## Rutare
 
@@ -13,7 +13,7 @@ Staging-ul se publică automat din branch-ul `staging` (vezi `publicare.md`). Ar
 ## IP-ul real al vizitatorului
 
 - [ ] `TRUST_PROXY_HOPS` este cel corect.
-  - Verificare: urmează procedura din `server.md` („Adresa IP a vizitatorului”): cu `DEBUG_CLIENT_IP=true`, deschide `https://<staging>/api/health` de pe Wi-Fi și de pe date mobile; linia `[debug] client address` din logul aplicației (cPanel → Setup Node.js App) trebuie să aibă `resolvedHash` diferit pe cele două rețele. Apoi șterge `DEBUG_CLIENT_IP` și repornește aplicația.
+  - Verificare: urmează procedura din [`server.md`](server.md) („Adresa IP a vizitatorului”): cu `DEBUG_CLIENT_IP=true`, deschide `https://<staging>/api/health` de pe Wi-Fi și de pe date mobile; linia `[debug] client address` din logul aplicației (cPanel → Setup Node.js App) trebuie să aibă `resolvedHash` diferit pe cele două rețele. Apoi șterge `DEBUG_CLIENT_IP` și repornește aplicația.
 - [ ] Rândurile din `rate_limits` confirmă același lucru.
   - Verificare: după două trimiteri de pe rețele diferite, phpMyAdmin → tabela `rate_limits` are două valori `ip_hash` diferite, plus rândul `global`.
 - [ ] A 6-a cerere într-o oră de pe același IP primește `429`.
@@ -26,7 +26,7 @@ Staging-ul se publică automat din branch-ul `staging` (vezi `publicare.md`). Ar
 - [ ] O configurare greșită nu publică variabilele de mediu.
   - Verificare: pe staging, schimbă temporar `MAIL_TO` în `gresit`, repornește aplicația și deschide `https://<staging>/api/health`: trebuie să apară o pagină de eroare simplă (500/503), fără nume sau valori de variabile. În logul aplicației apare doar „cannot start: invalid or missing configuration (MAIL_TO)”. Apoi restabilește valoarea.
 - [ ] `.htaccess`-ul aplicației conține `PassengerFriendlyErrorPages off`.
-  - Verificare: în folderul aplicației Node (`DEPLOY_APP_ROOT`) deschide `.htaccess` și verifică linia (vezi `publicare.md` §3).
+  - Verificare: în folderul aplicației Node (`DEPLOY_APP_ROOT`) deschide `.htaccess` și verifică linia (vezi [`publicare.md`](publicare.md) §3).
 
 ## Email
 
@@ -47,7 +47,7 @@ Staging-ul se publică automat din branch-ul `staging` (vezi `publicare.md`). Ar
 ## Cron
 
 - [ ] `notify-pending-leads` rulează la 10 minute, cu calea completă către `node`.
-  - Verificare: programarea cron conține jobul (`server.md` §3); `~/logs/notify.log` există și nu conține erori (jobul scrie „pending leads retried” doar când a retrimis ceva).
+  - Verificare: programarea cron conține jobul ([`server.md`](server.md) §3); `~/logs/notify.log` există și nu conține erori (jobul scrie „pending leads retried” doar când a retrimis ceva).
 - [ ] `purge-expired-leads` rulează zilnic.
   - Verificare: programarea cron a hostingului (sau `crontab -l`) conține jobul zilnic.
 - [ ] În log apare numărul de rânduri șterse.
@@ -91,7 +91,7 @@ Staging-ul se publică automat din branch-ul `staging` (vezi `publicare.md`). Ar
   - Verificare: deschide URL-ul într-o fereastră privată.
 - [ ] După o publicare automată, staging-ul cere în continuare parola.
   - Verificare: deschide URL-ul într-o fereastră privată imediat după ce rulează workflow-ul Deploy.
-  - Parola și `DEPLOY_HTPASSWD_FILE` se configurează în `publicare.md` (§2 pasul 4 și §3 pasul 6).
+  - Parola și `DEPLOY_HTPASSWD_FILE` se configurează în [`publicare.md`](publicare.md) (§2 pasul 4 și §3 pasul 6).
 - [ ] Staging-ul are `noindex` sau este blocat în `robots.txt`.
   - Verificare: `curl -s -u user:parola https://<staging>/robots.txt` și antetul `X-Robots-Tag` / meta `robots` din pagină.
 
