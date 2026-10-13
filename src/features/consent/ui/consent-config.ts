@@ -1,7 +1,6 @@
 import type * as CookieConsentApi from 'vanilla-cookieconsent';
 import { withBase } from '@shared/lib/with-base';
 
-/** Bump when the cookie policy changes; everyone is asked again. */
 export const COOKIE_REVISION = 1;
 
 type Handlers = {

@@ -56,11 +56,12 @@ export function createMysqlLeadRepository(pool: Pool): LeadRepository {
       await pool.execute('UPDATE leads SET notified_at = ? WHERE id = ?', [at, id]);
     },
     async findPendingNotification(query) {
-      const [rows] = await pool.execute<RowDataPacket[]>(
+      if (!Number.isSafeInteger(query.limit) || query.limit < 1) throw new RangeError('limit must be a positive integer');
+      const [rows] = await pool.query<RowDataPacket[]>(
         `SELECT * FROM leads
          WHERE notified_at IS NULL AND notify_attempts < ? AND created_at <= ? AND created_at >= ?
-         ORDER BY created_at ASC LIMIT ${Math.trunc(query.limit)}`,
-        [query.maxAttempts, query.olderThan, query.newerThan],
+         ORDER BY created_at ASC LIMIT ?`,
+        [query.maxAttempts, query.createdBefore, query.createdAfter, query.limit],
       );
       return rows.map(toStoredLead);
     },

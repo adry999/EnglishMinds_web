@@ -15,7 +15,6 @@ Modelul este `.env.example`. Pe cPanel se setează în aplicația Node; local, �
 | `MAIL_TO` | Adresa care primește contactele noi. |
 | `IP_HASH_SALT` | Cel puțin 32 de caractere aleatorii. Se folosește la calculul amprentei IP (SHA-256 cu sare) pentru limitarea trimiterilor. Schimbarea lui resetează limitele. |
 | `TRUST_PROXY_HOPS` | Câte proxy-uri se află între vizitator și aplicație și adaugă fiecare adresa în `X-Forwarded-For` (număr întreg, implicit `0`). `0` = se folosește adresa conexiunii directe (local); `1` = ultima adresă din antet; `2` = penultima etc. Vezi „Adresa IP a vizitatorului”. |
-| `TRUST_PROXY` | Vechiul comutator. `true` echivalează cu `TRUST_PROXY_HOPS=1`; dacă `TRUST_PROXY_HOPS` e setat, acela are prioritate. |
 | `LEAD_GLOBAL_HOURLY_CAP` | Câte cereri acceptă site-ul pe oră, de la toți vizitatorii la un loc (implicit `60`). Plasă de siguranță când adresa vizitatorului nu poate fi identificată sau este falsificată; peste prag toți primesc `429` până la ora următoare. |
 | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` | Opționale, se setează amândouă sau niciuna. Dacă există, fiecare cerere nouă trimite și un mesaj scurt pe Telegram (nume, telefon, grupa de vârstă, pagina, ora). Vezi „Notificarea pe Telegram”. Tokenul este o parolă: doar în variabilele de mediu, niciodată în repository sau în loguri. |
 | `DEBUG_CLIENT_IP` | `true` doar temporar, la verificarea de pe staging; apoi șterge-o. Vezi „Adresa IP a vizitatorului”. |
@@ -32,7 +31,7 @@ Limita de trimiteri se calculează pe adresa IP a vizitatorului, iar adresa core
 
 Dacă adresa nu poate fi aflată deloc, nu se mai folosește o găleată comună „necunoscut” (care ar bloca tot site-ul după 5 cereri): se aplică doar plafonul `LEAD_GLOBAL_HOURLY_CAP` și apare un avertisment în log. Plafonul se aplică întotdeauna, indiferent de adresă, și numără în același tabel `rate_limits`, la cheia `global`.
 
-Cum verifici valoarea corectă pe staging:
+Cum verifici valoarea corectă pe staging (punctul se bifează și în [`staging.md`](staging.md)):
 
 1. Setează temporar `DEBUG_CLIENT_IP=true` și repornește aplicația.
 2. Deschide `https://<staging>/api/health` de pe două rețele diferite (Wi-Fi și date mobile). Serverul scrie la fiecare cerere o linie `[debug] client address` cu `hops`, `forwardedEntries`, `hasSocketAddress` și `resolvedHash` (primele 12 caractere ale amprentei, nu adresa).
@@ -52,7 +51,9 @@ Mesajul conține doar numele părintelui, telefonul, grupa de vârstă, pagina �
 
 ### Cereri nenotificate: reîncercare
 
-Fiecare cerere salvată are în baza de date `notified_at` (momentul în care cel puțin un canal a reușit) și `notify_attempts`. Dacă niciun canal nu a reușit (SMTP căzut, parola de email schimbată, aplicația repornită în timpul trimiterii), jobul `notify-pending-leads` o retrimite: cererile mai vechi de 5 minute și mai noi de 7 zile, de cel mult 3 ori în total (prima încercare se numără). Dacă o cerere rămâne cu `notified_at` gol în phpMyAdmin, ea nu a ajuns la nimeni: sună părintele din baza de date.
+Notificările (email și Telegram) pleacă după ce răspunsul a ajuns la vizitator. Dacă un canal eșuează, contactul rămâne salvat, iar eroarea apare în loguri ca avertisment, fără date personale.
+
+Fiecare cerere salvată are în baza de date `notified_at` (momentul în care cel puțin un canal a reușit) și `notify_attempts`. Dacă niciun canal nu a reușit (SMTP căzut, parola de email schimbată, aplicația repornită în timpul trimiterii), jobul `notify-pending-leads` o retrimite: cererile mai vechi de 5 minute și mai noi de 7 zile, de cel mult 3 ori în total (prima încercare se numără). Două rulări ale jobului nu iau niciodată aceeași cerere, deci nu o retrimit împreună; o retrimitere tot e posibilă dacă prima trimitere durează mai mult de 5 minute sau dacă marcarea ca notificată eșuează după livrare. Dacă o cerere rămâne cu `notified_at` gol în phpMyAdmin, ea nu a ajuns la nimeni: sună părintele din baza de date.
 
 ## 2. Baza de date
 
@@ -62,21 +63,9 @@ Fiecare cerere salvată are în baza de date `notified_at` (momentul în care ce
 2. `server/db/migrations/002_create_rate_limits.sql`
 3. `server/db/migrations/003_add_lead_notification_state.sql`
 
-Migrațiile pot fi rulate din nou fără pagube (a treia adaugă coloanele doar dacă lipsesc). La o actualizare a unui site existent, rulează în phpMyAdmin doar migrațiile noi, înainte de publicare.
+Migrațiile pot fi rulate din nou fără pagube (a treia adaugă coloanele doar dacă lipsesc). La o actualizare a unui site existent, rulează în phpMyAdmin doar migrațiile noi, înainte de publicare. Migrația 003 marchează contactele deja existente drept notificate la data creării, ca jobul de reîncercare să nu le retrimită.
 
-## 3. Publicare
-
-Publicarea este automată, prin GitHub Actions după un CI verde: vezi `publicare.md`. Pașii de mai jos sunt doar rezerva, dacă publicarea automată nu funcționează.
-
-### Publicare manuală (rezervă)
-
-1. `npm run build:server` creează trei pachete în `dist-server/`: `app.cjs` (serverul), `purge-expired-leads.cjs` (jobul de curățare) și `notify-pending-leads.cjs` (jobul de reîncercare a notificărilor).
-2. Urcă `app.cjs` în folderul aplicației Node (punct de pornire: `app.cjs`) și celelalte două în același folder.
-3. Repornește aplicația prin `tmp/restart.txt` (`touch tmp/restart.txt` sau din interfața cPanel).
-
-Notificările (email și Telegram) pleacă după ce răspunsul a ajuns la vizitator. Dacă un canal eșuează, contactul rămâne salvat, eroarea apare în loguri ca avertisment (fără date personale), iar jobul de reîncercare de mai jos retrimite cererea.
-
-## 4. Joburi programate (cron)
+## 3. Joburi programate (cron)
 
 În cPanel, la Cron Jobs, se programează două joburi. Cron nu are `node` în PATH: folosește calea completă din mediul virtual al aplicației (cPanel → Setup Node.js App arată comanda `source /home/<utilizator>/nodevenv/<aplicație>/22/bin/activate`; binarul este `/home/<utilizator>/nodevenv/<aplicație>/22/bin/node`). Fișierul `.env` pentru `--env-file` stă în afara folderului site-ului, cu drepturi `600`.
 
@@ -94,18 +83,12 @@ Reîncercarea notificărilor, la fiecare 10 minute:
 
 Redirecționarea (`>> ~/logs/... 2>&1`) este necesară: cPanel trimite pe email tot ce scrie un cron, iar altfel ai primi un email la fiecare rulare cu eroare. Creează folderul o dată (`mkdir -p ~/logs`). Jobul scrie în log doar când a găsit cereri de retrimis sau a eșuat; când renunță la o cerere după a treia încercare scrie o eroare cu numărul cererii (id), ca să suni părintele din baza de date.
 
-Jobul are nevoie de exactamente aceleași variabile de mediu ca aplicația, toate (nu doar cele `DB_*`): configurarea se validează integral la pornire, iar dacă lipsește ceva jobul se oprește fără să șteargă nimic. Rulează-l cu același fișier de mediu (`--env-file=/cale/.env`, ca în linia de mai sus) sau cu variabilele setate în panou. Șterge contactele mai vechi de 12 luni și limitele de trimitere mai vechi de 24 de ore.
+Jobul are nevoie de exactamente aceleași variabile de mediu ca aplicația, toate (nu doar cele `DB_*`): configurarea se validează integral la pornire, iar dacă lipsește ceva jobul se oprește fără să șteargă nimic. Rulează-l cu același fișier de mediu (`--env-file=/cale/.env`, ca în linia de mai sus) sau cu variabilele setate în panou. Curățarea șterge contactele mai vechi de 12 luni și limitele de trimitere mai vechi de 24 de ore.
 
-## 5. Local
+## 4. Local
 
 1. Copiază `.env.example` în `.env` și completează valorile.
 2. Într-un terminal: `npm run dev:server` (construiește și pornește serverul pe portul 3000).
 3. În alt terminal: `npm run dev`. Astro trimite `/api` către `http://localhost:3000`.
 
-## 6. De verificat pe staging
-
-- Ruta `/api/lead` este servită pe același domeniu ca site-ul (spec §13.1).
-- `TRUST_PROXY_HOPS` este cel corect: procedura cu `DEBUG_CLIENT_IP` din „Adresa IP a vizitatorului” arată `resolvedHash` diferit pe două rețele diferite.
-- Tabela `rate_limits` arată valori `ip_hash` diferite pentru două rețele diferite (de exemplu Wi-Fi și date mobile), plus rândul `global`.
-- Aplicația rulează în mod **Production** (nu Development) și o variabilă greșită dă o pagină 500 simplă, fără variabile de mediu (vezi `publicare.md` §3).
-- Un email de test ajunge la `MAIL_TO`, iar pe portul 587 conexiunea folosește TLS.
+Publicarea aplicației (build, urcare, repornire) este automată, iar varianta manuală de rezervă e în [`publicare.md`](publicare.md) §6.

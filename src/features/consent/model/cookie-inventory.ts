@@ -1,4 +1,4 @@
-export type CookieInfo = {
+type CookieInfo = {
   readonly category: 'necessary' | 'analytics' | 'marketing';
   readonly service: string;
   readonly names: string;

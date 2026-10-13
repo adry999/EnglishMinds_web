@@ -7,7 +7,7 @@ import { createDatabasePool } from './db/pool';
 import { hashIp } from './leads/ip-hash';
 import { createChannels } from './leads/channels';
 import { createLeadDispatcher } from './leads/notify-leads';
-import { safeError } from './leads/safe-error';
+import { errorFieldsWithoutMessage } from './leads/error-fields';
 import { createMysqlLeadRepository } from './leads/lead.repository';
 import { consoleLogger, systemClock } from './leads/ports';
 import { createMysqlRateLimiter } from './leads/rate-limit';
@@ -42,10 +42,6 @@ async function sendWebResponse(response: Response, res: ServerResponse): Promise
   res.end(Buffer.from(await response.arrayBuffer()));
 }
 
-/**
- * A bad configuration must end in a plain exit, never an environment dump: a Passenger page in development
- * mode would publish the variables. Only the name of the offending variable is written out.
- */
 function loadEnvironment(): Environment {
   try {
     return readEnvironment();
@@ -68,27 +64,25 @@ const handle = createRequestHandler({
   hashIp: (ip) => hashIp(ip, env.ipHashSalt),
 });
 
-createServer((req, res) => {
+createServer(async (req, res) => {
   if (env.debugClientIp && pathOf(req.url) === '/api/health') {
     console.info('[debug] client address', describeClientIp(req.headers['x-forwarded-for'], req.socket.remoteAddress, env.trustProxyHops, env.ipHashSalt));
   }
-  Promise.resolve()
-    .then(() =>
-      handle(toWebRequest(req), {
-        clientIp: clientIpOf(req.headers['x-forwarded-for'], req.socket.remoteAddress, env.trustProxyHops),
-      }),
-    )
-    .then((response) => sendWebResponse(response, res))
-    .catch((error: unknown) => {
-      console.error('[server] unhandled request error', { method: req.method, path: pathOf(req.url), ...safeError(error) });
-      if (res.headersSent) {
-        res.end();
-        return;
-      }
-      res.statusCode = 500;
-      res.setHeader('content-type', 'application/json; charset=utf-8');
-      res.end(JSON.stringify({ ok: false, error: 'internal' }));
+  try {
+    const response = await handle(toWebRequest(req), {
+      clientIp: clientIpOf(req.headers['x-forwarded-for'], req.socket.remoteAddress, env.trustProxyHops),
     });
+    await sendWebResponse(response, res);
+  } catch (error) {
+    console.error('[server] unhandled request error', { method: req.method, path: pathOf(req.url), ...errorFieldsWithoutMessage(error) });
+    if (res.headersSent) {
+      res.end();
+      return;
+    }
+    res.statusCode = 500;
+    res.setHeader('content-type', 'application/json; charset=utf-8');
+    res.end(JSON.stringify({ ok: false, error: 'internal' }));
+  }
 }).listen(env.port, () => {
   console.log(`[server] listening on ${env.port}`);
 });

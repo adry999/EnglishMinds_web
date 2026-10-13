@@ -11,13 +11,16 @@ const MARKUP = `
 const menu = () => document.querySelector<HTMLElement>('site-menu')!;
 const toggle = () => document.querySelector<HTMLButtonElement>('.site-header__toggle')!;
 
+function attachAfterParsing(html: string): void {
+  const holder = document.createElement('div');
+  holder.innerHTML = html;
+  document.body.replaceChildren(...holder.childNodes);
+}
+
 describe('<site-menu>', () => {
   beforeEach(() => {
     defineSiteMenu();
-    // Parse detached, then attach: happy-dom fires connectedCallback before innerHTML children exist.
-    const holder = document.createElement('div');
-    holder.innerHTML = MARKUP;
-    document.body.replaceChildren(...holder.childNodes);
+    attachAfterParsing(MARKUP);
   });
 
   it('shows the toggle and starts closed once enhanced', () => {

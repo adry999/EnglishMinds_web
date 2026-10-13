@@ -1,7 +1,5 @@
 name: Pages
 
-# Client preview at https://adry999.github.io/EnglishMinds_web/, rebuilt after every green CI run on main.
-# Independent of Deploy: the real hosting is not touched.
 on:
   workflow_run:
     workflows: [CI]
@@ -43,8 +41,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      # Without it GitHub Pages runs Jekyll, which skips the _astro/ folder.
-      - run: touch dist/.nojekyll
+      - name: Disable Jekyll
+        run: touch dist/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -3,7 +3,8 @@ import { connect } from 'node:net';
 import { existsSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { aLeadSubmission } from '@test-support/lead-fakes';
 
 const TEST_ENV = {
   DB_HOST: '127.0.0.1',
@@ -78,8 +79,7 @@ describe('server bundle', () => {
       socket.on('error', reject);
     });
     expect(raw.startsWith('HTTP/1.1 500')).toBe(true);
-    await new Promise((done) => setTimeout(done, 200));
-    expect(stderr).toContain('unhandled request error');
+    await vi.waitFor(() => expect(stderr).toContain('unhandled request error'));
     expect(stderr).toContain('path: null');
     expect(stderr).not.toContain('http://localhost');
     const health = await fetch(`${base}/api/health`);
@@ -90,18 +90,7 @@ describe('server bundle', () => {
     const response = await fetch(`${base}/api/lead`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        parentName: 'Ana Pop',
-        phone: '0722 123 456',
-        childAgeGroup: null,
-        source: 'home',
-        testLevel: null,
-        consent: true,
-        policyVersion: '2',
-        utm: { source: null, medium: null, campaign: null },
-        website: '',
-        elapsedMs: 8400,
-      }),
+      body: JSON.stringify(aLeadSubmission()),
     });
     expect(response.status).toBe(500);
     expect(await response.json()).toEqual({ ok: false, error: 'internal' });

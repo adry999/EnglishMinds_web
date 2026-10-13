@@ -1,4 +1,3 @@
-/** Lighthouse CI on the built site (mobile preset). Every page must reach 0.9 in all four categories. */
 module.exports = {
   ci: {
     collect: {

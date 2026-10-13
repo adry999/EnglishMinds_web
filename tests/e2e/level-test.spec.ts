@@ -1,10 +1,11 @@
 import { expect, test } from '@playwright/test';
-import { blockWhatsApp, mockLeadApi } from './support/lead-api';
+import { mockLeadApi, stubWhatsApp } from './support/lead-api';
 
 const CHILD = 'Matei Ionescu';
+const FIRST_AUDIO_QUESTION = 3;
 
 test.beforeEach(async ({ context }) => {
-  await blockWhatsApp(context);
+  await stubWhatsApp(context);
 });
 
 test('level test -> diploma -> booking form, child name never sent', async ({ page }) => {
@@ -59,9 +60,9 @@ test('audio questions without speechSynthesis show the text and the fallback not
   await page.getByRole('button', { name: /Test de nivel/ }).click();
   await page.getByRole('button', { name: '5–6 ani' }).click();
   await page.getByRole('button', { name: 'Începe testul' }).click();
-  // Questions 1 and 2 are visual; question 3 is the first audio one ("cat").
-  await page.locator('level-test .level-test__options button').first().click();
-  await page.locator('level-test .level-test__options button').first().click();
+  for (let question = 1; question < FIRST_AUDIO_QUESTION; question += 1) {
+    await page.locator('level-test .level-test__options button').first().click();
+  }
   await expect(page.getByRole('heading', { name: 'Ce cuvânt ai auzit?' })).toBeVisible();
   await expect(page.getByText('Browserul tău nu poate reda sunetul. Citește propoziția:')).toBeVisible();
   await expect(page.locator('level-test [lang="en"]', { hasText: /^cat$/ })).toBeVisible();

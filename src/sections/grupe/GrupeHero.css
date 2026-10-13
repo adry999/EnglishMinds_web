@@ -28,7 +28,6 @@
   margin-top: 24px;
 }
 
-/* The five groups wrap onto a second row on phones instead of scrolling sideways. */
 .grupe-hero__nav ul {
   display: flex;
   flex-wrap: wrap;

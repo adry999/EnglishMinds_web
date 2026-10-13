@@ -44,7 +44,6 @@ let openSpy: ReturnType<typeof vi.spyOn>;
 let now = 0;
 
 function mount(source = 'home', options?: { ages?: boolean; hidden?: boolean; demo?: boolean }): HTMLElement {
-  // Parse detached, then attach: happy-dom fires connectedCallback before innerHTML children exist.
   const holder = document.createElement('div');
   holder.innerHTML = markup(source, options);
   document.body.replaceChildren(...holder.childNodes);

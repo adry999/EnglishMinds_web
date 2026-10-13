@@ -17,13 +17,16 @@ const MARKUP = `
 const toggles = () => [...document.querySelectorAll<HTMLButtonElement>('.faq__toggle')];
 const answers = () => [...document.querySelectorAll<HTMLElement>('.faq__answer')];
 
+function attachAfterParsing(html: string): void {
+  const holder = document.createElement('div');
+  holder.innerHTML = html;
+  document.body.replaceChildren(...holder.childNodes);
+}
+
 describe('<faq-list>', () => {
   beforeEach(() => {
     defineFaqList();
-    // Parse detached, then attach: happy-dom fires connectedCallback before innerHTML children exist.
-    const holder = document.createElement('div');
-    holder.innerHTML = MARKUP;
-    document.body.replaceChildren(...holder.childNodes);
+    attachAfterParsing(MARKUP);
   });
 
   it('turns each question into a collapsed toggle button', () => {

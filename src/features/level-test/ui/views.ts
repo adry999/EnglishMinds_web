@@ -22,24 +22,27 @@ export type Handlers = {
 const heading = (text: string, className = 'level-test__title') => h('h2', { class: className, tabindex: -1 }, text);
 
 export function modeView(on: Handlers): Node {
-  const card = (title: string, description: string) =>
-    h(
+  const card = (title: string, description: string, onClick: () => void) => {
+    const button = h(
       'button',
       { type: 'button', class: 'level-test__mode' },
       h('span', { class: 'level-test__eyebrow' }, '12 întrebări · 5 minute'),
       h('span', { class: 'level-test__mode-title' }, title),
       h('span', { class: 'level-test__mode-text' }, description),
     );
+    button.addEventListener('click', onClick);
+    return button;
+  };
   const level = card(
     'Test de nivel',
     'Aflăm grupa potrivită. Întrebările se adaptează vârstei, cu imagini și audio pentru cei mici.',
+    () => on.chooseMode('level'),
   );
   const exam = card(
     'Test pentru examen Cambridge',
     'Verificăm cât de pregătit e copilul pentru Starters, Movers, Flyers sau A2 Key.',
+    () => on.chooseMode('exam'),
   );
-  level.addEventListener('click', () => on.chooseMode('level'));
-  exam.addEventListener('click', () => on.chooseMode('exam'));
   return h(
     'div',
     { class: 'level-test__step' },
@@ -111,16 +114,14 @@ function mediaView(question: Question, speechAvailable: boolean, on: Handlers): 
   }
 }
 
-let renderCount = 0;
+const INSTRUCTION_ID = 'level-test-instruction';
+const MEDIA_ID = 'level-test-media';
 
 export function questionView(question: Question, index: number, total: number, speechAvailable: boolean, on: Handlers): Node {
-  renderCount += 1;
-  const instructionId = `level-test-instruction-${renderCount}`;
-  const mediaId = `level-test-media-${renderCount}`;
   const media = mediaView(question, speechAvailable, on);
-  if (media instanceof HTMLElement) media.id = mediaId;
+  if (media instanceof HTMLElement) media.id = MEDIA_ID;
   const title = heading(question.prompt, 'level-test__question');
-  title.setAttribute('aria-describedby', media ? `${instructionId} ${mediaId}` : instructionId);
+  title.setAttribute('aria-describedby', media ? `${INSTRUCTION_ID} ${MEDIA_ID}` : INSTRUCTION_ID);
   const options = question.options.map((option, optionIndex) => {
     const item = h(
       'button',
@@ -153,7 +154,7 @@ export function questionView(question: Question, index: number, total: number, s
       },
       h('span', { class: 'level-test__progress-fill', style: `width: ${((index + 1) / total) * 100}%` }),
     ),
-    h('p', { class: 'level-test__eyebrow', id: instructionId }, question.instruction),
+    h('p', { class: 'level-test__eyebrow', id: INSTRUCTION_ID }, question.instruction),
     media,
     title,
     h('div', { class: 'level-test__options' }, ...options),

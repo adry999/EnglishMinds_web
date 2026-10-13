@@ -105,7 +105,7 @@ export async function createDiplomaCanvas(doc: Document, data: DiplomaData): Pro
     await Promise.all(FONT_WEIGHTS.map((font) => doc.fonts?.load(font, FONT_SAMPLE)));
     await doc.fonts?.ready;
   } catch (error) {
-    console.warn('Fonturile diplomei nu s-au încărcat, folosim fontul de rezervă', error);
+    console.warn('[diploma] fonts failed to load, using the fallback font', error);
   }
   const canvas = doc.createElement('canvas');
   canvas.width = DIPLOMA_SIZE.width;
@@ -146,7 +146,7 @@ export function printDiploma(popup: Window | null, canvas: HTMLCanvasElement, ch
   image.addEventListener(
     'error',
     () => {
-      console.error('Diploma nu a putut fi încărcată pentru tipărire');
+      console.error('[diploma] image failed to load for printing');
       popup.close();
     },
     { once: true },

@@ -1,19 +1,14 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createSmtpNotifier, formatLeadEmail, type MailSender } from './lead-notification';
-import type { LeadRecord } from './ports';
+import { aLead } from '@test-support/lead-fakes';
 
-const record: LeadRecord = {
+const record = aLead({
   parentName: 'Ştefănescu Ana',
-  phone: '+40722123456',
   childAgeGroup: '7–8 ani',
   source: 'test',
   testLevel: 'level:movers',
-  consent: true,
-  policyVersion: '2',
   utm: { source: 'instagram', medium: null, campaign: 'demo-toamna' },
-  consentAt: new Date('2026-10-11T09:30:00.000Z'),
-  createdAt: new Date('2026-10-11T09:30:00.000Z'),
-};
+});
 
 describe('formatLeadEmail', () => {
   it('writes a plain Romanian summary with the Bucharest time', () => {

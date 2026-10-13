@@ -14,7 +14,6 @@ export default defineConfig({
     { name: 'mobile', use: { ...devices['Pixel 7'] } },
     { name: 'desktop', use: { ...devices['Desktop Chrome'] } },
   ],
-  // The tests expect a built dist/ (run `npm run build` first).
   webServer: {
     command: 'npx astro preview --port 4399',
     url: 'http://localhost:4399/',

@@ -1,7 +1,7 @@
 ---
 import type { ImageMetadata } from 'astro';
 import { site } from '@shared/content/site';
-import { companyLine } from '@shared/lib/company-line';
+import { legalCompanyLine } from '@shared/lib/company-line';
 import { withBase } from '@shared/lib/with-base';
 import Button from './Button.astro';
 import Logo from './Logo.astro';
@@ -24,7 +24,6 @@ const LEGAL = [
 const year = new Date().getFullYear();
 const ANPC_SAL_URL = 'https://reclamatiisal.anpc.ro/';
 const ANPC_SAL_LABEL = 'ANPC – Soluționarea alternativă a litigiilor';
-// The official pictogram is downloaded from anpc.ro by the client and dropped in src/assets/legal/anpc-sal.*; until then a text badge of the same size is shown.
 const anpcPictogram = Object.values(
   import.meta.glob<{ default: ImageMetadata }>('/src/assets/legal/anpc-sal.*', { eager: true }),
 )[0]?.default;
@@ -91,7 +90,7 @@ const anpcPictogram = Object.values(
           <li><button type="button" class="site-footer__cookie-settings" data-cc="show-preferencesModal">Setări cookies</button></li>
         </ul>
       </nav>
-      <p class="site-footer__company">{companyLine(site.company)}</p>
+      <p class="site-footer__company">{legalCompanyLine(site.company)}</p>
     </div>
   </div>
 </footer>

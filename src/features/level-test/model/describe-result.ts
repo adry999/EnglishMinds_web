@@ -19,7 +19,7 @@ export function describeResult(mode: Mode, choice: number, score: number, total:
   if (mode === 'level') {
     const slug = recommendLevel(choice, score, total);
     const level = slug === 'b1-preliminary' ? B1 : site.levels.find((candidate) => candidate.slug === slug);
-    if (!level) throw new Error(`Nivel lipsă din site.levels: ${slug}`);
+    if (!level) throw new RangeError(`Nivel lipsă din site.levels: ${slug}`);
     return { kicker: 'Nivelul recomandat', title: level.name, description: level.summary, level: slug };
   }
   const exam = EXAMS[choice];
@@ -32,7 +32,7 @@ export function describeResult(mode: Mode, choice: number, score: number, total:
     },
     almost: {
       title: 'Aproape pregătit',
-      description: `Baza e solidă. Cu pregătire țintită pe competențele de mai jos, examenul ${exam.name} e la îndemână.`,
+      description: `Baza e bună. Dacă exersează competențele de mai jos, examenul ${exam.name} este la îndemână.`,
     },
     'not-yet': {
       title: 'Mai avem de lucru',

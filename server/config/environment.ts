@@ -4,17 +4,12 @@ export type Environment = Readonly<{
   smtp: Readonly<{ host: string; port: number; user: string; password: string }>;
   mail: Readonly<{ from: string; to: string }>;
   ipHashSalt: string;
-  /** Proxy addresses between the visitor and the app that append to X-Forwarded-For. 0 = use the socket address. */
   trustProxyHops: number;
-  /** Leads accepted per hour across all visitors; a backstop against rotating addresses. */
   globalHourlyCap: number;
-  /** Optional second notification channel; null when not configured. */
   telegram: Readonly<{ botToken: string; chatId: string }> | null;
-  /** Temporary: logs which address the server resolves for /api/health requests. */
   debugClientIp: boolean;
 }>;
 
-/** A startup configuration problem. Carries the variable name only, so it is safe to log. */
 export class ConfigError extends Error {
   constructor(
     message: string,
@@ -63,9 +58,8 @@ function integerOf(env: NodeJS.ProcessEnv, name: string, fallback: number, min: 
   return value;
 }
 
-function trustProxyHopsOf(env: NodeJS.ProcessEnv): number {
-  const legacy = flagOf(env, 'TRUST_PROXY') ? 1 : 0;
-  return integerOf(env, 'TRUST_PROXY_HOPS', legacy, 0, 10);
+function invalidSecret(name: string): ConfigError {
+  return new ConfigError(`${name} invalid`, name);
 }
 
 function telegramOf(env: NodeJS.ProcessEnv): Environment['telegram'] {
@@ -74,9 +68,8 @@ function telegramOf(env: NodeJS.ProcessEnv): Environment['telegram'] {
   if (botToken === '' && chatId === '') return null;
   if (botToken === '') throw new ConfigError('Missing environment variable: TELEGRAM_BOT_TOKEN', 'TELEGRAM_BOT_TOKEN');
   if (chatId === '') throw new ConfigError('Missing environment variable: TELEGRAM_CHAT_ID', 'TELEGRAM_CHAT_ID');
-  // The value is never echoed: a malformed token is still a secret.
-  if (!/^\d+:[\w-]+$/.test(botToken)) throw new ConfigError('TELEGRAM_BOT_TOKEN invalid', 'TELEGRAM_BOT_TOKEN');
-  if (!/^-?\d+$|^@\w+$/.test(chatId)) throw new ConfigError('TELEGRAM_CHAT_ID invalid', 'TELEGRAM_CHAT_ID');
+  if (!/^\d+:[\w-]+$/.test(botToken)) throw invalidSecret('TELEGRAM_BOT_TOKEN');
+  if (!/^-?\d+$|^@\w+$/.test(chatId)) throw invalidSecret('TELEGRAM_CHAT_ID');
   return Object.freeze({ botToken, chatId });
 }
 
@@ -100,7 +93,7 @@ export function readEnvironment(env: NodeJS.ProcessEnv = process.env): Environme
     }),
     mail: Object.freeze({ from: emailOf(env, 'MAIL_FROM'), to: emailOf(env, 'MAIL_TO') }),
     ipHashSalt,
-    trustProxyHops: trustProxyHopsOf(env),
+    trustProxyHops: integerOf(env, 'TRUST_PROXY_HOPS', 0, 0, 10),
     globalHourlyCap: integerOf(env, 'LEAD_GLOBAL_HOURLY_CAP', 60, 1, 10_000),
     telegram: telegramOf(env),
     debugClientIp: flagOf(env, 'DEBUG_CLIENT_IP'),

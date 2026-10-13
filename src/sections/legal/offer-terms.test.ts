@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { offerTermsSentences } from './offer-terms';
+import { offerConditionsRequiredByLaw } from './offer-terms';
 
 const offer = {
   label: 'Ofertă pre-sale 2026',
@@ -13,9 +13,9 @@ const offer = {
   },
 };
 
-describe('offerTermsSentences', () => {
+describe('offerConditionsRequiredByLaw', () => {
   it('states both offers, their period, scope, value and how the first 20 are counted', () => {
-    expect(offerTermsSentences(offer)).toEqual([
+    expect(offerConditionsRequiredByLaw(offer)).toEqual([
       'Oferta „Ofertă pre-sale 2026” (4 + 1 lună cadou) este valabilă până la 30 noiembrie 2026.',
       'Se aplică pentru: toate cursurile de grup.',
       'Reducere pentru primii 20 înscriși: 10% din prețul lunar.',

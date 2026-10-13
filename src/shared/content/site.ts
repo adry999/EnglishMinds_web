@@ -30,7 +30,6 @@ export type Level = {
 export type FaqEntry = {
   readonly question: string;
   readonly answer: string;
-  /** Optional internal link shown after the answer (root-absolute path, the base is added when rendering). */
   readonly link?: { readonly label: string; readonly href: string };
 };
 
@@ -135,7 +134,7 @@ const levels: readonly Level[] = [
 const faq: readonly FaqEntry[] = [
   {
     question: 'De la ce vârstă poate începe copilul?',
-    answer: 'Avem grupe de la 5 ani până la 14 ani, organizate pe vârste și niveluri.',
+    answer: 'Primim copii de la 5 la 14 ani, în grupe pe vârstă.',
   },
   {
     question: 'Cum aflu nivelul copilului?',
@@ -169,7 +168,6 @@ export const site = {
     label: 'Ofertă pre-sale 2026',
     headline: '4 + 1 lună cadou',
     detail: 'Reducere pentru primii 20 înscriși',
-    // Conditions of the offers above, shown in full on the terms page (Legea 363/2007).
     terms: {
       validUntil: 'TODO: data până la care e valabilă oferta',
       appliesTo: 'TODO: pentru ce cursuri se aplică',
@@ -193,7 +191,7 @@ export const site = {
     },
     {
       title: 'Rezultate vizibile după prima lună',
-      text: 'Progres pas cu pas, pe care îl vezi și acasă.',
+      text: 'Progres pe care îl vezi și acasă.',
       tone: 'sun',
     },
   ] satisfies readonly ValueCard[],
@@ -227,14 +225,12 @@ export const site = {
     registeredOffice: 'TODO: sediul social',
   },
   tracking: {
-    // Optional. Empty = off. With an ID, only GTM loads (after consent) and the direct IDs below are ignored.
     gtmContainerId: '',
     ga4MeasurementId: 'TODO: ID GA4 (G-…)',
     metaPixelId: 'TODO: ID Meta Pixel',
     googleAdsId: 'TODO: ID Google Ads (AW-…)',
     googleAdsLeadLabel: 'TODO: eticheta conversiei Lead din Google Ads',
   },
-  /** Optional search engine verification tokens. Empty = no tag rendered. */
   seo: {
     googleSiteVerification: '',
     bingSiteVerification: '',

@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { companyLine } from './company-line';
+import { legalCompanyLine } from './company-line';
 
-describe('companyLine', () => {
+describe('legalCompanyLine', () => {
   it('joins the legal name, CUI, trade register number and registered office', () => {
     expect(
-      companyLine({
+      legalCompanyLine({
         legalName: 'Exemplu SRL',
         cui: 'RO12345678',
         registrationNumber: 'J12/345/2020',

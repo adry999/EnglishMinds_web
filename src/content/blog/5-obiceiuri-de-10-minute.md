@@ -10,7 +10,7 @@ draft: true
 
 Nu ai nevoie de fișe, de aplicații scumpe sau de o engleză perfectă ca să-ți ajuți copilul. Ce contează cel mai mult între două lecții este contactul scurt și plăcut cu limba, repetat des. Zece minute pe zi, fără presiune, valorează mai mult decât o oră de „recapitulare” duminică seara.
 
-Iată cinci obiceiuri simple, de la care poți face pauză oricând, fără vinovăție, și la care poți reveni a doua zi.
+Sunt cinci obiceiuri simple. Poți face pauză oricând, fără să te simți vinovat, și le reiei a doua zi.
 
 ## 1. Cântecul din mașină
 

@@ -68,7 +68,6 @@
   font-weight: 900;
 }
 
-/* Only rendered while drafts are visible (dev server and the client preview). */
 .draft-badge {
   display: inline-block;
   margin: 0;

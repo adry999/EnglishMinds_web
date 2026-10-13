@@ -7,12 +7,14 @@ import { FBEVENTS_SRC, planTags } from '../model/tag-plan';
 import { parseTrackingIds, type TrackingIds } from '../model/tracking-ids';
 import { buildConsentConfig } from './consent-config';
 
+const trackingWindow = window as unknown as TrackingWindow;
+
 function readTracking(json: string | undefined): unknown {
   if (!json) return null;
   try {
     return JSON.parse(json) as unknown;
   } catch (error) {
-    console.warn('cookie-consent: data-tracking is not valid JSON', error);
+    console.warn('[cookie-consent] data-tracking is not valid JSON', error);
     return null;
   }
 }
@@ -27,10 +29,9 @@ export class CookieConsentElement extends HTMLElement {
     if (this.started) return;
     this.started = true;
     this.ids = parseTrackingIds(readTracking(this.dataset.tracking));
-    // Mounted here, at the top of <body>, so keyboard users reach the banner right after the skip link.
     const config = { ...buildConsentConfig({ onConsent: this.apply, onChange: this.apply }), root: this };
     CookieConsent.run(config).catch((error: unknown) => {
-      console.error('cookie-consent: banner failed to start', error);
+      console.error('[cookie-consent] banner failed to start', error);
     });
   }
 
@@ -44,14 +45,13 @@ export class CookieConsentElement extends HTMLElement {
       marketing: CookieConsent.acceptedCategory('marketing'),
     };
     const plan = planTags(this.ids, choice, this.applied, new Date());
-    const target = window as unknown as TrackingWindow;
     if (plan.gtmSrc) appendScript(document, plan.gtmSrc);
     if (plan.gtagSrc) appendScript(document, plan.gtagSrc);
     if (plan.loadPixel) {
-      ensureFbq(target);
+      ensureFbq(trackingWindow);
       appendScript(document, FBEVENTS_SRC);
     }
-    sendTagCalls(target, plan.calls);
+    sendTagCalls(trackingWindow, plan.calls);
     this.applied = choice;
     this.publish(choice);
   };
@@ -63,7 +63,7 @@ export class CookieConsentElement extends HTMLElement {
 
   private readonly onLead = (event: Event): void => {
     const { detail } = event as CustomEvent<LeadSubmittedDetail>;
-    sendTagCalls(window as unknown as TrackingWindow, leadConversionCalls(detail, this.ids, this.applied));
+    sendTagCalls(trackingWindow, leadConversionCalls(detail, this.ids, this.applied));
   };
 }
 

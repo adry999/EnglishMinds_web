@@ -1,19 +1,13 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { LeadRecord } from './ports';
+import { aLead } from '@test-support/lead-fakes';
 import { createTelegramNotifier, formatLeadTelegram, type FetchLike } from './telegram-notification';
 
-const record: LeadRecord = {
+const record = aLead({
   parentName: 'Ştefănescu Ana',
-  phone: '+40722123456',
   childAgeGroup: '7–8 ani',
   source: 'landing',
-  testLevel: null,
-  consent: true,
-  policyVersion: '2',
   utm: { source: 'instagram', medium: 'paid', campaign: 'demo-toamna' },
-  consentAt: new Date('2026-10-11T09:30:00.000Z'),
-  createdAt: new Date('2026-10-11T09:30:00.000Z'),
-};
+});
 
 const config = { botToken: '123456:SECRET-token', chatId: '-1001234567' };
 

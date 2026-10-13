@@ -1,10 +1,6 @@
 import { defineHastPlugin } from 'satteri';
 import { joinBase } from '@shared/lib/with-base';
 
-/**
- * Sätteri hast plugin: Markdown links are root-absolute (`/cookies/`); under a base path they need the same
- * prefix as the links in components. Registers no visitor when the site is served from the root.
- */
 export function prefixBasePlugin(base: string) {
   const atRoot = base.replace(/\/+$/, '') === '';
   return defineHastPlugin({

@@ -19,7 +19,7 @@ Publicarea rămâne oprită cât timp variabila de repository `DEPLOY_ENABLED` n
 
 Se face o singură dată, în repository, la **Settings**.
 
-1. Settings → Environments → **New environment**: creează `production` și `staging`.
+1. Settings → Environments → **New environment**: creează `production` și `staging`. Nu restricționa environment-ul `staging` la branch-ul `staging`: workflow-ul Deploy pornește din CI (`workflow_run`), iar regulile de branch văd atunci branch-ul implicit, nu `staging`.
 2. În fiecare environment, la **Environment secrets**, adaugă:
    - `DEPLOY_HOST`: adresa serverului (hostul SFTP);
    - `DEPLOY_USER`: utilizatorul cPanel;
@@ -52,13 +52,15 @@ Căile trebuie să înceapă cu `/`, fără `/` la sfârșit, să aibă cel puț
    - variabilele de mediu din `server.md` §1, separate pentru fiecare aplicație (inclusiv `DB_*` către baza ei de date);
    - în folderul aplicației (Application root), în fișierul `.htaccess` creat de cPanel pentru aplicație, adaugă linia `PassengerFriendlyErrorPages off`. Publicarea automată nu atinge acest fișier (urcă doar `app.cjs`, `purge-expired-leads.cjs` și `notify-pending-leads.cjs`), deci setarea rămâne. Serverul, la rândul lui, se oprește la o configurare greșită cu un mesaj generic, fără valori.
 4. **Bazele de date.** Creează două baze de date MySQL, una pentru producție și una pentru staging (fiecare cu utilizatorul ei), și importă migrațiile în amândouă, conform `server.md` §2. Variabilele de mediu ale fiecărei aplicații Node trimit către baza ei.
-5. **Cron.** Adaugă jobul zilnic de curățare și jobul de reîncercare a notificărilor (la 10 minute), conform `server.md` §4.
-6. **Subdomeniul de staging.** cPanel → Domains: creează subdomeniul, cu folderul lui (acesta este `DEPLOY_WEB_ROOT` pentru staging). Folderul trebuie să fie **în afara** lui `public_html`, de exemplu `/home/utilizator/staging.englishminds.ro`: cPanel propune implicit `public_html/<subdomeniu>`, iar publicarea pe producție șterge din `public_html` tot ce nu e în build, deci ar șterge și staging-ul. Apoi cPanel → **Directory Privacy**: protejează folderul cu parolă, creează utilizatorul și parola. Pune în variabila `DEPLOY_HTPASSWD_FILE` calea fișierului de parole generat (de exemplu `/home/utilizator/.htpasswds/staging/passwd`). Publicarea adaugă singură blocul de autentificare în `.htaccess` la fiecare rulare.
+5. **Cron.** Adaugă jobul zilnic de curățare și jobul de reîncercare a notificărilor (la 10 minute), conform `server.md` §3.
+6. **Subdomeniul de staging.** cPanel → Domains: creează subdomeniul, cu folderul lui (acesta este `DEPLOY_WEB_ROOT` pentru staging). Folderul trebuie să fie **în afara** lui `public_html`, de exemplu `/home/utilizator/staging.englishminds.ro`: cPanel propune implicit `public_html/<subdomeniu>`, iar publicarea pe producție șterge din `public_html` tot ce nu e în build, deci ar șterge și staging-ul. Apoi cPanel → **Directory Privacy**: protejează folderul cu parolă, creează utilizatorul și parola. Calea fișierului de parole generat (de exemplu `/home/utilizator/.htpasswds/staging/passwd`) merge în `DEPLOY_HTPASSWD_FILE` (§2, pasul 4). Publicarea adaugă singură blocul de autentificare în `.htaccess` la fiecare rulare, cu `/.well-known/` exceptat ca AutoSSL să poată valida domeniul, și restaurează `dist/.htaccess` local după rulare. Nu te baza pe `.htaccess`-ul scris de cPanel: publicarea îl suprascrie.
 7. **SSL.** cPanel → SSL/TLS Status: rulează **AutoSSL** (Let's Encrypt) pentru domeniu și pentru subdomeniul de staging.
 
 ## 4. Ce nu atinge publicarea pe server
 
 La fiecare rulare se șterge din folderul site-ului tot ce nu există în build, cu excepția acestor căi, care rămân neatinse: `api/`, `.well-known/`, `cgi-bin/`, `.user.ini`, `error_log` și `.htpasswds/`. Nu pune fișiere proprii în folderul site-ului în afara lor.
+
+Site-ul se urcă în două treceri: întâi se copiază tot ce e nou, fără ștergere, apoi se șterge ce nu mai există în build. Astfel vizitatorii nu găsesc, nici pentru o clipă, o pagină al cărei fișier lipsește.
 
 ## 5. Întoarcerea la versiunea anterioară
 
@@ -70,7 +72,7 @@ Nu șterge și nu înlocui nimic manual pe server.
 
 ## 6. Publicare manuală (rezervă)
 
-Dacă GitHub Actions nu funcționează: construiește local (`npm run build` și `npm run build:server`), setează în terminal variabilele `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_WEB_ROOT`, `DEPLOY_APP_ROOT`, `DEPLOY_KEY_FILE` (calea cheii private) și `DEPLOY_KNOWN_HOSTS_FILE` (calea fișierului `known_hosts`), plus opțional `DEPLOY_PORT` și `DEPLOY_HTPASSWD_FILE`, apoi rulează `bash scripts/deploy.sh`. `DEPLOY_KEY_FILE` și `DEPLOY_KNOWN_HOSTS_FILE` sunt obligatorii la o publicare reală; doar `--dry-run` le sare și doar arată ce ar face, fără să urce nimic. Pe calculator trebuie instalat `lftp`. Reconstruiește între ținte: după o publicare pe staging, rulează din nou `npm run build` înainte de producție (scriptul restaurează `dist/.htaccess`, dar `SITE_ENV` rămâne cel din build). Pentru staging construiește cu `SITE_ENV=staging`, pentru producție cu `SITE_ENV=production` (de exemplu `SITE_ENV=staging npm run build`). Pașii complet manuali sunt în `server.md` §3.
+Dacă GitHub Actions nu funcționează: construiește local (`npm run build` și `npm run build:server`), setează în terminal variabilele `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_WEB_ROOT`, `DEPLOY_APP_ROOT`, `DEPLOY_KEY_FILE` (calea cheii private) și `DEPLOY_KNOWN_HOSTS_FILE` (calea fișierului `known_hosts`), plus opțional `DEPLOY_PORT` și `DEPLOY_HTPASSWD_FILE`, apoi rulează `bash scripts/deploy.sh`. `DEPLOY_KEY_FILE` și `DEPLOY_KNOWN_HOSTS_FILE` sunt obligatorii la o publicare reală; doar `--dry-run` le sare și doar arată ce ar face, fără să urce nimic. Pe calculator trebuie instalat `lftp`. Reconstruiește între ținte: după o publicare pe staging, rulează din nou `npm run build` înainte de producție (scriptul restaurează `dist/.htaccess`, dar `SITE_ENV` rămâne cel din build). Pentru staging construiește cu `SITE_ENV=staging`, pentru producție cu `SITE_ENV=production` (de exemplu `SITE_ENV=staging npm run build`). Fără scriptul: `npm run build:server` creează în `dist-server/` `app.cjs`, `purge-expired-leads.cjs` și `notify-pending-leads.cjs`; urcă-le în folderul aplicației Node și repornește aplicația cu `touch tmp/restart.txt` (sau din interfața cPanel).
 
 ## 7. Unde se văd erorile
 

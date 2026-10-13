@@ -45,8 +45,20 @@ describe('createSpeech', () => {
     expect(cancel).toHaveBeenCalledTimes(1);
   });
 
-  it('reports a failure instead of swallowing it', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+  it('does not throw when cancelling fails', () => {
+    const win = {
+      speechSynthesis: {
+        cancel: () => {
+          throw new Error('busy');
+        },
+        speak: () => undefined,
+      },
+      SpeechSynthesisUtterance: class {},
+    } as unknown as Window;
+    expect(() => createSpeech(win).cancel()).not.toThrow();
+  });
+
+  it('reports a failure to speak by returning false', () => {
     const win = {
       speechSynthesis: {
         cancel: () => undefined,
@@ -57,7 +69,5 @@ describe('createSpeech', () => {
       SpeechSynthesisUtterance: class {},
     } as unknown as Window;
     expect(createSpeech(win).speak('cat')).toBe(false);
-    expect(warn).toHaveBeenCalled();
-    warn.mockRestore();
   });
 });

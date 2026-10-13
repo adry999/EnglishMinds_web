@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { blockWhatsApp, mockLeadApi } from './support/lead-api';
+import { mockLeadApi, stubWhatsApp } from './support/lead-api';
 
 const WA = 'https://wa.me/40775630680?text=';
 const PARENT = 'Ana Pop';
@@ -7,12 +7,13 @@ const PARENT = 'Ana Pop';
 let whatsapp: { hits: string[] };
 
 test.beforeEach(async ({ context }) => {
-  whatsapp = await blockWhatsApp(context);
+  whatsapp = await stubWhatsApp(context);
 });
 
-/** The client waits about 3.2 s before posting, so look past that window. */
+const CLIENT_SUBMIT_DELAY_MS = 3200;
+
 async function expectNoLeadRequest(page: Page): Promise<void> {
-  await expect(page.waitForRequest('**/api/lead', { timeout: 4500 })).rejects.toThrow(/Timeout/);
+  await expect(page.waitForRequest('**/api/lead', { timeout: CLIENT_SUBMIT_DELAY_MS + 1300 })).rejects.toThrow(/Timeout/);
 }
 
 async function open(page: Page, path = '/') {
@@ -111,19 +112,17 @@ for (const [label, reply] of [
   });
 }
 
-test('rate limited (429): alert with contact links, popup never reaches WhatsApp', async ({ page }) => {
+test('rate limited (429): the WhatsApp tab opens synchronously with the click and closes, the alert offers contact links', async ({ page }) => {
   const api = await mockLeadApi(page, { status: 429, body: { ok: false, error: 'rate_limited' } });
   const f = await open(page);
   await fillValid(f, page);
   const closed: Promise<unknown>[] = [];
   page.on('popup', (popup) => {
-    // The tab opens synchronously with the click (popup blockers) and is closed on 429.
     closed.push(popup.waitForEvent('close'));
   });
   await f.submit.click();
   const alert = page.getByRole('alert').filter({ hasText: 'Ai trimis deja mai multe cereri' });
-  // The client waits 3.2 s before posting, so the default 5 s is too tight.
-  await expect(alert).toBeVisible({ timeout: 10_000 });
+  await expect(alert).toBeVisible({ timeout: CLIENT_SUBMIT_DELAY_MS + 6800 });
   await expect(page.getByRole('link', { name: 'Scrie pe WhatsApp' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Sună-ne' }).first()).toBeVisible();
   expect(closed).toHaveLength(1);

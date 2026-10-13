@@ -6,9 +6,7 @@ import LegalDocument from './LegalDocument.astro';
 
 type Entry = Parameters<typeof LegalDocument>[0]['entry'];
 
-// A hand-built entry: the component only reads `data` and calls render(entry),
-// which falls back to an empty body when the entry has no rendered markdown.
-const entry = {
+const entryWithoutRenderedBody = {
   id: 'cookies',
   collection: 'legal',
   data: { title: 'Politica de test', description: 'Descriere.', updatedAt: new Date('2026-10-12') },
@@ -16,7 +14,7 @@ const entry = {
 
 async function render(props: { showCookies?: boolean; showPolicyVersion?: boolean; showOfferTerms?: boolean }) {
   const container = await AstroContainer.create();
-  return container.renderToString(LegalDocument, { props: { entry, ...props } });
+  return container.renderToString(LegalDocument, { props: { entry: entryWithoutRenderedBody, ...props } });
 }
 
 describe('LegalDocument', () => {

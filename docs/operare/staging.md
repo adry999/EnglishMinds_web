@@ -47,7 +47,7 @@ Staging-ul se publică automat din branch-ul `staging` (vezi `publicare.md`). Ar
 ## Cron
 
 - [ ] `notify-pending-leads` rulează la 10 minute, cu calea completă către `node`.
-  - Verificare: programarea cron conține jobul (`server.md` §4); `~/logs/notify.log` există și nu conține erori (jobul scrie „pending leads retried” doar când a retrimis ceva).
+  - Verificare: programarea cron conține jobul (`server.md` §3); `~/logs/notify.log` există și nu conține erori (jobul scrie „pending leads retried” doar când a retrimis ceva).
 - [ ] `purge-expired-leads` rulează zilnic.
   - Verificare: programarea cron a hostingului (sau `crontab -l`) conține jobul zilnic.
 - [ ] În log apare numărul de rânduri șterse.
@@ -91,14 +91,14 @@ Staging-ul se publică automat din branch-ul `staging` (vezi `publicare.md`). Ar
   - Verificare: deschide URL-ul într-o fereastră privată.
 - [ ] După o publicare automată, staging-ul cere în continuare parola.
   - Verificare: deschide URL-ul într-o fereastră privată imediat după ce rulează workflow-ul Deploy.
-  - Parola vine din variabila `DEPLOY_HTPASSWD_FILE` (doar în mediul `staging`): creează o dată utilizatorul în cPanel, Directory Privacy, apoi setează variabila la calea fișierului passwd generat (de exemplu `/home/u/.htpasswds/staging/passwd`). Scriptul adaugă blocul de autentificare în `.htaccess` la fiecare publicare (cu `/.well-known/` exceptat) și restaurează `dist/.htaccess` local după rulare. Nu te baza pe `.htaccess`-ul scris de cPanel, pentru că publicarea îl suprascrie. Setează `DEPLOY_HTPASSWD_FILE` doar ca variabilă a mediului `staging`, niciodată la nivel de repository, altfel și producția primește parolă.
+  - Parola și `DEPLOY_HTPASSWD_FILE` se configurează în `publicare.md` (§2 pasul 4 și §3 pasul 6).
 - [ ] Staging-ul are `noindex` sau este blocat în `robots.txt`.
   - Verificare: `curl -s -u user:parola https://<staging>/robots.txt` și antetul `X-Robots-Tag` / meta `robots` din pagină.
 
 ## Publicare
 
-- [ ] Fluxul de publicare funcționează: build din ramura `staging`, încărcare prin SFTP, repornire prin `tmp/restart.txt`.
-  - Verificare: încarcă un build nou prin SFTP, rulează `touch tmp/restart.txt` în aplicație și confirmă că pagina și `/api/lead` servesc noul build (de exemplu o modificare vizibilă de text).
+- [ ] Fluxul de publicare funcționează.
+  - Verificare: fă o modificare vizibilă de text pe branch-ul `staging`, așteaptă să treacă workflow-urile CI și Deploy, apoi deschide pagina și verifică și `/api/lead` (vezi „Rutare”).
 
 - [ ] Site-ul nu răspunde cu 500 după prima încărcare.
   - Verificare: deschide `https://<staging>/`. Dacă apare 500, `AllowOverride` al hostingului poate interzice `Options`: șterge linia `Options -Indexes` din `.htaccess` sau cere hostingului să o permită.

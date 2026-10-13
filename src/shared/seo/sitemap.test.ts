@@ -1,3 +1,5 @@
+import { readdirSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { STATIC_ROUTES, renderRobots, renderSitemap } from './sitemap';
 
@@ -44,5 +46,12 @@ describe('STATIC_ROUTES', () => {
       '/cookies/',
       '/termeni/',
     ]);
+  });
+
+  it('matches the static pages in src/pages', () => {
+    const pages = readdirSync(fileURLToPath(new URL('../../pages/', import.meta.url)))
+      .filter((file) => file.endsWith('.astro') && file !== '404.astro')
+      .map((file) => (file === 'index.astro' ? '/' : `/${file.replace('.astro', '')}/`));
+    expect([...STATIC_ROUTES].sort()).toEqual(pages.sort());
   });
 });

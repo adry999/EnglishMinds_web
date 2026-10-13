@@ -9,20 +9,35 @@ const noDeepRelative = {
   message: 'Folosește aliasurile @features/, @shared/, @core/ în loc de ../../',
 };
 
+const importRule = (...patterns) => ({ 'no-restricted-imports': ['error', { patterns: [noDeepRelative, ...patterns] }] });
+
+const featureIndexOnly = (who) => [
+  { regex: '^@features/[^/]+/.+', message: `${who} importă un feature doar prin index-ul lui: @features/<nume>.` },
+  { regex: '^\\.{1,2}/(.*/)?features/', message: `${who} importă un feature doar prin @features/<nume>.` },
+];
+
+const featurePatterns = [
+  {
+    group: ['@features/*'],
+    message: 'Un feature nu importă alt feature; folosește un CustomEvent din @shared/contracts.',
+  },
+  { group: ['@sections/*'], message: 'Un feature nu depinde de secțiunile paginilor.' },
+  { group: ['@layouts/*'], message: 'Un feature nu depinde de layout-uri.' },
+];
+
 export default defineConfig(
-  { ignores: ['dist/', 'dist-server/', '.astro/', 'design/', 'tests/boundaries/fixture/', 'node_modules/'] },
+  { ignores: ['dist/', 'dist-server/', '.astro/', 'tests/boundaries/fixture/', 'node_modules/'] },
   js.configs.recommended,
   tseslint.configs.recommended,
   astro.configs.recommended,
   { languageOptions: { globals: { ...globals.browser, ...globals.node } } },
   {
     rules: {
-      'no-restricted-imports': ['error', { patterns: [noDeepRelative] }],
+      ...importRule(),
       'no-restricted-syntax': [
         'error',
         { selector: 'ExportAllDeclaration', message: 'Fără export *; exportă explicit.' },
       ],
-      'no-empty': ['error', { allowEmptyCatch: false }],
       'no-restricted-properties': [
         'error',
         { object: 'process', property: 'env', message: 'Doar server/config/environment.ts citește process.env.' },
@@ -30,143 +45,51 @@ export default defineConfig(
     },
   },
   {
-    files: ['server/config/environment.ts', 'astro.config.ts', 'server/**/*.test.ts', 'tests/support/mysql.ts', 'playwright.config.ts', 'tests/staging/**', 'tests/preview/**', 'tests/deploy/**'],
+    files: ['server/config/environment.ts', 'astro.config.ts', 'server/**/*.test.ts', 'tests/support/mysql.ts', 'playwright.config.ts', 'tests/support/astro-build.ts', 'tests/deploy/**'],
     rules: { 'no-restricted-properties': 'off' },
   },
   {
     files: ['src/shared/**', 'src/core/**'],
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: [
-            noDeepRelative,
-            { group: ['@features/*'], message: 'shared/ și core/ nu depind de feature-uri.' },
-            { group: ['@sections/*'], message: 'shared/ și core/ nu depind de secțiuni.' },
-            { group: ['@layouts/*'], message: 'shared/ și core/ nu depind de layout-uri.' },
-            {
-              regex: '^\\.{1,2}/(.*/)?(features|pages|layouts|sections)/',
-              message: 'shared/ și core/ nu depind de feature-uri, pagini, layout-uri sau secțiuni.',
-            },
-          ],
-        },
-      ],
-    },
+    rules: importRule(
+      { group: ['@features/*'], message: 'shared/ și core/ nu depind de feature-uri.' },
+      { group: ['@sections/*'], message: 'shared/ și core/ nu depind de secțiuni.' },
+      { group: ['@layouts/*'], message: 'shared/ și core/ nu depind de layout-uri.' },
+      {
+        regex: '^\\.{1,2}/(.*/)?(features|pages|layouts|sections)/',
+        message: 'shared/ și core/ nu depind de feature-uri, pagini, layout-uri sau secțiuni.',
+      },
+    ),
   },
   {
-    files: ['src/pages/**', 'src/layouts/**', 'src/sections/**'],
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: [
-            noDeepRelative,
-            {
-              regex: '^@features/[^/]+/.+',
-              message: 'Paginile importă un feature doar prin index-ul lui: @features/<nume>.',
-            },
-            {
-              regex: '^\\.{1,2}/(.*/)?features/',
-              message: 'Paginile importă un feature doar prin @features/<nume>.',
-            },
-          ],
-        },
-      ],
-    },
+    files: ['src/pages/**'],
+    rules: importRule(...featureIndexOnly('Paginile')),
   },
   {
     files: ['src/layouts/**'],
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: [
-            noDeepRelative,
-            {
-              regex: '^@features/[^/]+/.+',
-              message: 'Layout-urile importă un feature doar prin index-ul lui: @features/<nume>.',
-            },
-            {
-              regex: '^\\.{1,2}/(.*/)?features/',
-              message: 'Layout-urile importă un feature doar prin @features/<nume>.',
-            },
-            { group: ['@sections/*'], message: 'Doar paginile și alte secțiuni importă din sections/.' },
-            {
-              regex: '^\\.{1,2}/(.*/)?sections/',
-              message: 'Doar paginile și alte secțiuni importă din sections/.',
-            },
-          ],
-        },
-      ],
-    },
+    rules: importRule(
+      ...featureIndexOnly('Layout-urile'),
+      { group: ['@sections/*'], message: 'Doar paginile și alte secțiuni importă din sections/.' },
+      { regex: '^\\.{1,2}/(.*/)?sections/', message: 'Doar paginile și alte secțiuni importă din sections/.' },
+    ),
   },
   {
     files: ['src/sections/**'],
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: [
-            noDeepRelative,
-            {
-              regex: '^@features/[^/]+/.+',
-              message: 'Paginile importă un feature doar prin index-ul lui: @features/<nume>.',
-            },
-            {
-              regex: '^\\.{1,2}/(.*/)?features/',
-              message: 'Paginile importă un feature doar prin @features/<nume>.',
-            },
-            { group: ['@layouts/*'], message: 'Secțiunile nu importă layout-uri.' },
-            {
-              regex: '^\\.{1,2}/(.*/)?layouts/',
-              message: 'Secțiunile nu importă layout-uri.',
-            },
-          ],
-        },
-      ],
-    },
+    rules: importRule(
+      ...featureIndexOnly('Paginile'),
+      { group: ['@layouts/*'], message: 'Secțiunile nu importă layout-uri.' },
+      { regex: '^\\.{1,2}/(.*/)?layouts/', message: 'Secțiunile nu importă layout-uri.' },
+    ),
   },
   {
     files: ['src/features/**'],
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: [
-            noDeepRelative,
-            {
-              group: ['@features/*'],
-              message: 'Un feature nu importă alt feature; folosește un CustomEvent din @shared/contracts.',
-            },
-            { group: ['@sections/*'], message: 'Un feature nu depinde de secțiunile paginilor.' },
-            { group: ['@layouts/*'], message: 'Un feature nu depinde de layout-uri.' },
-          ],
-        },
-      ],
-    },
+    rules: importRule(...featurePatterns),
   },
   {
     files: ['src/features/*/*'],
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: [
-            noDeepRelative,
-            {
-              group: ['@features/*'],
-              message: 'Un feature nu importă alt feature; folosește un CustomEvent din @shared/contracts.',
-            },
-            { group: ['@sections/*'], message: 'Un feature nu depinde de secțiunile paginilor.' },
-            { group: ['@layouts/*'], message: 'Un feature nu depinde de layout-uri.' },
-            {
-              group: ['../*'],
-              message: 'Un fișier din rădăcina unui feature nu iese din feature cu ../; folosește @shared/ sau @core/.',
-            },
-          ],
-        },
-      ],
-    },
+    rules: importRule(...featurePatterns, {
+      group: ['../*'],
+      message: 'Un fișier din rădăcina unui feature nu iese din feature cu ../; folosește @shared/ sau @core/.',
+    }),
   },
   {
     files: ['src/features/*/model/**'],

@@ -1,7 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-// Computed styles, not CSS text: the footer's generic link colour must not override its own link rules.
-test.describe('footer link colours', () => {
+test.describe('footer links keep their own colour, not the generic link colour', () => {
   test('the Instagram button turns navy on sun yellow on hover, not white', async ({ page }) => {
     await page.goto('/');
     const social = page.locator('.site-footer__social');

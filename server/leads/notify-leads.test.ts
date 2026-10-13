@@ -1,20 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { FakeNotifier, RecordingLogger } from '@test-support/lead-fakes';
+import { FakeNotifier, RecordingLogger, aLead } from '@test-support/lead-fakes';
 import { createLeadDispatcher } from './notify-leads';
-import type { LeadRecord } from './ports';
 
-const record: LeadRecord = {
-  parentName: 'Ana Pop',
-  phone: '+40722123456',
-  childAgeGroup: null,
-  source: 'home',
-  testLevel: null,
-  consent: true,
-  policyVersion: '2',
-  utm: { source: null, medium: null, campaign: null },
-  consentAt: new Date('2026-10-11T09:30:00.000Z'),
-  createdAt: new Date('2026-10-11T09:30:00.000Z'),
-};
+const record = aLead();
 
 describe('createLeadDispatcher', () => {
   it('sends through every channel and reports success', async () => {

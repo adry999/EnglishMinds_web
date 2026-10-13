@@ -51,7 +51,7 @@ describe('home sections', () => {
     const html = await render(TestTeaser);
     expect(html).toContain('id="test"');
     expect(html).toContain('href="/test-de-nivel/"');
-    expect(html).toContain('Descoperă nivelul potrivit copilului tău');
+    expect(html).toContain('Află ce grupă i se potrivește copilului tău');
   });
 
   it('contact section has phone, WhatsApp, maps link and a slot for the form', async () => {
@@ -67,6 +67,6 @@ describe('home sections', () => {
   it('contact section does not promise a phone form when no form is slotted', async () => {
     const html = await render(HomeContact);
     expect(html).not.toContain('Lasă-ne un număr de telefon');
-    expect(html).toContain('Scrie-ne pe WhatsApp sau sună-ne și stabilim împreună ziua și ora.');
+    expect(html).toContain('Scrie-ne pe WhatsApp sau sună-ne și stabilim ziua și ora.');
   });
 });

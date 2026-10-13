@@ -6,6 +6,8 @@ import { beforeAll, describe, expect, it } from 'vitest';
 const dist = resolve(import.meta.dirname, '../../dist');
 const PAGES = ['index.html', 'grupe/index.html', 'metoda-cambridge/index.html', 'tabere/index.html', 'test-de-nivel/index.html', 'lectie-demo/index.html', 'blog/index.html', 'confidentialitate/index.html', 'cookies/index.html', 'termeni/index.html', '404.html'];
 
+const PRELOADED_FACES = (4 + 1) * 2;
+
 const read = (page: string) => readFileSync(join(dist, page), 'utf8');
 
 describe('built pages', () => {
@@ -22,11 +24,9 @@ describe('built pages', () => {
     expect(html).toContain('id="continut"');
   });
 
-  it.each(PAGES)('%s preloads every declared font face', (page) => {
+  it.each(PAGES)('%s preloads every font face, so no late swap shifts the layout', (page) => {
     const html = read(page);
-    // All Nunito weights (600, 700, 800, 900) and Barlow Condensed 700, each in latin and latin-ext = 10. Preloading only
-    // some weights caused CLS (0.38 on /test-de-nivel/): a page using a weight that was not preloaded swapped its font late.
-    expect(html.match(/<link rel="preload"[^>]*as="font"/g)).toHaveLength(10);
+    expect(html.match(/<link rel="preload"[^>]*as="font"/g)).toHaveLength(PRELOADED_FACES);
     const declared = new Set([...html.matchAll(/@font-face\{[^}]*font-weight:(\d+)/g)].map((match) => match[1]));
     for (const weight of ['600', '700', '800', '900']) expect(declared).toContain(weight);
   });
@@ -203,7 +203,6 @@ describe('built pages', () => {
   });
 
   it('every published article has a valid BlogPosting', () => {
-    // Zero posts is allowed while every article is still a draft.
     const posts = readdirSync(join(dist, 'blog')).filter((entry) => statSync(join(dist, 'blog', entry)).isDirectory());
     for (const slug of posts) {
       const [block] = jsonLdBlocks(read(`blog/${slug}/index.html`)) as { '@type': string; url: string; image: string }[];

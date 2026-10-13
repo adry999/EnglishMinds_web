@@ -9,5 +9,5 @@ test-results/
 playwright-report/
 .lighthouseci/
 
-# Local notes
+.claude/
 CASE_STUDY_BRIEF_EnglishMinds_web.md

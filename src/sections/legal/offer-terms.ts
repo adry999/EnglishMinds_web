@@ -10,8 +10,7 @@ export type OfferWithTerms = {
   };
 };
 
-/** The conditions of the offers shown on the site, as full sentences (Legea 363/2007: no hidden conditions). */
-export function offerTermsSentences(offer: OfferWithTerms): string[] {
+export function offerConditionsRequiredByLaw(offer: OfferWithTerms): string[] {
   const { terms } = offer;
   return [
     `Oferta „${offer.label}” (${offer.headline}) este valabilă până la ${terms.validUntil}.`,

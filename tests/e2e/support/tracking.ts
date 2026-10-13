@@ -9,24 +9,18 @@ export const TEST_TRACKING = {
 
 const TAG_DOMAINS = ['googletagmanager.com', 'google-analytics.com', 'googleadservices.com', 'doubleclick.net', 'facebook.net', 'facebook.com'];
 
-/** True for an exact tag domain or any of its subdomains (hostname match, not substring). */
-export const TAG_HOSTS = (url: URL): boolean =>
+export const isTagHost = (url: URL): boolean =>
   TAG_DOMAINS.some((domain) => url.hostname === domain || url.hostname.endsWith(`.${domain}`));
 
-/** The cookie library hides its banner from automated browsers; real visitors are not webdriver-driven. */
 export async function showBannerToTests(page: Page): Promise<void> {
   await page.addInitScript(() => {
     Object.defineProperty(Navigator.prototype, 'webdriver', { get: () => false });
   });
 }
 
-/**
- * Serves pages with valid test ids in <cookie-consent data-tracking> and records every tag request
- * instead of letting it reach Google or Meta. Returns the live list of requested tag URLs.
- */
 export async function useTestTracking(page: Page): Promise<string[]> {
   const requested: string[] = [];
-  await page.route(TAG_HOSTS, async (route) => {
+  await page.route(isTagHost, async (route) => {
     requested.push(route.request().url());
     await route.fulfill({ status: 200, contentType: 'application/javascript', body: '' });
   });

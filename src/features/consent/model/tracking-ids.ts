@@ -1,5 +1,4 @@
 export type TrackingIds = {
-  /** Set = GTM mode: the direct tags below are not loaded. */
   readonly gtm: string | null;
   readonly ga4: string | null;
   readonly metaPixel: string | null;

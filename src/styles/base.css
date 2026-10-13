@@ -28,7 +28,6 @@ img {
   height: auto;
 }
 
-/* Pictures fade in over the photo colour of their frame once loaded; image-fade.ts only marks images that are still loading, so without JavaScript they are simply visible. */
 img[data-fade] {
   transition: opacity 250ms ease;
 }
@@ -82,7 +81,6 @@ a {
   top: 16px;
 }
 
-/* The skip link target takes focus (tabindex="-1") without showing a ring around the whole page. */
 #continut:focus {
   outline: none;
 }

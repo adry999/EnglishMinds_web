@@ -2,7 +2,6 @@ import type { BrowserContext, Page } from '@playwright/test';
 
 type Reply = { status: number; body?: unknown } | 'network-error';
 
-/** Answers POST /api/lead without a server and keeps every request body for assertions. */
 export async function mockLeadApi(page: Page, reply: Reply): Promise<{ requests: unknown[] }> {
   const requests: unknown[] = [];
   await page.route('**/api/lead', async (route) => {
@@ -17,8 +16,7 @@ export async function mockLeadApi(page: Page, reply: Reply): Promise<{ requests:
   return { requests };
 }
 
-/** The WhatsApp tab must open with the right URL but never load wa.me. */
-export async function blockWhatsApp(context: BrowserContext): Promise<{ hits: string[] }> {
+export async function stubWhatsApp(context: BrowserContext): Promise<{ hits: string[] }> {
   const hits: string[] = [];
   await context.route(/wa\.me|api\.whatsapp\.com|web\.whatsapp\.com/, (route) => {
     hits.push(route.request().url());

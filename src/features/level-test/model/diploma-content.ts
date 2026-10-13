@@ -29,7 +29,7 @@ const FONT = 'Nunito, sans-serif';
 const CENTER = DIPLOMA_SIZE.width / 2;
 
 const SLUG_MAX = 60;
-export const NAME_MAX_WIDTH = 1250;
+const NAME_MAX_WIDTH = 1250;
 
 export function cleanChildName(name: string): string {
   return name.normalize('NFC').trim().replace(/\s+/g, ' ');

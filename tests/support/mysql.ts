@@ -19,15 +19,11 @@ export async function openTestPool(url: string): Promise<Pool> {
     password: decodeURIComponent(parsed.password),
     database: decodeURIComponent(parsed.pathname.slice(1)),
   });
-  await runMigrations(pool);
+  await runMigrationsOnOneConnection(pool);
   return pool;
 }
 
-/**
- * Runs every migration in order, one statement at a time on a single connection (session variables and
- * prepared statements in a migration live on one connection). Migrations are idempotent, so this can repeat.
- */
-export async function runMigrations(pool: Pool): Promise<void> {
+export async function runMigrationsOnOneConnection(pool: Pool): Promise<void> {
   const connection = await pool.getConnection();
   try {
     for (const file of readdirSync(MIGRATIONS).filter((name) => name.endsWith('.sql')).sort()) {
