@@ -5,6 +5,7 @@ Ghiduri pentru cine administrează site-ul, fără cunoștințe tehnice. Începe
 | Document | Ce conține |
 |---|---|
 | [`lansare.md`](lansare.md) | Lista de bifat de la datele clientului până la predare, în ordine. |
+| [`chestionar-client.md`](chestionar-client.md) | Întrebările pentru client: datele care lipsesc de pe site. |
 | [`publicare.md`](publicare.md) | Cum ajunge o modificare pe site (GitHub Actions + SFTP) și configurarea inițială pe GitHub și cPanel. |
 | [`continut.md`](continut.md) | Unde se schimbă textele, datele, articolele de blog, textele legale și fotografiile. |
 | [`server.md`](server.md) | Serverul formularului: variabile de mediu, baza de date, cron, publicare manuală de rezervă. |

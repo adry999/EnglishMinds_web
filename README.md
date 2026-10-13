@@ -24,5 +24,6 @@ Site-ul academiei de engleză pentru copii English Minds Academy din Cluj-Napoca
 
 ## Documentație
 
+- Ce mai e de făcut până la lansare: [`TODO.md`](TODO.md).
 - Operare, publicare și lansare, pentru cine administrează site-ul: [`docs/operare/README.md`](docs/operare/README.md).
 - Arhitectura, granițele de import și convențiile de cod: [`docs/arhitectura.md`](docs/arhitectura.md).
