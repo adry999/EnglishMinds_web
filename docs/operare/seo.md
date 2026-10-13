@@ -6,11 +6,11 @@ Așteptări realiste: Google indexează paginile în câteva zile până la cât
 
 ## 1. Înainte de lansare
 
-Staging-ul și previzualizarea au `noindex` și nu se trimit nicăieri. Tot ce urmează se face pe domeniul de producție, după lansare.
+Staging-ul și preview-ul ([`publicare.md`](publicare.md) §8) au `noindex` și nu se trimit nicăieri. Tot ce urmează se face pe domeniul de producție, după lansare.
 
 ## 2. Google Search Console
 
-1. Intră pe <https://search.google.com/search-console> cu contul Google al firmei (vezi `conturi.md`).
+1. Intră pe <https://search.google.com/search-console> cu contul Google al firmei (vezi [`conturi.md`](conturi.md)).
 2. „Add property" → tipul „Domain" → `englishminds.ro`. Google dă o înregistrare TXT.
 3. În contul de la registrar/DNS adaugă înregistrarea TXT la domeniu și apasă „Verify". Poate dura câteva minute.
 4. Variantă fără DNS: tipul „URL prefix" cu `https://englishminds.ro/`, metoda „HTML tag". Copiezi doar valoarea din `content="…"` și o pui în `src/shared/content/site.ts`, în `seo.googleSiteVerification`, apoi publici site-ul și apeși „Verify". Câmpul gol = nu se afișează nimic.
@@ -64,7 +64,7 @@ Articole scurte, utile, scrise pentru părinți, fiecare cu o căutare clară î
 | Tabără de vară în engleză: ce să cauți | „tabără de engleză pentru copii Cluj" |
 | Cum motivezi un copil care nu vrea să învețe engleza | „copilul nu vrea să învețe engleza" |
 
-Reguli: un articol, o întrebare; titlu natural, fără repetarea cuvintelor-cheie; 600–1000 de cuvinte; o fotografie reală. Un articol pe lună e suficient. Cum se adaugă: `continut.md`.
+Reguli: un articol, o întrebare; titlu natural, fără repetarea cuvintelor-cheie; 600–1000 de cuvinte; o fotografie reală. Un articol pe lună e suficient. Cum se adaugă: [`continut.md`](continut.md).
 
 ## 7. Ce urmărești lunar (15 minute)
 

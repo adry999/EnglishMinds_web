@@ -20,7 +20,7 @@ Există o singură activitate de prelucrare: „Cereri pentru lecția demo".
 | Transferuri în afara UE | Telegram Messenger (serverele companiei sunt în afara UE), doar pentru mesajul de notificare către academie, dacă este activat; temeiul transferului se verifică cu juristul. În rest niciunul de către academie, cu hosting în UE (de confirmat cu furnizorul ales la lansare). WhatsApp/Meta se supun politicii proprii. |
 | Termen de ștergere | Baza de date: 12 luni de la cerere, prin job zilnic automat. Limitele de trimitere (amprentă IP): șterse automat în cel mult 2 zile (jobul șterge rândurile mai vechi de 24 de ore, iar rulează o dată pe zi). |
 | Stare notificare | Coloanele `notified_at` și `notify_attempts` din `leads` (fără date personale suplimentare); un job la 10 minute retrimite cererile nenotificate, cel mult 3 încercări în total, în 7 zile. Se șterg odată cu cererea. |
-| Copii prin email și Telegram | Fiecare cerere ajunge și ca email de notificare la adresa `MAIL_TO` (nume, telefon, grupa de vârstă, UTM). Jobul NU le șterge: ștergere manuală în aceleași 12 luni (vezi `date-personale.md`). Mesajele din grupul Telegram se șterg manual în aceleași 12 luni. |
+| Copii prin email și Telegram | Fiecare cerere ajunge și ca email de notificare la adresa `MAIL_TO` (nume, telefon, grupa de vârstă, UTM). Jobul NU le șterge: ștergere manuală în aceleași 12 luni (vezi [`date-personale.md`](date-personale.md)). Mesajele din grupul Telegram se șterg manual în aceleași 12 luni. |
 | Loguri ale serverului de găzduire | Pot conține IP-uri; păstrate conform setărilor furnizorului de găzduire. |
 
 ## Statistici și reclame (cookie-uri, doar cu acord)
@@ -45,5 +45,5 @@ Există o singură activitate de prelucrare: „Cereri pentru lecția demo".
 
 ## Documente înrudite
 
-- `docs/operare/date-personale.md`: cum se rezolvă cererile de acces și ștergere.
-- `docs/operare/taguri.md`: cookie-urile, taguri de măsurare și setările obligatorii din conturi.
+- [`date-personale.md`](date-personale.md): cum se rezolvă cererile de acces și ștergere.
+- [`taguri.md`](taguri.md): cookie-urile, tagurile de măsurare și setările obligatorii din conturi.

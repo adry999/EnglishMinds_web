@@ -1,6 +1,6 @@
 # Chestionar pentru client
 
-Datele de mai jos lipsesc de pe site. Fără ele site-ul nu poate fi publicat: build-ul de producție se oprește cât timp rămâne vreun câmp necompletat. Răspunsurile se trec în `src/shared/content/site.ts`.
+Datele de mai jos lipsesc de pe site. Fără ele site-ul nu poate fi publicat: build-ul de producție se oprește cât timp rămâne vreun câmp necompletat. Răspunsurile se trec în `src/shared/content/site.ts` ([`continut.md`](continut.md) §1).
 
 Poți trimite fișierul ca atare clientului sau îl poți copia într-un email.
 
@@ -53,7 +53,7 @@ Pe site apar „Ofertă pre-sale 2026: 4 + 1 lună cadou” și „Reducere pent
 
 ## 6. Articolele de blog
 
-Pe site sunt 4 articole pregătite, încă nepublicate. Clientul le citește pe preview și confirmă:
+Pe site sunt 4 articole pregătite, încă nepublicate. Clientul le citește pe preview ([`publicare.md`](publicare.md) §8, articolele `draft` se văd acolo) și confirmă:
 
 - Sunt de acord să fie publicate? Ce ar schimba?
 - În articolul despre Starters, Movers și Flyers: descrierea „Ce facem noi la curs” e corectă?
@@ -67,7 +67,7 @@ Pe site sunt 4 articole pregătite, încă nepublicate. Clientul le citește pe 
 
 ## 8. Acte în afara site-ului
 
-Nu le facem noi, dar trebuie să existe la lansare (detalii în `lansare.md` §1b):
+Nu le facem noi, dar trebuie să existe la lansare (detalii în [`lansare.md`](lansare.md) §1b):
 
 - Contract de înscriere, cu prețuri, anulare și rambursare.
 - Acordul scris al părinților pentru pozele cu copii (site și Instagram).

@@ -13,7 +13,7 @@ Aproape toate datele sunt într-un singur fișier: `src/shared/content/site.ts`.
 | `pricing` | `vatNote`: mențiunea TVA („TVA inclus” sau „scutit de TVA”) afișată lângă prețul cursului și al taberei. |
 | `camps` | Tabăra: an, vârste, perioadă, program, preț, ziua tip, ce include. |
 | `company` | Denumirea firmei cu forma juridică, CUI, numărul din Registrul Comerțului, sediul social (apar în subsol și în paginile legale). |
-| `tracking` | ID-urile GA4, Meta Pixel și Google Ads (vezi `taguri.md`). |
+| `tracking` | ID-urile GA4, Meta Pixel și Google Ads (vezi [`taguri.md`](taguri.md)). |
 | `url` | Adresa site-ului, folosită în sitemap și linkuri canonice. |
 
 **Regula `TODO`:** valorile care încă lipsesc sunt scrise `TODO: …`. Build-ul de producție refuză să pornească cât timp există un `TODO`. Pe staging sunt permise, ca să se poată vedea site-ul înainte de a avea toate datele.
@@ -36,10 +36,10 @@ Aproape toate datele sunt într-un singur fișier: `src/shared/content/site.ts`.
    ```
 
 3. `category` poate fi doar una dintre: `acasa`, `metoda-cambridge`, `motivatie`, `scoala` (lista este `BLOG_CATEGORY_IDS`, în `src/features/blog/model/categories.ts`).
-4. Coperta are cel puțin 1200 px lățime și se pune în `src/assets/photos/`.
-5. Cât timp scrie `draft: true`, articolul nu apare pe site. La publicare, schimbă în `draft: false`.
+4. Coperta se pune în `src/assets/photos/` și ar trebui să aibă cel puțin 1200 px lățime (o copertă mai mică dă o imagine socială mai mică).
+5. Cât timp scrie `draft: true`, articolul nu apare pe staging și producție. Îl vezi doar în `npm run dev` și pe preview-ul pentru client ([`publicare.md`](publicare.md) §8). La publicare, schimbă în `draft: false`.
 
-Cele 4 articole existente sunt toate `draft: true`, deci nu apar încă. Fiecare are nevoie de o copertă de cel puțin 1200 px lățime înainte de a fi trecut pe `draft: false`.
+Cele 4 articole existente sunt toate `draft: true`, în așteptarea aprobării clientului. Două dintre ele (`5-obiceiuri-de-10-minute`, `copilul-nu-vrea-sa-vorbeasca`) au coperți de 640 px lățime: schimbă-le cu o poză de cel puțin 1200 px înainte de publicare.
 
 ## 3. Textele legale
 
@@ -58,7 +58,7 @@ Fișierele sunt în `src/assets/photos/`, iar legătura cu paginile este în `sr
 
 ## 5. După o modificare
 
-1. Fă commit pe branch-ul `staging` (publicarea pe staging pornește singură, vezi `publicare.md`).
+1. Fă commit pe branch-ul `staging` (publicarea pe staging pornește singură, vezi [`publicare.md`](publicare.md)).
 2. Verifică modificarea pe subdomeniul de staging.
 3. Fă merge din `staging` în `main`. Publicarea pe producție pornește singură.
 

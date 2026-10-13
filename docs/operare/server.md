@@ -47,7 +47,7 @@ Emailul rămâne canalul principal; Telegram este o a doua cale, ca o cerere să
 3. Află identificatorul conversației (`TELEGRAM_CHAT_ID`): după ce ai scris un mesaj în grup, deschide în browser `https://api.telegram.org/bot<token>/getUpdates` și caută `"chat":{"id":...}` (pentru grupuri numărul e negativ).
 4. Setează cele două variabile în aplicația Node și repornește-o. Fără ele, funcția este oprită.
 
-Mesajul conține doar numele părintelui, telefonul, grupa de vârstă, pagina și ora. Telegram Messenger are servere în afara UE, de aceea este trecut în politica de confidențialitate și în `registru-prelucrare.md`. Cererea către Telegram are un timeout de 5 secunde; tokenul nu apare în loguri.
+Mesajul conține doar numele părintelui, telefonul, grupa de vârstă, pagina și ora. Telegram Messenger are servere în afara UE, de aceea este trecut în politica de confidențialitate și în [`registru-prelucrare.md`](registru-prelucrare.md). Cererea către Telegram are un timeout de 5 secunde; tokenul nu apare în loguri.
 
 ### Cereri nenotificate: reîncercare
 
@@ -83,7 +83,7 @@ Reîncercarea notificărilor, la fiecare 10 minute:
 
 Redirecționarea (`>> ~/logs/... 2>&1`) este necesară: cPanel trimite pe email tot ce scrie un cron, iar altfel ai primi un email la fiecare rulare cu eroare. Creează folderul o dată (`mkdir -p ~/logs`). Jobul scrie în log doar când a găsit cereri de retrimis sau a eșuat; când renunță la o cerere după a treia încercare scrie o eroare cu numărul cererii (id), ca să suni părintele din baza de date.
 
-Jobul are nevoie de exactamente aceleași variabile de mediu ca aplicația, toate (nu doar cele `DB_*`): configurarea se validează integral la pornire, iar dacă lipsește ceva jobul se oprește fără să șteargă nimic. Rulează-l cu același fișier de mediu (`--env-file=/cale/.env`, ca în linia de mai sus) sau cu variabilele setate în panou. Curățarea șterge contactele mai vechi de 12 luni și limitele de trimitere mai vechi de 24 de ore.
+Jobul are nevoie de exactamente aceleași variabile de mediu ca aplicația, toate (nu doar cele `DB_*`): configurarea se validează integral la pornire, iar dacă lipsește ceva jobul se oprește fără să șteargă nimic. Rulează-l cu același fișier de mediu (`--env-file=/cale/.env`, ca în linia de mai sus) sau cu variabilele setate în panou. Ce șterge curățarea și cât se păstrează: [`date-personale.md`](date-personale.md).
 
 ## 4. Local
 

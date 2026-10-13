@@ -128,7 +128,7 @@ Previzualizarea pentru client (`preview`) se publică sub un subfolder al GitHub
 - Joburile `jobs/purge-expired-leads` și `jobs/notify-pending-leads` rulează din cron. `npm run build:server` produce în `dist-server/` trei pachete: `app.cjs` și cele două joburi.
 - Migrațiile SQL sunt în `server/db/migrations/` și pot fi rulate de mai multe ori.
 
-Variabilele de mediu, cron-ul și publicarea: [`operare/server.md`](operare/server.md).
+Variabilele de mediu și cron-ul: [`operare/server.md`](operare/server.md).
 
 ### Contractul `POST /api/lead`
 
@@ -144,7 +144,7 @@ Corpul JSON: `parentName`, `phone`, `childAgeGroup`, `source` (`home`, `landing`
 - Un honeypot completat sau un `elapsedMs` sub 3000 primește `201` fără salvare, ca robotul să nu primească semnal.
 - Limitele: 5 trimiteri pe oră pentru aceeași amprentă IP (SHA-256 cu sare, IP-ul nu se stochează) și un plafon pe oră pentru tot site-ul. Dacă adresa vizitatorului nu poate fi stabilită, se aplică doar plafonul general.
 - Dacă notificarea eșuează după salvare, răspunsul rămâne `201`; erorile se scriu în log fără date personale.
-- Contactele mai vechi de 12 luni și limitele mai vechi de 24 de ore se șterg zilnic.
+- Cât se păstrează și cum se șterg datele: [`operare/date-personale.md`](operare/date-personale.md).
 
 ### Erori în interfață
 
@@ -170,7 +170,7 @@ Corpul JSON: `parentName`, `phone`, `childAgeGroup`, `source` (`home`, `landing`
 
 | Strat | Comandă | Ce acoperă |
 |---|---|---|
-| Unitare, componente, server | `npm test` | Logica din `model/`, scheme, Web Components (happy-dom), handler-ul și joburile cu fake-uri din `tests/support/`. Testul MySQL rulează doar cu `TEST_DATABASE_URL` |
+| Unitare, componente, server | `npm test` | Logica din `model/`, scheme, Web Components (happy-dom), handler-ul și joburile cu fake-uri din `tests/support/`. Testul MySQL rulează doar cu `TEST_DATABASE_URL` (în CI, pe un serviciu MariaDB) |
 | Granițe | `npm test` | `tests/boundaries/`: fiecare regulă dependency-cruiser și ESLint, verificată pe o încălcare plantată |
 | Build-ul final | `npm run test:dist` | Paginile din `dist/`: meta, JSON-LD, linkuri interne, sitemap, imagini |
 | Staging și preview | `npm run test:staging`, `npm run test:preview` | Build-uri cu `SITE_ENV` respectiv: `noindex`, `robots.txt`, formular demo, prefix de bază |
@@ -188,4 +188,4 @@ Biblioteca de cookie-uri ascunde bannerul de browserele automate; testele E2E î
 
 ## Publicare
 
-CI-ul rulează la fiecare push pe `main`/`staging` și la fiecare pull request. După un CI verde, GitHub Actions publică prin SFTP: `main` în producție (cu aprobare), `staging` pe subdomeniul de staging. Detalii: [`operare/publicare.md`](operare/publicare.md).
+CI-ul rulează la fiecare push pe `main`/`staging` și la fiecare pull request. După un CI verde, GitHub Actions publică prin SFTP: `main` în producție (cu aprobare), `staging` pe subdomeniul de staging. Preview-ul pentru client se publică separat, pe GitHub Pages, după fiecare CI verde pe `main` (workflow-ul `pages.yml`). Detalii: [`operare/publicare.md`](operare/publicare.md).
