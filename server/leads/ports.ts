@@ -5,45 +5,32 @@ export type LeadRecord = Lead & { readonly consentAt: Date; readonly createdAt: 
 export type StoredLead = LeadRecord & { readonly id: number; readonly notifyAttempts: number };
 
 export type PendingNotificationQuery = {
-  /** Only leads created at or before this moment (gives the first attempt time to finish). */
-  readonly olderThan: Date;
-  /** Only leads created at or after this moment. */
-  readonly newerThan: Date;
-  /** Only leads with fewer notification attempts than this. */
+  readonly createdBefore: Date;
+  readonly createdAfter: Date;
   readonly maxAttempts: number;
   readonly limit: number;
 };
 
 export interface LeadRepository {
-  /** Stores the lead and returns its id. */
   save(record: LeadRecord): Promise<number>;
   deleteCreatedBefore(cutoff: Date): Promise<number>;
-  /** Counts one notification attempt; sets `notified_at` when it reached at least one channel. */
   recordNotifyAttempt(id: number, delivered: boolean, at: Date): Promise<void>;
-  /**
-   * Reserves a retry: counts one attempt only if the lead still has `expectedAttempts`, so two overlapping cron runs
-   * cannot both take the same lead. `false` when another run got there first.
-   */
   claimNotifyAttempt(id: number, expectedAttempts: number): Promise<boolean>;
-  /** Sets `notified_at` once a claimed attempt reached at least one channel. */
   markNotified(id: number, at: Date): Promise<void>;
   findPendingNotification(query: PendingNotificationQuery): Promise<StoredLead[]>;
 }
 
 export interface RateLimiter {
-  /** Numără o încercare; întoarce `false` dacă limita ferestrei curente e depășită. `limit` înlocuiește limita implicită a cheii. */
   hit(key: string, now: Date, limit?: number): Promise<boolean>;
   deleteWindowsBefore(cutoff: Date): Promise<number>;
 }
 
-/** One notification channel (email, Telegram). Throws when the message could not be delivered. */
 export interface LeadNotifier {
   notify(record: LeadRecord): Promise<void>;
 }
 
 export type NotificationChannel = { readonly name: string; readonly notifier: LeadNotifier };
 
-/** Sends a lead through every channel independently; `true` when at least one channel delivered it. Never throws. */
 export interface LeadDispatcher {
   dispatch(record: LeadRecord): Promise<boolean>;
 }
@@ -62,8 +49,12 @@ export interface Logger {
 
 export const systemClock: Clock = { now: () => new Date() };
 
+function logArguments(message: string, context: LogContext | undefined): [string] | [string, LogContext] {
+  return context === undefined ? [message] : [message, context];
+}
+
 export const consoleLogger: Logger = {
-  info: (message, context) => console.info(message, context ?? {}),
-  warn: (message, context) => console.warn(message, context ?? {}),
-  error: (message, context) => console.error(message, context ?? {}),
+  info: (message, context) => console.info(...logArguments(message, context)),
+  warn: (message, context) => console.warn(...logArguments(message, context)),
+  error: (message, context) => console.error(...logArguments(message, context)),
 };

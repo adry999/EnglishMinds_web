@@ -1,25 +1,11 @@
 import { createTransport } from 'nodemailer';
 import type { Environment } from '../config/environment';
+import { SOURCE_LABELS, formatReceivedAt } from './lead-labels';
 import type { LeadNotifier, LeadRecord } from './ports';
 
 export type MailSender = {
   sendMail(message: { from: string; to: string; subject: string; text: string }): Promise<unknown>;
 };
-
-const SOURCE_LABELS: Readonly<Record<LeadRecord['source'], string>> = {
-  home: 'pagina principală',
-  landing: 'pagina lecției demo',
-  test: 'testul de nivel',
-};
-
-const RECEIVED_AT = new Intl.DateTimeFormat('ro-RO', {
-  timeZone: 'Europe/Bucharest',
-  day: '2-digit',
-  month: '2-digit',
-  year: 'numeric',
-  hour: '2-digit',
-  minute: '2-digit',
-});
 
 const dash = (value: string | null): string => value ?? '—';
 
@@ -33,7 +19,7 @@ export function formatLeadEmail(record: LeadRecord): { subject: string; text: st
     ...(record.source === 'test' ? [`Rezultat test: ${dash(record.testLevel)}`] : []),
     `Sursă: ${SOURCE_LABELS[record.source]}`,
     `UTM: ${utm}`,
-    `Primită: ${RECEIVED_AT.format(record.createdAt)}`,
+    `Primită: ${formatReceivedAt(record.createdAt, { withYear: true })}`,
     `Acord: politica v${record.policyVersion}`,
     '',
     'Datele se șterg automat după 12 luni.',

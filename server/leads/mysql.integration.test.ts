@@ -1,24 +1,20 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import type { Pool, RowDataPacket } from 'mysql2/promise';
-import { openTestPool, resetTables, runMigrations, testDatabaseUrl } from '@test-support/mysql';
+import { aLeadCreatedAt } from '@test-support/lead-fakes';
+import { openTestPool, resetTables, runMigrationsOnOneConnection, testDatabaseUrl } from '@test-support/mysql';
 import { createMysqlLeadRepository } from './lead.repository';
-import type { LeadRecord } from './ports';
 import { GLOBAL_RATE_KEY, createMysqlRateLimiter } from './rate-limit';
 
 const url = testDatabaseUrl();
 
-const record = (createdAt: string): LeadRecord => ({
-  parentName: 'Ştefănescu Ţurcan Ana',
-  phone: '+40722123456',
-  childAgeGroup: '7–8 ani',
-  source: 'test',
-  testLevel: 'level:movers',
-  consent: true,
-  policyVersion: '2',
-  utm: { source: 'instagram', medium: 'paid', campaign: 'demo-toamna' },
-  consentAt: new Date(createdAt),
-  createdAt: new Date(createdAt),
-});
+const record = (createdAt: string) =>
+  aLeadCreatedAt(createdAt, {
+    parentName: 'Ştefănescu Ţurcan Ana',
+    childAgeGroup: '7–8 ani',
+    source: 'test',
+    testLevel: 'level:movers',
+    utm: { source: 'instagram', medium: 'paid', campaign: 'demo-toamna' },
+  });
 
 describe.skipIf(!url)('MySQL adapters', () => {
   let pool: Pool;
@@ -49,6 +45,8 @@ describe.skipIf(!url)('MySQL adapters', () => {
       utm_medium: 'paid',
       utm_campaign: 'demo-toamna',
       policy_version: '2',
+      notified_at: null,
+      notify_attempts: 0,
     });
     expect((rows[0]?.created_at as Date).toISOString()).toBe('2026-10-11T09:30:00.000Z');
     expect((rows[0]?.consent_at as Date).toISOString()).toBe('2026-10-11T09:30:00.000Z');
@@ -81,7 +79,7 @@ describe.skipIf(!url)('MySQL adapters', () => {
   });
 
   it('applies the migrations a second time without error and keeps the notification columns', async () => {
-    await runMigrations(pool);
+    await runMigrationsOnOneConnection(pool);
     const [columns] = await pool.query<RowDataPacket[]>(
       "SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'leads' AND COLUMN_NAME IN ('notified_at', 'notify_attempts')",
     );
@@ -94,7 +92,7 @@ describe.skipIf(!url)('MySQL adapters', () => {
     await repository.save(record('2026-10-10T08:00:00.000Z'));
     await pool.query('ALTER TABLE leads DROP KEY leads_pending_notification, DROP COLUMN notified_at, DROP COLUMN notify_attempts');
 
-    await runMigrations(pool);
+    await runMigrationsOnOneConnection(pool);
     const [rows] = await pool.query<RowDataPacket[]>('SELECT created_at, notified_at, notify_attempts FROM leads ORDER BY created_at');
     expect(rows).toHaveLength(2);
     for (const row of rows) {
@@ -102,22 +100,16 @@ describe.skipIf(!url)('MySQL adapters', () => {
       expect(row.notify_attempts).toBe(0);
     }
     await expect(
-      repository.findPendingNotification({ olderThan: new Date('2026-10-11T12:00:00.000Z'), newerThan: new Date('2026-10-01T00:00:00.000Z'), maxAttempts: 3, limit: 50 }),
+      repository.findPendingNotification({ createdBefore: new Date('2026-10-11T12:00:00.000Z'), createdAfter: new Date('2026-10-01T00:00:00.000Z'), maxAttempts: 3, limit: 50 }),
     ).resolves.toEqual([]);
 
-    // A second run must not mark leads that arrived after the migration.
-    const fresh = await repository.save(record('2026-10-11T09:00:00.000Z'));
-    await runMigrations(pool);
-    const [after] = await pool.query<RowDataPacket[]>('SELECT notified_at FROM leads WHERE id = ?', [fresh]);
-    expect(after[0]?.notified_at).toBeNull();
   });
 
-  it('stores consent and policy version, and starts with no notification', async () => {
-    const id = await createMysqlLeadRepository(pool).save(record('2026-10-11T09:30:00.000Z'));
-    expect(id).toBeGreaterThan(0);
-    const [rows] = await pool.query<RowDataPacket[]>('SELECT notified_at, notify_attempts, consent_at, policy_version FROM leads WHERE id = ?', [id]);
-    expect(rows[0]).toMatchObject({ notified_at: null, notify_attempts: 0, policy_version: '2' });
-    expect((rows[0]?.consent_at as Date).toISOString()).toBe('2026-10-11T09:30:00.000Z');
+  it('does not mark leads that arrived after the migration', async () => {
+    const id = await createMysqlLeadRepository(pool).save(record('2026-10-11T09:00:00.000Z'));
+    await runMigrationsOnOneConnection(pool);
+    const [rows] = await pool.query<RowDataPacket[]>('SELECT notified_at FROM leads WHERE id = ?', [id]);
+    expect(rows[0]?.notified_at).toBeNull();
   });
 
   it('records notification attempts and sets notified_at only on delivery', async () => {
@@ -154,8 +146,8 @@ describe.skipIf(!url)('MySQL adapters', () => {
     for (let attempt = 0; attempt < 3; attempt += 1) await repository.recordNotifyAttempt(exhausted, false, new Date('2026-10-11T09:21:00.000Z'));
 
     const found = await repository.findPendingNotification({
-      olderThan: new Date('2026-10-11T11:55:00.000Z'),
-      newerThan: new Date('2026-10-04T12:00:00.000Z'),
+      createdBefore: new Date('2026-10-11T11:55:00.000Z'),
+      createdAfter: new Date('2026-10-04T12:00:00.000Z'),
       maxAttempts: 3,
       limit: 50,
     });

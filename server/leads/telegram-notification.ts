@@ -1,25 +1,11 @@
 import type { Environment } from '../config/environment';
+import { SOURCE_LABELS, formatReceivedAt } from './lead-labels';
 import type { LeadNotifier, LeadRecord } from './ports';
 
 export type FetchLike = (url: string, init: { method: string; headers: Record<string, string>; body: string; signal: AbortSignal }) => Promise<{ ok: boolean; status: number; body?: { cancel(): Promise<void> } | null }>;
 
 export const TELEGRAM_TIMEOUT_MS = 5_000;
 
-const SOURCE_LABELS: Readonly<Record<LeadRecord['source'], string>> = {
-  home: 'pagina principală',
-  landing: 'pagina lecției demo',
-  test: 'testul de nivel',
-};
-
-const RECEIVED_AT = new Intl.DateTimeFormat('ro-RO', {
-  timeZone: 'Europe/Bucharest',
-  day: '2-digit',
-  month: '2-digit',
-  hour: '2-digit',
-  minute: '2-digit',
-});
-
-/** Only name, phone, age group, source page and time: the minimum the academy needs to call back. */
 export function formatLeadTelegram(record: LeadRecord): string {
   return [
     'Cerere nouă de lecție demo',
@@ -27,12 +13,11 @@ export function formatLeadTelegram(record: LeadRecord): string {
     `Telefon: ${record.phone}`,
     `Vârsta copilului: ${record.childAgeGroup ?? '—'}`,
     `Pagina: ${SOURCE_LABELS[record.source]}`,
-    `Primită: ${RECEIVED_AT.format(record.createdAt)}`,
+    `Primită: ${formatReceivedAt(record.createdAt, { withYear: false })}`,
   ].join('\n');
 }
 
-function failure(code: string): Error {
-  // Deliberately generic: the request URL contains the bot token, which must never reach a log.
+function errorWithoutRequestUrl(code: string): Error {
   return Object.assign(new Error('Telegram request failed'), { code });
 }
 
@@ -48,11 +33,10 @@ export function createTelegramNotifier(config: NonNullable<Environment['telegram
           signal: AbortSignal.timeout(TELEGRAM_TIMEOUT_MS),
         });
       } catch (error) {
-        throw failure(error instanceof Error && error.name === 'TimeoutError' ? 'TELEGRAM_TIMEOUT' : 'TELEGRAM_NETWORK');
+        throw errorWithoutRequestUrl(error instanceof Error && error.name === 'TimeoutError' ? 'TELEGRAM_TIMEOUT' : 'TELEGRAM_NETWORK');
       }
-      // Release the connection without reading the body, which is not needed.
       await response.body?.cancel().catch(() => undefined);
-      if (!response.ok) throw failure(`TELEGRAM_HTTP_${response.status}`);
+      if (!response.ok) throw errorWithoutRequestUrl(`TELEGRAM_HTTP_${response.status}`);
     },
   };
 }

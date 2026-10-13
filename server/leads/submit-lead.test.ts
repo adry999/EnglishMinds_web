@@ -1,22 +1,16 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { FakeDispatcher, FakeLeadRepository, FakeNotifier, FakeRateLimiter, RecordingLogger, fixedClock } from '@test-support/lead-fakes';
+import { FakeDispatcher, FakeLeadRepository, FakeNotifier, FakeRateLimiter, RecordingLogger, aLeadSubmission, fixedClock, flushBackgroundWork } from '@test-support/lead-fakes';
 import { createLeadDispatcher } from './notify-leads';
 import { isLikelyBot, submitLead, type SubmitLeadDeps } from './submit-lead';
 
 const NOW = '2026-10-11T09:30:00.000Z';
 
-const body = {
+const body = aLeadSubmission({
   parentName: 'Ștefănescu Ana',
-  phone: '0722 123 456',
   childAgeGroup: '7–8 ani',
   source: 'landing',
-  testLevel: null,
-  consent: true,
-  policyVersion: '2',
   utm: { source: 'instagram', medium: 'paid', campaign: 'demo-toamna' },
-  website: '',
-  elapsedMs: 8400,
-};
+});
 
 let repository: FakeLeadRepository;
 let rateLimiter: FakeRateLimiter;
@@ -29,7 +23,7 @@ beforeEach(() => {
   rateLimiter = new FakeRateLimiter();
   dispatcher = new FakeDispatcher();
   logger = new RecordingLogger();
-  deps = { repository, rateLimiter, dispatcher, logger, clock: fixedClock(NOW), hashIp: (ip) => `hash(${ip})` };
+  deps = { repository, rateLimiter, dispatcher, logger, clock: fixedClock(NOW), hashIp: (ip) => `hash(${ip})`, globalHourlyCap: 60 };
 });
 
 const logged = (): string => JSON.stringify(logger.entries);
@@ -71,14 +65,14 @@ describe('submitLead', () => {
   });
 
   it('answers 429 when the site-wide hourly cap is reached, without saving', async () => {
-    rateLimiter.refuse.add('global');
+    rateLimiter.refusedKeys.add('global');
     await expect(submitLead(body, '1.1.1.1', deps)).resolves.toEqual({ status: 429 });
     expect(repository.saved).toEqual([]);
     expect(dispatcher.sent).toEqual([]);
   });
 
   it('enforces the site-wide cap for unknown visitors too', async () => {
-    rateLimiter.refuse.add('global');
+    rateLimiter.refusedKeys.add('global');
     await expect(submitLead(body, null, deps)).resolves.toEqual({ status: 429 });
   });
 
@@ -88,23 +82,23 @@ describe('submitLead', () => {
   });
 
   it('does not spend the site-wide cap on a visitor who is already rate limited', async () => {
-    rateLimiter.refuse.add('hash(1.1.1.1)');
+    rateLimiter.refusedKeys.add('hash(1.1.1.1)');
     await expect(submitLead(body, '1.1.1.1', deps)).resolves.toEqual({ status: 429 });
     expect(rateLimiter.keys).toEqual(['hash(1.1.1.1)']);
   });
 
   it('marks the lead as notified when a channel delivered it', async () => {
     await submitLead(body, '1.1.1.1', deps);
-    await new Promise((resolve) => setImmediate(resolve));
-    expect(repository.state[0]?.notifiedAt?.toISOString()).toBe(NOW);
-    expect(repository.state[0]?.attempts).toBe(1);
+    await flushBackgroundWork();
+    expect(repository.notificationBySavedIndex[0]?.notifiedAt?.toISOString()).toBe(NOW);
+    expect(repository.notificationBySavedIndex[0]?.attempts).toBe(1);
   });
 
   it('leaves the lead pending when no channel delivered it', async () => {
     dispatcher.delivered = false;
     await submitLead(body, '1.1.1.1', deps);
-    await new Promise((resolve) => setImmediate(resolve));
-    expect(repository.state[0]).toEqual({ notifiedAt: null, attempts: 1 });
+    await flushBackgroundWork();
+    expect(repository.notificationBySavedIndex[0]).toEqual({ notifiedAt: null, attempts: 1 });
   });
 
   it.each([
@@ -144,9 +138,9 @@ describe('submitLead', () => {
     email.failWith = Object.assign(new Error('SMTP timeout for Ștefănescu'), { responseCode: 421 });
     const real = { ...deps, dispatcher: createLeadDispatcher([{ name: 'email', notifier: email }], logger) };
     await expect(submitLead(body, '1.1.1.1', real)).resolves.toEqual({ status: 201 });
-    await new Promise((resolve) => setImmediate(resolve));
+    await flushBackgroundWork();
     expect(repository.saved).toHaveLength(1);
-    expect(repository.state[0]).toEqual({ notifiedAt: null, attempts: 1 });
+    expect(repository.notificationBySavedIndex[0]).toEqual({ notifiedAt: null, attempts: 1 });
     expect(logged()).toContain('421');
     expect(logger.entries.some((entry) => entry.level === 'warn')).toBe(true);
     expect(logged()).not.toMatch(/Ștefănescu|0722/);
@@ -155,7 +149,7 @@ describe('submitLead', () => {
   it('keeps 201 when recording the notification state fails', async () => {
     repository.failRecordWith = Object.assign(new Error('Ștefănescu'), { code: 'ECONNRESET' });
     await expect(submitLead(body, '1.1.1.1', deps)).resolves.toEqual({ status: 201 });
-    await new Promise((resolve) => setImmediate(resolve));
+    await flushBackgroundWork();
     expect(logger.entries.some((entry) => entry.level === 'warn')).toBe(true);
     expect(logged()).not.toMatch(/Ștefănescu/);
   });

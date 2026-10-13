@@ -34,17 +34,11 @@ describe('readEnvironment', () => {
     expect(readEnvironment({ ...BASE, PORT: undefined }).port).toBe(3000);
   });
 
-  it('reads optional ports and the proxy flag', () => {
-    const env = readEnvironment({ ...BASE, DB_PORT: '3307', SMTP_PORT: '587', TRUST_PROXY: 'true' });
+  it('reads optional ports and the proxy hops', () => {
+    const env = readEnvironment({ ...BASE, DB_PORT: '3307', SMTP_PORT: '587', TRUST_PROXY_HOPS: '2' });
     expect(env.db.port).toBe(3307);
     expect(env.smtp.port).toBe(587);
-    expect(env.trustProxyHops).toBe(1);
-  });
-
-  it('reads TRUST_PROXY_HOPS and lets it win over the legacy flag', () => {
-    expect(readEnvironment({ ...BASE, TRUST_PROXY_HOPS: '2' }).trustProxyHops).toBe(2);
-    expect(readEnvironment({ ...BASE, TRUST_PROXY: 'true', TRUST_PROXY_HOPS: '0' }).trustProxyHops).toBe(0);
-    expect(readEnvironment({ ...BASE, TRUST_PROXY: 'true', TRUST_PROXY_HOPS: '2' }).trustProxyHops).toBe(2);
+    expect(env.trustProxyHops).toBe(2);
   });
 
   it.each(['-1', '1.5', 'x', '11'])('rejects TRUST_PROXY_HOPS=%j', (value) => {
@@ -95,10 +89,6 @@ describe('readEnvironment', () => {
 
   it.each(['MAIL_FROM', 'MAIL_TO'])('requires an email address in %s', (name) => {
     expect(() => readEnvironment({ ...BASE, [name]: 'office' })).toThrow(`${name} invalid: "office"`);
-  });
-
-  it('rejects an unknown TRUST_PROXY value', () => {
-    expect(() => readEnvironment({ ...BASE, TRUST_PROXY: 'yes' })).toThrow('TRUST_PROXY invalid: "yes"');
   });
 
   it('returns a deeply frozen object', () => {

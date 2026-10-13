@@ -1,7 +1,7 @@
 import { MIN_ELAPSED_MS, validateLead, type LeadField } from '@shared/contracts/lead.schema';
 import { GLOBAL_RATE_KEY } from './rate-limit';
 import type { Clock, LeadDispatcher, LeadRecord, LeadRepository, Logger, RateLimiter } from './ports';
-import { safeError } from './safe-error';
+import { errorFieldsWithoutMessage } from './error-fields';
 
 export type SubmitLeadDeps = {
   readonly repository: LeadRepository;
@@ -10,11 +10,8 @@ export type SubmitLeadDeps = {
   readonly clock: Clock;
   readonly logger: Logger;
   readonly hashIp: (ip: string) => string;
-  /** Leads per hour across all visitors. */
-  readonly globalHourlyCap?: number;
+  readonly globalHourlyCap: number;
 };
-
-export const DEFAULT_GLOBAL_HOURLY_CAP = 60;
 
 export type SubmitLeadOutcome =
   | { readonly status: 201 }
@@ -41,34 +38,38 @@ export async function submitLead(body: unknown, clientIp: string | null, deps: S
   const record: LeadRecord = { ...validation.lead, consentAt: now, createdAt: now };
   let id: number;
   try {
-    if (clientIp === null) {
-      // Unknown visitor address: do not pool every visitor into one small bucket. Only the site-wide cap applies.
-      deps.logger.warn('[lead] client address unknown; only the site-wide limit applies', { source: record.source });
-    } else if (!(await deps.rateLimiter.hit(deps.hashIp(clientIp), now))) {
+    if (!(await visitorWithinLimit(clientIp, record, now, deps))) {
       deps.logger.warn('[lead] rate limited', { source: record.source });
       return { status: 429 };
     }
-    if (!(await deps.rateLimiter.hit(GLOBAL_RATE_KEY, now, deps.globalHourlyCap ?? DEFAULT_GLOBAL_HOURLY_CAP))) {
+    if (!(await deps.rateLimiter.hit(GLOBAL_RATE_KEY, now, deps.globalHourlyCap))) {
       deps.logger.warn('[lead] site-wide hourly limit reached', { source: record.source });
       return { status: 429 };
     }
     id = await deps.repository.save(record);
   } catch (error) {
-    deps.logger.error('[lead] could not save lead', { source: record.source, ...safeError(error) });
+    deps.logger.error('[lead] could not save lead', { source: record.source, ...errorFieldsWithoutMessage(error) });
     return { status: 500 };
   }
 
-  // Best effort: slow or failing channels must not delay or fail the response. Unnotified leads are retried by the cron job.
-  void notifyAndRecord(id, record, deps);
+  void notifyInBackground(id, record, deps);
   deps.logger.info('[lead] saved', { source: record.source });
   return { status: 201 };
 }
 
-async function notifyAndRecord(id: number, record: LeadRecord, deps: SubmitLeadDeps): Promise<void> {
+async function visitorWithinLimit(clientIp: string | null, record: LeadRecord, now: Date, deps: SubmitLeadDeps): Promise<boolean> {
+  if (clientIp === null) {
+    deps.logger.warn('[lead] client address unknown; only the site-wide limit applies', { source: record.source });
+    return true;
+  }
+  return deps.rateLimiter.hit(deps.hashIp(clientIp), now);
+}
+
+async function notifyInBackground(id: number, record: LeadRecord, deps: SubmitLeadDeps): Promise<void> {
   try {
     const delivered = await deps.dispatcher.dispatch(record);
     await deps.repository.recordNotifyAttempt(id, delivered, deps.clock.now());
   } catch (error) {
-    deps.logger.warn('[lead] could not record the notification state', { source: record.source, ...safeError(error) });
+    deps.logger.warn('[lead] could not record the notification state', { source: record.source, ...errorFieldsWithoutMessage(error) });
   }
 }

@@ -1,21 +1,10 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { FakeLeadRepository, FakeDispatcher, FakeRateLimiter, RecordingLogger, fixedClock } from '@test-support/lead-fakes';
+import { FakeLeadRepository, FakeDispatcher, FakeRateLimiter, RecordingLogger, aLeadSubmission, fixedClock } from '@test-support/lead-fakes';
 import { MAX_BODY_BYTES, createRequestHandler, type RequestHandler } from './handle-request';
 
 const BASE = 'http://localhost';
 const context = { clientIp: '203.0.113.7' };
-const lead = {
-  parentName: 'Ana Pop',
-  phone: '0722 123 456',
-  childAgeGroup: null,
-  source: 'home',
-  testLevel: null,
-  consent: true,
-  policyVersion: '2',
-  utm: { source: null, medium: null, campaign: null },
-  website: '',
-  elapsedMs: 8400,
-};
+const lead = aLeadSubmission();
 
 let repository: FakeLeadRepository;
 let rateLimiter: FakeRateLimiter;
@@ -31,6 +20,7 @@ beforeEach(() => {
     logger: new RecordingLogger(),
     clock: fixedClock('2026-10-11T09:30:00.000Z'),
     hashIp: (ip) => `hash(${ip})`,
+    globalHourlyCap: 60,
   });
 });
 

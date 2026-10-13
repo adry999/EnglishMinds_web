@@ -15,7 +15,6 @@ Modelul este `.env.example`. Pe cPanel se setează în aplicația Node; local, �
 | `MAIL_TO` | Adresa care primește contactele noi. |
 | `IP_HASH_SALT` | Cel puțin 32 de caractere aleatorii. Se folosește la calculul amprentei IP (SHA-256 cu sare) pentru limitarea trimiterilor. Schimbarea lui resetează limitele. |
 | `TRUST_PROXY_HOPS` | Câte proxy-uri se află între vizitator și aplicație și adaugă fiecare adresa în `X-Forwarded-For` (număr întreg, implicit `0`). `0` = se folosește adresa conexiunii directe (local); `1` = ultima adresă din antet; `2` = penultima etc. Vezi „Adresa IP a vizitatorului”. |
-| `TRUST_PROXY` | Vechiul comutator. `true` echivalează cu `TRUST_PROXY_HOPS=1`; dacă `TRUST_PROXY_HOPS` e setat, acela are prioritate. |
 | `LEAD_GLOBAL_HOURLY_CAP` | Câte cereri acceptă site-ul pe oră, de la toți vizitatorii la un loc (implicit `60`). Plasă de siguranță când adresa vizitatorului nu poate fi identificată sau este falsificată; peste prag toți primesc `429` până la ora următoare. |
 | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` | Opționale, se setează amândouă sau niciuna. Dacă există, fiecare cerere nouă trimite și un mesaj scurt pe Telegram (nume, telefon, grupa de vârstă, pagina, ora). Vezi „Notificarea pe Telegram”. Tokenul este o parolă: doar în variabilele de mediu, niciodată în repository sau în loguri. |
 | `DEBUG_CLIENT_IP` | `true` doar temporar, la verificarea de pe staging; apoi șterge-o. Vezi „Adresa IP a vizitatorului”. |
