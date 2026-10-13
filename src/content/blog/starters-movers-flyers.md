@@ -10,7 +10,7 @@ draft: true
 
 Dacă ai auzit de „Starters”, „Movers” și „Flyers” și nu ești sigur ce înseamnă, ești în companie bună. Sunt cele trei examene Cambridge English Young Learners, gândite pentru copii care învață engleza ca limbă străină. Sunt opționale: un copil poate învăța engleza foarte bine fără să dea vreunul.
 
-Iată ce înseamnă fiecare, într-un ghid scurt pentru părinți.
+Mai jos găsești pe scurt ce înseamnă fiecare.
 
 ## Cele trei niveluri pe scurt
 

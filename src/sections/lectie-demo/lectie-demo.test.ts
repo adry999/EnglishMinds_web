@@ -37,7 +37,7 @@ describe('demo landing sections', () => {
 
   it('steps list the three steps', async () => {
     const html = await render(LandingSteps);
-    for (const text of ['Cum se desfășoară', 'Completezi formularul', 'Durează 30 de secunde.', 'Te sunăm', 'Stabilim împreună ziua și ora potrivită.', 'Copilul vine la lecție', 'La final îți spunem nivelul și grupa recomandată.']) {
+    for (const text of ['Cum se desfășoară', 'Completezi formularul', 'Durează 30 de secunde.', 'Te sunăm', 'Alegem împreună ziua și ora.', 'Copilul vine la lecție', 'La final îți spunem nivelul și grupa recomandată.']) {
       expect(html).toContain(text);
     }
   });
