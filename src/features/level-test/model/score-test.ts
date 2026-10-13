@@ -1,6 +1,6 @@
 import { SKILLS, type Bank, type Skill } from './types';
 
-export type SkillScore = { readonly correct: number; readonly total: number };
+type SkillScore = { readonly correct: number; readonly total: number };
 
 export type TestScore = {
   readonly score: number;

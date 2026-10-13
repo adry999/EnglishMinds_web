@@ -27,17 +27,12 @@ export function createSpeech(win: Window): Speech {
         synth.cancel();
         synth.speak(utterance);
         return true;
-      } catch (error) {
-        console.warn('[level-test] speechSynthesis a eșuat', error);
+      } catch {
         return false;
       }
     },
     cancel() {
-      try {
-        synth?.cancel();
-      } catch (error) {
-        console.warn('[level-test] speechSynthesis.cancel a eșuat', error);
-      }
+      synth?.cancel();
     },
   };
 }

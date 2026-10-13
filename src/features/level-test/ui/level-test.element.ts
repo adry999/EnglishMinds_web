@@ -1,11 +1,11 @@
 import { createLeadFormRequested, createLevelTestCompleted } from '@shared/contracts/domain-events';
 import { createDiplomaCanvas, downloadDiploma, printDiploma } from '../diploma/render-diploma';
-import { describeResult } from '../model/describe-result';
+import { describeResult, type ResultSummary } from '../model/describe-result';
 import { cleanChildName } from '../model/diploma-content';
 import { emaLine } from '../model/ema-line';
 import { resultWhatsappUrl } from '../model/result-message';
-import { scoreTest } from '../model/score-test';
-import { selectBank } from '../model/select-bank';
+import { scoreTest, type TestScore } from '../model/score-test';
+import { selectBank, type Mode } from '../model/select-bank';
 import { currentQuestion, INITIAL_STATE, reduceTest, type TestAction, type TestState } from '../model/test-session';
 import { createSpeech, type Speech } from './speech';
 import { modeView, questionView, resultView, setupView, type Handlers } from './views';
@@ -13,8 +13,25 @@ import { modeView, questionView, resultView, setupView, type Handlers } from './
 const PRINT_BLOCKED = 'Fereastra de tipărire a fost blocată, am descărcat diploma ca imagine.';
 const DIPLOMA_ERROR = 'Nu am putut pregăti diploma. Încearcă din nou sau fă o captură de ecran.';
 
+type ResultState = Extract<TestState, { step: 'result' }>;
+type ResultData = {
+  readonly mode: Mode;
+  readonly score: TestScore;
+  readonly summary: ResultSummary;
+};
+
+function computeResult(state: ResultState): ResultData {
+  const score = scoreTest(selectBank(state.mode, state.choice), state.answers);
+  return { mode: state.mode, score, summary: describeResult(state.mode, state.choice, score.score, score.total) };
+}
+
+function openPrintWindowSynchronously(): Window | null {
+  return window.open('', '_blank');
+}
+
 export class LevelTest extends HTMLElement {
   private state: TestState = INITIAL_STATE;
+  private result: ResultData | null = null;
   private childName = '';
   private speechFailed = false;
   private exporting = false;
@@ -27,27 +44,28 @@ export class LevelTest extends HTMLElement {
     answer: (option) => this.dispatch({ type: 'answer', option }),
     replay: () => this.speakCurrent(),
     restart: () => this.dispatch({ type: 'restart' }),
-    bookDemo: () => void this.dispatchEvent(createLeadFormRequested()),
+    bookDemo: () => this.dispatchEvent(createLeadFormRequested()),
     nameInput: (value) => this.updateName(value),
     download: () => void this.exportDiploma('download'),
     print: () => void this.exportDiploma('print'),
   };
 
   connectedCallback(): void {
-    if (this.dataset.enhanced === 'true') return;
-    if (!this.cardRegion()) {
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => this.connectedCallback(), { once: true });
-      }
-      return;
+    this.enhance();
+    if (this.dataset.enhanced !== 'true' && document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => this.enhance(), { once: true });
     }
-    this.speech = createSpeech(window);
-    this.dataset.enhanced = 'true';
-    this.render({ focus: false });
   }
 
   disconnectedCallback(): void {
     this.speech.cancel();
+  }
+
+  private enhance(): void {
+    if (this.dataset.enhanced === 'true' || !this.cardRegion()) return;
+    this.speech = createSpeech(window);
+    this.dataset.enhanced = 'true';
+    this.render({ focus: false });
   }
 
   private cardRegion(): HTMLElement | null {
@@ -58,11 +76,11 @@ export class LevelTest extends HTMLElement {
     const previous = this.state;
     this.state = reduceTest(this.state, action);
     if (this.state === previous) return;
+    this.result = this.state.step === 'result' ? computeResult(this.state) : null;
     if (previous.step === 'question' || action.type === 'restart') this.speech.cancel();
     if (action.type === 'restart') this.speechFailed = false;
-    const stepChanged = previous.step !== this.state.step;
     const isOptionChange = action.type === 'chooseOption';
-    this.render({ focus: !isOptionChange || stepChanged, focusChoice: isOptionChange });
+    this.render({ focus: !isOptionChange || previous.step !== this.state.step, focusChoice: isOptionChange });
     if (this.state.step === 'question') this.speakCurrent();
     if (this.state.step === 'result' && previous.step !== 'result') this.announceResult();
   }
@@ -79,16 +97,8 @@ export class LevelTest extends HTMLElement {
     if (this.state.step === 'question') this.render({ focus: this.contains(document.activeElement) });
   }
 
-  private resultData() {
-    if (this.state.step !== 'result') return null;
-    const bank = selectBank(this.state.mode, this.state.choice);
-    const score = scoreTest(bank, this.state.answers);
-    const summary = describeResult(this.state.mode, this.state.choice, score.score, score.total);
-    return { mode: this.state.mode, score, summary };
-  }
-
   private announceResult(): void {
-    const data = this.resultData();
+    const data = this.result;
     if (!data) return;
     this.dispatchEvent(
       createLevelTestCompleted({ mode: data.mode, level: data.summary.level, score: data.score.score, total: data.score.total }),
@@ -103,25 +113,34 @@ export class LevelTest extends HTMLElement {
 
     const state = this.state;
     let view: Node;
-    if (state.step === 'mode') view = modeView(this.handlers);
-    else if (state.step === 'setup') view = setupView(state.mode, state.choice, this.handlers);
-    else if (state.step === 'question') {
-      const bank = selectBank(state.mode, state.choice);
-      const question = bank[state.answers.length];
-      if (!question) return;
-      view = questionView(question, state.answers.length, bank.length, this.speech.available && !this.speechFailed, this.handlers);
-    } else {
-      const data = this.resultData();
-      if (!data) return;
-      view = resultView(
-        {
-          ...data,
-          childName: this.childName,
-          whatsappUrl: resultWhatsappUrl(data.summary, data.score.score, data.score.total, cleanChildName(this.childName)),
-          date: new Date(),
-        },
-        this.handlers,
-      );
+    switch (state.step) {
+      case 'mode':
+        view = modeView(this.handlers);
+        break;
+      case 'setup':
+        view = setupView(state.mode, state.choice, this.handlers);
+        break;
+      case 'question': {
+        const bank = selectBank(state.mode, state.choice);
+        const question = bank[state.answers.length];
+        if (!question) return;
+        view = questionView(question, state.answers.length, bank.length, this.speech.available && !this.speechFailed, this.handlers);
+        break;
+      }
+      case 'result': {
+        const data = this.result;
+        if (!data) return;
+        view = resultView(
+          {
+            ...data,
+            childName: this.childName,
+            whatsappUrl: resultWhatsappUrl(data.summary, data.score.score, data.score.total, cleanChildName(this.childName)),
+            date: new Date(),
+          },
+          this.handlers,
+        );
+        break;
+      }
     }
     region.replaceChildren(view);
     if (state.step === 'result') this.refreshDiploma();
@@ -141,7 +160,7 @@ export class LevelTest extends HTMLElement {
 
   private refreshDiploma(): void {
     const region = this.cardRegion();
-    const data = this.resultData();
+    const data = this.result;
     if (!region || !data) return;
     const cleanName = cleanChildName(this.childName);
     const hasName = cleanName.length > 0;
@@ -165,7 +184,7 @@ export class LevelTest extends HTMLElement {
   }
 
   private async exportDiploma(kind: 'download' | 'print'): Promise<void> {
-    const data = this.resultData();
+    const data = this.result;
     const region = this.cardRegion();
     const cleanName = cleanChildName(this.childName);
     if (!data || !region || !cleanName || this.exporting) return;
@@ -173,8 +192,7 @@ export class LevelTest extends HTMLElement {
     const note = region.querySelector('.level-test__diploma-note');
     if (error) error.textContent = '';
     if (note) note.textContent = '';
-    // Opened synchronously, before any await, so Safari treats it as user-initiated.
-    const popup = kind === 'print' ? window.open('', '_blank') : null;
+    const popup = kind === 'print' ? openPrintWindowSynchronously() : null;
     this.exporting = true;
     this.refreshDiploma();
     try {
@@ -193,7 +211,7 @@ export class LevelTest extends HTMLElement {
       downloadDiploma(document, canvas, cleanName);
     } catch (cause) {
       popup?.close();
-      console.error('[level-test] diploma nu a putut fi generată', cause);
+      console.error('[level-test] diploma export failed', cause);
       if (error) error.textContent = DIPLOMA_ERROR;
     } finally {
       this.exporting = false;

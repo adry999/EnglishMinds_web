@@ -1,4 +1,3 @@
-/* Doubled id: the library stylesheet loads after ours and would otherwise reset the font and colours. */
 #cc-main#cc-main {
   --cc-font-family: var(--font-body);
   --cc-bg: var(--color-cream);
@@ -34,7 +33,6 @@
   outline-offset: 2px;
 }
 
-/* The consent card: a chunky navy edge and offset shadow, like the buttons and cards on the rest of the site. */
 #cc-main#cc-main .cm {
   max-width: 44rem;
   border: 3px solid var(--color-navy);
@@ -85,7 +83,6 @@
   font-size: 0.8125rem;
 }
 
-/* Phones: a compact card with Accept/Refuz side by side (same weight) and "Aleg eu" below. */
 @media (max-width: 640px) {
   #cc-main#cc-main .cm__texts {
     padding-block: 14px 2px;
@@ -105,7 +102,6 @@
     padding-bottom: 10px;
   }
 
-  /* The library forces a column on phones with !important; only !important can put the two choices side by side. */
   #cc-main#cc-main .cm__btn-group:first-child {
     flex-direction: row !important;
     gap: 8px;

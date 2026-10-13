@@ -9,7 +9,6 @@ export function leadConversionCalls(
   granted: ConsentChoice,
 ): TagCall[] {
   if (ids.gtm) {
-    // Only the source: no name, phone, email. GTM decides which tags react to it.
     return granted.analytics || granted.marketing
       ? [{ sink: 'dataLayer', args: [{ event: 'generate_lead', lead_source: detail.source }] }]
       : [];

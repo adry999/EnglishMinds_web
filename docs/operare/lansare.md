@@ -6,7 +6,7 @@ Bifează în ordine. Fiecare punct spune unde se face.
 
 - [ ] **Hosting cPanel cu acces:** cu Node 22.22.3 sau mai nou din seria 22.x, sau 24.16+, SSH și MySQL. Datele de acces se trec în managerul de parole, nu în repo.
 - [ ] **Domeniul și `MAIL_TO`:** domeniul la registrar; adresa de email care primește contactele se setează în variabilele aplicației Node (`server.md` §1).
-- [ ] **Prețuri, zile, mărimea grupelor, manual:** `src/shared/content/site.ts` → `courseFacts`.
+- [ ] **Prețuri, zile, mărimea grupelor, manual:** `src/shared/content/site.ts` → `courseFacts`. Când `monthlyPrice` devine număr, `courseJsonLd` (`src/shared/seo/json-ld.ts`) primește și `offers`; până atunci datele structurate nu conțin prețuri.
 - [ ] **Tabere (an, vârste, perioadă, program, preț, ora fiecărei activități, ce include):** `src/shared/content/site.ts` → `camps`.
 - [ ] **Datele firmei (denumire cu forma juridică, de ex. „X SRL”, CUI, număr de înmatriculare la Registrul Comerțului J…, sediu social):** `src/shared/content/site.ts` → `company`. Apar în subsolul fiecărei pagini și în blocul „Operator” al paginilor legale (Legea 365/2002 art. 5, Legea 31/1990 art. 74).
 - [ ] **Emailul de contact public:** `src/shared/content/site.ts` → `contact.email`. Apare în subsol și în blocul „Operator”; pe el primesc părinții cererile legate de date (GDPR).

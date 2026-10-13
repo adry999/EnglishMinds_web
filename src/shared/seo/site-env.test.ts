@@ -13,11 +13,20 @@ describe('siteEnv', () => {
 });
 
 describe('isIndexable', () => {
-  it('hides staging and preview from search engines', () => {
-    expect(isIndexable('preview')).toBe(false);
-    expect(isIndexable('production')).toBe(true);
-    expect(isIndexable('development')).toBe(true);
+  it('is false for staging', () => {
     expect(isIndexable('staging')).toBe(false);
+  });
+
+  it('is false for the client preview', () => {
+    expect(isIndexable('preview')).toBe(false);
+  });
+
+  it('is true for production', () => {
+    expect(isIndexable('production')).toBe(true);
+  });
+
+  it('keeps local and CI builds indexable so the dist checks describe production', () => {
+    expect(isIndexable('development')).toBe(true);
   });
 });
 

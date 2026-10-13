@@ -4,7 +4,6 @@ import type { TrackingIds } from './tracking-ids';
 
 export const GTAG_URL = 'https://www.googletagmanager.com/gtag/js';
 export const FBEVENTS_SRC = 'https://connect.facebook.net/en_US/fbevents.js';
-
 export const GTM_URL = 'https://www.googletagmanager.com/gtm.js';
 
 export type TagPlan = {
@@ -27,7 +26,6 @@ const pixelOn = (ids: TrackingIds, choice: ConsentChoice): boolean => Boolean(id
 
 const gtmOn = (ids: TrackingIds, choice: ConsentChoice): boolean => Boolean(ids.gtm && (choice.analytics || choice.marketing));
 
-/** GTM mode: only the container loads, consent reaches it as Consent Mode signals and as an `em_consent` event. */
 function planGtm(ids: TrackingIds, choice: ConsentChoice, previous: ConsentChoice, now: Date): TagPlan {
   const calls: TagCall[] = [];
   const before = gtmOn(ids, previous);

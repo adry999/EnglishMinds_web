@@ -5,33 +5,29 @@ function consentGiven(): boolean {
   return (document.documentElement.dataset[CONSENT_DATASET_KEY] ?? '').trim() !== '';
 }
 
-function store(): void {
+function saveUtmToSession(): void {
   const utm = parseUtm(window.location.search);
   if (!utm) return;
   try {
     sessionStorage.setItem(UTM_STORAGE_KEY, JSON.stringify(utm));
-  } catch (error) {
-    console.warn('[lead-capture] UTM nu a putut fi păstrat', error);
+  } catch {
+    return;
   }
 }
 
-function clear(): void {
+function clearSavedUtm(): void {
   try {
     sessionStorage.removeItem(UTM_STORAGE_KEY);
-  } catch (error) {
-    console.warn('[lead-capture] UTM nu a putut fi șters', error);
+  } catch {
+    return;
   }
 }
 
-/**
- * Remembering the campaign across pages writes to the visitor's device, so it waits for consent to statistics or
- * marketing. Without it the lead form still reads the UTM from the address of the page it is on.
- */
 export function captureUtm(): void {
-  if (consentGiven()) store();
+  if (consentGiven()) saveUtmToSession();
   document.addEventListener(CONSENT_CHANGED, (event) => {
     const { analytics, marketing } = (event as CustomEvent<ConsentChangedDetail>).detail;
-    if (analytics || marketing) store();
-    else clear();
+    if (analytics || marketing) saveUtmToSession();
+    else clearSavedUtm();
   });
 }

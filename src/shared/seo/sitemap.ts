@@ -5,7 +5,6 @@ export type SitemapEntry = {
   readonly lastmod?: Date;
 };
 
-/** Every indexable page that is not generated from content. Keep in sync with src/pages. */
 export const STATIC_ROUTES = [
   '/',
   '/grupe/',

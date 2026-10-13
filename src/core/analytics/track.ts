@@ -1,4 +1,4 @@
-export type TagSink = 'gtag' | 'fbq' | 'dataLayer';
+type TagSink = 'gtag' | 'fbq' | 'dataLayer';
 
 export type TagCall = {
   readonly sink: TagSink;
@@ -22,13 +22,15 @@ type FbqStub = TagFunction & {
   callMethod?: TagFunction;
 };
 
-/** Runs calls already filtered by consent; a missing sink (ad blocker) is skipped. */
+function pushDataLayerEvent(target: TrackingWindow, event: unknown): void {
+  target.dataLayer ??= [];
+  target.dataLayer.push(event);
+}
+
 export function sendTagCalls(target: TrackingWindow, calls: readonly TagCall[]): void {
   for (const call of calls) {
     if (call.sink === 'dataLayer') {
-      // Plain objects (not `arguments`): these are GTM events and variables, not gtag commands.
-      target.dataLayer = target.dataLayer ?? [];
-      target.dataLayer.push(call.args[0]);
+      pushDataLayerEvent(target, call.args[0]);
       continue;
     }
     const fn = target[call.sink];
@@ -51,7 +53,7 @@ export function ensureFbq(target: TrackingWindow): void {
 }
 
 export function appendScript(doc: Document, src: string): void {
-  if (Array.from(doc.scripts).some((script) => script.getAttribute('src') === src)) return;
+  if (doc.querySelector(`script[src="${src}"]`)) return;
   const script = doc.createElement('script');
   script.async = true;
   script.src = src;

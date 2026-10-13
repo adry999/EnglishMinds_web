@@ -34,19 +34,19 @@ describe('diploma content', () => {
     expect(formatDiplomaDate(new Date('2026-10-10T22:30:00Z'))).toBe('11.10.2026');
   });
 
-  it('shrinks names in 4px steps from 104 down to a 50px floor', () => {
+  it('keeps a short name at the top size of 104px', () => {
     expect(fitNameFont('Ana', measureByLength)).toBe(104);
+  });
 
-    // 30 chars * 0.6 * size: 68px gives 1224 (fits), 72px gives 1296 (too wide).
+  it('shrinks in 4px steps: 30 characters fit at 68px (1224) but not at 72px (1296)', () => {
     const mid = 'x'.repeat(30);
     expect(fitNameFont(mid, measureByLength)).toBe(68);
     expect(measureByLength(`900 68px Nunito`, mid)).toBeLessThanOrEqual(1250);
     expect(measureByLength(`900 72px Nunito`, mid)).toBeGreaterThan(1250);
+  });
 
-    // Real long name: no 4px-grid size above 50 fits (52 gives 1276.8), so it hits the floor.
-    const long = 'Maria-Alexandra Popescu-Ionescu Vasilescu';
-    expect(fitNameFont(long, measureByLength)).toBe(50);
-
+  it('stops at the 50px floor: the real long name does not fit even at 52px (1276.8)', () => {
+    expect(fitNameFont('Maria-Alexandra Popescu-Ionescu Vasilescu', measureByLength)).toBe(50);
     expect(fitNameFont('x'.repeat(200), measureByLength)).toBe(50);
   });
 
@@ -54,11 +54,10 @@ describe('diploma content', () => {
     expect(fitNameFont('Ana', () => 1250)).toBe(104);
   });
 
-  it('draws a 12-point star', () => {
+  it('draws a 12-point star whose inner points sit at radius 70 * 0.58', () => {
     const points = starPoints(800, 230, 70);
     expect(points).toHaveLength(24);
     expect(points[0]).toEqual({ x: 800, y: 160 });
-    // Index 1 is the inner point: radius 70 * 0.58 at -75 degrees.
     expect(points[1]).toEqual({ x: 810.51, y: 190.78 });
   });
 

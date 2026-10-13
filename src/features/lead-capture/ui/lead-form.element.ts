@@ -1,6 +1,6 @@
 import type { AgeGroup } from '@shared/contracts/age-groups';
 import { LEAD_FORM_REQUESTED, LEVEL_TEST_COMPLETED, createLeadSubmitted, type LevelTestCompletedDetail } from '@shared/contracts/domain-events';
-import { MIN_ELAPSED_MS, validateLead, type LeadField, type LeadRequest, type LeadSource } from '@shared/contracts/lead.schema';
+import { MIN_ELAPSED_MS, validateLead, type LeadRequest, type LeadSource } from '@shared/contracts/lead.schema';
 import { POLICY_VERSION } from '@shared/contracts/policy';
 import { submitLead } from '../api/lead.client';
 import { ageGroupForLevel } from '../model/age-preselect';
@@ -8,15 +8,16 @@ import { testLevelCode, testResultLabel, type TestOutcome } from '../model/test-
 import { EMPTY_UTM, UTM_STORAGE_KEY, parseStoredUtm, parseUtm, type Utm } from '../model/utm';
 import { leadWhatsappUrl } from '../model/whatsapp-message';
 
-const FIELD_ORDER: readonly LeadField[] = ['parentName', 'phone', 'childAgeGroup', 'consent'];
-const FIELD_ERRORS: Partial<Record<LeadField, string>> = {
+const FIELD_ORDER = ['parentName', 'phone', 'childAgeGroup', 'consent'] as const;
+const FIELD_ERRORS: Record<(typeof FIELD_ORDER)[number], string> = {
   parentName: 'Scrie numele tău (cel puțin 2 litere).',
   phone: 'Scrie un număr de telefon din România, de exemplu 0722 123 456.',
   childAgeGroup: 'Alege vârsta din listă.',
   consent: 'Bifează acordul ca să te putem contacta.',
 };
 const GENERAL_ERROR = 'Verifică datele și încearcă din nou.';
-const MIN_FILL_MS = MIN_ELAPSED_MS + 200;
+const CLIENT_MARGIN_MS = 200;
+const MIN_FILL_MS = MIN_ELAPSED_MS + CLIENT_MARGIN_MS;
 const SEND_FAILED = 'Nu am putut trimite cererea. Scrie-ne pe WhatsApp sau sună-ne.';
 const SENDING = 'Se trimite…';
 const DEMO_DONE = 'Aceasta este o versiune demo a site-ului: nu am trimis și nu am salvat nimic.';
@@ -37,7 +38,6 @@ export class LeadForm extends HTMLElement {
     this.hidden = false;
   };
 
-  /** The level-test result asks for the booking form: bring it into view and put the cursor in its first field. */
   private readonly onFormRequested = (): void => {
     this.hidden = false;
     const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -52,7 +52,6 @@ export class LeadForm extends HTMLElement {
       document.addEventListener(LEVEL_TEST_COMPLETED, this.onTestCompleted);
       document.addEventListener(LEAD_FORM_REQUESTED, this.onFormRequested);
     }
-    if (this.dataset.enhanced === 'true') return;
     this.enhance();
     if (this.dataset.enhanced !== 'true' && document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => this.enhance(), { once: true });
@@ -77,7 +76,7 @@ export class LeadForm extends HTMLElement {
     form.hidden = false;
     form.addEventListener('submit', (event) => {
       event.preventDefault();
-      this.submit(form).catch((error: unknown) => console.error('[lead-form] trimiterea a eșuat', error));
+      void this.submit(form);
     });
     form.addEventListener('input', (event) => this.clearError(form, event.target));
     form.addEventListener('change', (event) => this.clearError(form, event.target));
@@ -100,8 +99,7 @@ export class LeadForm extends HTMLElement {
     if (fromAddress) return fromAddress;
     try {
       return parseStoredUtm(sessionStorage.getItem(UTM_STORAGE_KEY)) ?? EMPTY_UTM;
-    } catch (error) {
-      console.warn('[lead-form] UTM indisponibil', error);
+    } catch {
       return EMPTY_UTM;
     }
   }
@@ -144,7 +142,6 @@ export class LeadForm extends HTMLElement {
       testResult: this.source === 'test' && this.testOutcome ? testResultLabel(this.testOutcome) : null,
     });
     if (this.dataset.demo !== undefined) {
-      // Preview build: show the real thank-you state so the client can judge it, but send, open and track nothing.
       this.showDone(form, local.lead.parentName, whatsappUrl, `${DONE_BLOCKED} ${DEMO_DONE}`);
       return;
     }
@@ -174,7 +171,7 @@ export class LeadForm extends HTMLElement {
     } catch (error) {
       popup?.close();
       this.showAlert(form, SEND_FAILED);
-      console.error('[lead-form] trimiterea a eșuat', error);
+      console.error('[lead-form] submit failed', error);
     } finally {
       this.setSubmitting(form, false);
     }
@@ -202,7 +199,7 @@ export class LeadForm extends HTMLElement {
     let first: HTMLInputElement | null = null;
     for (const field of known) {
       const message = form.querySelector(`[data-error-for="${field}"]`);
-      if (message) message.textContent = FIELD_ERRORS[field] ?? GENERAL_ERROR;
+      if (message) message.textContent = FIELD_ERRORS[field];
       const control = form.querySelector<HTMLInputElement>(`[name="${field}"]`);
       control?.setAttribute('aria-invalid', 'true');
       first ??= control;

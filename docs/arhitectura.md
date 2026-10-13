@@ -150,6 +150,20 @@ Corpul JSON: `parentName`, `phone`, `childAgeGroup`, `source` (`home`, `landing`
 
 `lead.client.ts` întoarce un rezultat tipat: `ok`, `validation`, `rate_limited`, `network` sau `server`. Interfața afișează mesaje în română pentru fiecare caz și nu arată niciodată textul brut de la server. `catch {}` gol nu este permis.
 
+## Capcane cunoscute
+
+- **`cookie-consent.css`:** selectorii `#cc-main#cc-main` dublează intenționat id-ul. Stilurile bibliotecii se încarcă după ale noastre și, cu un singur id, ar reseta fontul și culorile. Pe telefon biblioteca forțează coloana cu `!important`, deci doar `!important` poate pune cele două alegeri alăturate.
+- **Revizia cookie-urilor:** `COOKIE_REVISION` (`consent-config.ts`) crește când se schimbă politica de cookie-uri; toți vizitatorii sunt întrebați din nou. Nu e legată de `POLICY_VERSION` (acordul din formular).
+- **Poziția bannerului:** `<cookie-consent>` se montează la începutul lui `<body>`, ca tastatura să ajungă la banner imediat după linkul „Sari la conținut”.
+- **`Footer.css`:** `:where(a:not(.button))` ține culoarea linkurilor la specificitate zero, ca regulile proprii ale subsolului (buton social, linkuri legale, hover) să câștige.
+- **`Header.css`:** meniul se restrânge în `@media (scripting: enabled)` încă dinainte ca `site-menu` să fie definit; altfel antetul s-ar micșora după încărcare (layout shift). În DOM, butonul precede `<nav>`, ca Tab de pe buton să intre în meniul deschis (verificat în `Header.test.ts`).
+- **`lectie-demo.css`:** `lead-form:not(:defined)` rezervă înălțimea formularului (`--lead-form-reserved-height*`, valorile măsurate rotunjite în jos), ca secțiunile de sub el să nu sară când elementul înlocuiește varianta fără JavaScript.
+- **`Logo.css`:** textul logotipului este exceptat de la contrastul WCAG 1.4.3, deci un avertisment axe `color-contrast` pe `.logo__academy` este așteptat.
+- **Previzualizare imagini sociale:** `ogImageSize` dă cel mai mare decupaj 1,91:1 care încape în sursă; Astro nu mărește imaginile, deci o copertă mică nu trebuie să declare 1200×630.
+- **Fereastra de tipărire:** `openPrintWindowSynchronously` (`level-test.element.ts`) se apelează înainte de orice `await`; Safari blochează altfel fereastra, fiind considerată neinițiată de utilizator.
+- **Google tag:** `GTAG_STUB` (`consent-defaults.ts`) pune în `dataLayer` obiectul `arguments`, nu un array; altfel `gtag.js` ignoră comanda. Evenimentele GTM (`generate_lead`, `em_consent`) sunt obiecte simple, nu comenzi gtag.
+- **Teste în happy-dom:** `connectedCallback` rulează înainte ca descendenții din `innerHTML` să existe, deci testele de elemente parsează într-un container detașat și abia apoi atașează (`attachAfterParsing`).
+
 ## Teste
 
 | Strat | Comandă | Ce acoperă |

@@ -1,7 +1,7 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
 import { site } from '@shared/content/site';
-import { companyLine } from '@shared/lib/company-line';
+import { legalCompanyLine } from '@shared/lib/company-line';
 import Footer from './Footer.astro';
 
 async function render() {
@@ -60,7 +60,7 @@ describe('Footer', () => {
   it('identifies the company in the bottom bar with CUI, trade register number and registered office', async () => {
     const html = await render();
     const bottom = html.match(/<div class="site-footer__bottom">[\s\S]*?<\/footer>/)?.[0] ?? '';
-    expect(bottom).toContain(`<p class="site-footer__company">${companyLine(site.company)}</p>`);
+    expect(bottom).toContain(`<p class="site-footer__company">${legalCompanyLine(site.company)}</p>`);
     expect(bottom).toContain(`CUI ${site.company.cui}`);
     expect(bottom).toContain(`Nr. Reg. Com. ${site.company.registrationNumber}`);
   });
