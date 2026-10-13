@@ -21,6 +21,7 @@ Lista detaliată, cu pașii exacți, e în [`docs/operare/lansare.md`](docs/oper
 ## Când vin răspunsurile clientului
 
 - [ ] Completează `src/shared/content/site.ts` până nu mai rămâne niciun `TODO` ([`lansare.md`](docs/operare/lansare.md) §1, [`continut.md`](docs/operare/continut.md) §1).
+- [ ] Înlocuiește copertele de 640 px ale articolelor `5-obiceiuri-de-10-minute` și `copilul-nu-vrea-sa-vorbeasca` cu fotografii mai mari ([`continut.md`](docs/operare/continut.md) §2).
 - [ ] Publică articolele aprobate (`draft: false`, [`continut.md`](docs/operare/continut.md) §2).
 - [ ] Build de producție local fără erori ([`lansare.md`](docs/operare/lansare.md) §2).
 
