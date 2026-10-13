@@ -67,6 +67,6 @@ describe('home sections', () => {
   it('contact section does not promise a phone form when no form is slotted', async () => {
     const html = await render(HomeContact);
     expect(html).not.toContain('Lasă-ne un număr de telefon');
-    expect(html).toContain('Scrie-ne pe WhatsApp sau sună-ne și ne înțelegem asupra zilei și orei.');
+    expect(html).toContain('Scrie-ne pe WhatsApp sau sună-ne și stabilim ziua și ora.');
   });
 });
