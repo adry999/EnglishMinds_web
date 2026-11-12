@@ -38,12 +38,14 @@ export async function submitLead(body: unknown, clientIp: string | null, deps: S
   const record: LeadRecord = { ...validation.lead, consentAt: now, createdAt: now };
   let id: number;
   try {
-    if (!(await visitorWithinLimit(clientIp, record, now, deps))) {
+    const visitorKey = clientIp === null ? null : deps.hashIp(clientIp);
+    if (!(await visitorWithinLimit(visitorKey, record, now, deps))) {
       deps.logger.warn('[lead] rate limited', { source: record.source });
       return { status: 429 };
     }
     if (!(await deps.rateLimiter.hit(GLOBAL_RATE_KEY, now, deps.globalHourlyCap))) {
       deps.logger.warn('[lead] site-wide hourly limit reached', { source: record.source });
+      if (visitorKey !== null) await deps.rateLimiter.release(visitorKey, now);
       return { status: 429 };
     }
     id = await deps.repository.save(record);
@@ -57,12 +59,12 @@ export async function submitLead(body: unknown, clientIp: string | null, deps: S
   return { status: 201 };
 }
 
-async function visitorWithinLimit(clientIp: string | null, record: LeadRecord, now: Date, deps: SubmitLeadDeps): Promise<boolean> {
-  if (clientIp === null) {
+async function visitorWithinLimit(visitorKey: string | null, record: LeadRecord, now: Date, deps: SubmitLeadDeps): Promise<boolean> {
+  if (visitorKey === null) {
     deps.logger.warn('[lead] client address unknown; only the site-wide limit applies', { source: record.source });
     return true;
   }
-  return deps.rateLimiter.hit(deps.hashIp(clientIp), now);
+  return deps.rateLimiter.hit(visitorKey, now);
 }
 
 async function notifyInBackground(id: number, record: LeadRecord, deps: SubmitLeadDeps): Promise<void> {

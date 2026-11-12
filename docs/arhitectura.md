@@ -142,7 +142,7 @@ Corpul JSON: `parentName`, `phone`, `childAgeGroup`, `source` (`home`, `landing`
 | 500 | eroare internă | `{ "ok": false, "error": "internal" }`, detaliile doar în log |
 
 - Un honeypot completat sau un `elapsedMs` sub 3000 primește `201` fără salvare, ca robotul să nu primească semnal.
-- Limitele: 5 trimiteri pe oră pentru aceeași amprentă IP (SHA-256 cu sare, IP-ul nu se stochează) și un plafon pe oră pentru tot site-ul. Dacă adresa vizitatorului nu poate fi stabilită, se aplică doar plafonul general.
+- Limitele: 5 trimiteri pe oră pentru aceeași amprentă IP (SHA-256 cu sare, IP-ul nu se stochează) și un plafon pe oră pentru tot site-ul. Dacă adresa vizitatorului nu poate fi stabilită, se aplică doar plafonul general. Dacă plafonul general refuză cererea, vizitatorul își primește înapoi încercarea consumată din limita lui.
 - Dacă notificarea eșuează după salvare, răspunsul rămâne `201`; erorile se scriu în log fără date personale.
 - Cât se păstrează și cum se șterg datele: [`operare/date-personale.md`](operare/date-personale.md).
 
