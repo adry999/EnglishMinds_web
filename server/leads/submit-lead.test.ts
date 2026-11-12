@@ -71,6 +71,17 @@ describe('submitLead', () => {
     expect(dispatcher.sent).toEqual([]);
   });
 
+  it('gives the visitor their attempt back when the site-wide cap refuses', async () => {
+    rateLimiter.refusedKeys.add('global');
+    await submitLead(body, '1.1.1.1', deps);
+    expect(rateLimiter.released).toEqual(['hash(1.1.1.1)']);
+  });
+
+  it('releases nothing when the site-wide cap accepts', async () => {
+    await submitLead(body, '1.1.1.1', deps);
+    expect(rateLimiter.released).toEqual([]);
+  });
+
   it('enforces the site-wide cap for unknown visitors too', async () => {
     rateLimiter.refusedKeys.add('global');
     await expect(submitLead(body, null, deps)).resolves.toEqual({ status: 429 });

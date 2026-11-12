@@ -22,6 +22,9 @@ export function createMysqlRateLimiter(pool: Pool): RateLimiter {
       const [rows] = await pool.execute<RowDataPacket[]>('SELECT hits FROM rate_limits WHERE ip_hash = ? AND window_start = ?', [key, start]);
       return Number(rows[0]?.hits ?? 0) <= limit;
     },
+    async release(key, now) {
+      await pool.execute('UPDATE rate_limits SET hits = hits - 1 WHERE ip_hash = ? AND window_start = ? AND hits > 0', [key, windowStart(now)]);
+    },
     async deleteWindowsBefore(cutoff) {
       const [result] = await pool.execute<ResultSetHeader>('DELETE FROM rate_limits WHERE window_start < ?', [cutoff]);
       return result.affectedRows;

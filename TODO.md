@@ -17,6 +17,7 @@ Lista detaliată, cu pașii exacți, e în [`docs/operare/lansare.md`](docs/oper
 - [ ] Creează botul de Telegram din @BotFather și află `TELEGRAM_CHAT_ID` ([`server.md`](docs/operare/server.md), „Notificarea pe Telegram”).
 - [ ] Decide: Google Tag Manager sau tagurile direct ([`gtm.md`](docs/operare/gtm.md), [`taguri.md`](docs/operare/taguri.md)).
 - [ ] Găsește un jurist pentru cele 3 pagini legale, bannerul de cookie-uri și bifa de acord ([`lansare.md`](docs/operare/lansare.md) §1).
+- [ ] Întreabă juristul și despre UTM-uri: formularul trimite la server `utm_source`, `utm_medium` și `utm_campaign` din adresa paginii chiar și fără acord de cookie-uri (fără cookie, fără salvare în browser); se păstrează în baza de date și apar în email.
 
 ## Când vin răspunsurile clientului
 
@@ -24,6 +25,7 @@ Lista detaliată, cu pașii exacți, e în [`docs/operare/lansare.md`](docs/oper
 - [ ] Înlocuiește copertele de 640 px ale articolelor `5-obiceiuri-de-10-minute` și `copilul-nu-vrea-sa-vorbeasca` cu fotografii mai mari ([`continut.md`](docs/operare/continut.md) §2).
 - [ ] Publică articolele aprobate (`draft: false`, [`continut.md`](docs/operare/continut.md) §2).
 - [ ] Build de producție local fără erori ([`lansare.md`](docs/operare/lansare.md) §2).
+- [ ] Pe un telefon real, trimite formularul din browserul din Instagram și din Facebook (deschide linkul dintr-o postare sau reclamă): verifică dacă se deschide WhatsApp, dacă rămâne vreun tab gol și dacă mesajul e precompletat. Acolo ajunge traficul din reclamele Meta.
 
 ## Când avem hostingul
 

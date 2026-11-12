@@ -24,7 +24,7 @@ const variants = (pkg: string, weights: number[]): [Variant, ...Variant[]] =>
     })),
   ) as [Variant, ...Variant[]];
 
-const IMAGE_QUALITY = { avif: 45, webp: 70 };
+const IMAGE_QUALITY = { avif: 45, webp: 70, jpeg: 75 };
 
 const base = process.env.SITE_BASE || '/';
 
@@ -34,7 +34,7 @@ export default defineConfig({
   site: process.env.SITE_URL || site.url,
   base,
   output: 'static',
-  image: { service: { entrypoint: 'astro/assets/services/sharp', config: { avif: { quality: IMAGE_QUALITY.avif }, webp: { quality: IMAGE_QUALITY.webp } } } },
+  image: { service: { entrypoint: 'astro/assets/services/sharp', config: { avif: { quality: IMAGE_QUALITY.avif }, webp: { quality: IMAGE_QUALITY.webp }, jpeg: { quality: IMAGE_QUALITY.jpeg, mozjpeg: true } } } },
   trailingSlash: 'always',
   build: { format: 'directory', inlineStylesheets: 'always' },
   fonts: [

@@ -101,6 +101,7 @@ export class FakeLeadRepository implements LeadRepository {
 
 export class FakeRateLimiter implements RateLimiter {
   readonly keys: string[] = [];
+  readonly released: string[] = [];
   readonly limits = new Map<string, number | undefined>();
   allow = true;
   readonly refusedKeys = new Set<string>();
@@ -111,6 +112,10 @@ export class FakeRateLimiter implements RateLimiter {
     this.keys.push(key);
     this.limits.set(key, limit);
     return this.allow && !this.refusedKeys.has(key);
+  }
+
+  async release(key: string): Promise<void> {
+    this.released.push(key);
   }
 
   async deleteWindowsBefore(): Promise<number> {

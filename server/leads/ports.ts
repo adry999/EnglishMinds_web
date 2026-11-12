@@ -22,6 +22,7 @@ export interface LeadRepository {
 
 export interface RateLimiter {
   hit(key: string, now: Date, limit?: number): Promise<boolean>;
+  release(key: string, now: Date): Promise<void>;
   deleteWindowsBefore(cutoff: Date): Promise<number>;
 }
 

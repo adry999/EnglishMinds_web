@@ -165,4 +165,21 @@ describe.skipIf(!url)('MySQL adapters', () => {
     expect(results).toEqual([true, true, true, false]);
     await expect(limiter.hit('a'.repeat(64), now)).resolves.toBe(true);
   });
+
+  it('gives back one hit in the same window and never goes below zero', async () => {
+    const limiter = createMysqlRateLimiter(pool);
+    const now = new Date('2026-10-11T09:20:00.000Z');
+    const key = 'c'.repeat(64);
+    for (let attempt = 0; attempt < 5; attempt += 1) await limiter.hit(key, now);
+    await limiter.release(key, now);
+    await expect(limiter.hit(key, now)).resolves.toBe(true);
+    await expect(limiter.hit(key, now)).resolves.toBe(false);
+    const other = 'd'.repeat(64);
+    await limiter.release(other, now);
+    await limiter.hit(other, now);
+    await limiter.release(other, now);
+    await limiter.release(other, now);
+    const [rows] = await pool.query<RowDataPacket[]>('SELECT hits FROM rate_limits WHERE ip_hash = ?', [other]);
+    expect(Number(rows[0]?.hits)).toBe(0);
+  });
 });
