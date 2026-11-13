@@ -105,6 +105,33 @@ describe('submitLead', () => {
     expect(repository.notificationBySavedIndex[0]?.attempts).toBe(1);
   });
 
+  it('claims the first attempt before sending, so the retry job cannot send it too', async () => {
+    let attemptsWhileSending: number | undefined;
+    dispatcher.dispatch = async () => {
+      attemptsWhileSending = repository.notificationBySavedIndex[0]?.attempts;
+      return true;
+    };
+    await submitLead(body, '1.1.1.1', deps);
+    await flushBackgroundWork();
+    expect(attemptsWhileSending).toBe(1);
+  });
+
+  it('does not send when the retry job already claimed the lead', async () => {
+    repository.claimNotifyAttempt = async () => false;
+    await submitLead(body, '1.1.1.1', deps);
+    await flushBackgroundWork();
+    expect(dispatcher.sent).toEqual([]);
+    expect(repository.notificationBySavedIndex[0]?.notifiedAt).toBeNull();
+  });
+
+  it('does not send when the claim cannot be recorded, and leaves the lead to the retry job', async () => {
+    repository.failNotifyStateWith = Object.assign(new Error('Ștefănescu'), { code: 'ECONNRESET' });
+    await submitLead(body, '1.1.1.1', deps);
+    await flushBackgroundWork();
+    expect(dispatcher.sent).toEqual([]);
+    expect(repository.notificationBySavedIndex[0]).toEqual({ notifiedAt: null, attempts: 0 });
+  });
+
   it('leaves the lead pending when no channel delivered it', async () => {
     dispatcher.delivered = false;
     await submitLead(body, '1.1.1.1', deps);
@@ -158,7 +185,7 @@ describe('submitLead', () => {
   });
 
   it('keeps 201 when recording the notification state fails', async () => {
-    repository.failRecordWith = Object.assign(new Error('Ștefănescu'), { code: 'ECONNRESET' });
+    repository.failNotifyStateWith = Object.assign(new Error('Ștefănescu'), { code: 'ECONNRESET' });
     await expect(submitLead(body, '1.1.1.1', deps)).resolves.toEqual({ status: 201 });
     await flushBackgroundWork();
     expect(logger.entries.some((entry) => entry.level === 'warn')).toBe(true);

@@ -44,7 +44,7 @@ export class FakeLeadRepository implements LeadRepository {
   readonly saved: LeadRecord[] = [];
   readonly notificationBySavedIndex: { notifiedAt: Date | null; attempts: number }[] = [];
   failWith: Error | null = null;
-  failRecordWith: Error | null = null;
+  failNotifyStateWith: Error | null = null;
 
   async save(record: LeadRecord): Promise<number> {
     if (this.failWith) throw this.failWith;
@@ -53,15 +53,8 @@ export class FakeLeadRepository implements LeadRepository {
     return this.saved.length;
   }
 
-  async recordNotifyAttempt(id: number, delivered: boolean, at: Date): Promise<void> {
-    if (this.failRecordWith) throw this.failRecordWith;
-    const state = this.notificationBySavedIndex[id - 1];
-    if (!state) return;
-    state.attempts += 1;
-    if (delivered) state.notifiedAt = at;
-  }
-
   async claimNotifyAttempt(id: number, expectedAttempts: number): Promise<boolean> {
+    if (this.failNotifyStateWith) throw this.failNotifyStateWith;
     const state = this.notificationBySavedIndex[id - 1];
     if (!state || state.attempts !== expectedAttempts) return false;
     state.attempts += 1;
@@ -69,6 +62,7 @@ export class FakeLeadRepository implements LeadRepository {
   }
 
   async markNotified(id: number, at: Date): Promise<void> {
+    if (this.failNotifyStateWith) throw this.failNotifyStateWith;
     const state = this.notificationBySavedIndex[id - 1];
     if (state) state.notifiedAt = at;
   }

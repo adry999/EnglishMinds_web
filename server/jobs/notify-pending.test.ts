@@ -39,7 +39,7 @@ describe('notifyPending', () => {
   it('stops after 3 attempts in total, counting the first one', async () => {
     dispatcher.delivered = false;
     await repository.save(aLeadCreatedAt('2026-10-11T11:00:00.000Z'));
-    await repository.recordNotifyAttempt(1, false, new Date(NOW));
+    await repository.claimNotifyAttempt(1, 0);
     await expect(run()).resolves.toEqual({ found: 1, delivered: 0 });
     await expect(run()).resolves.toEqual({ found: 1, delivered: 0 });
     await expect(run()).resolves.toEqual({ found: 0, delivered: 0 });
@@ -49,7 +49,8 @@ describe('notifyPending', () => {
 
   it('skips leads that were already notified', async () => {
     await repository.save(aLeadCreatedAt('2026-10-11T11:00:00.000Z'));
-    await repository.recordNotifyAttempt(1, true, new Date(NOW));
+    await repository.claimNotifyAttempt(1, 0);
+    await repository.markNotified(1, new Date(NOW));
     await expect(run()).resolves.toEqual({ found: 0, delivered: 0 });
   });
 
