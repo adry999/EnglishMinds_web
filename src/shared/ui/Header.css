@@ -192,6 +192,32 @@
   }
 }
 
+@media (max-width: 359.98px) {
+  .site-header__inner {
+    gap: 8px 4px;
+    padding-inline: 12px;
+  }
+
+  .site-header .logo__line {
+    font-size: 1.5rem;
+  }
+
+  .site-header .logo__star {
+    width: 18px;
+    height: 18px;
+  }
+
+  .site-header .logo__academy {
+    margin-left: 18px;
+    font-size: 0.75rem;
+  }
+
+  .site-header__cta {
+    padding-inline: 8px;
+    font-size: 0.8125rem;
+  }
+}
+
 @media (min-width: 1100px) {
   .site-header__inner {
     gap: 12px 24px;
