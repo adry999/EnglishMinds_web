@@ -13,7 +13,7 @@ Orice modificare ajunge pe site astfel:
 | `main` | Producție | `production` |
 | `staging` | Subdomeniul de staging (cu `noindex`, ascuns de Google) | `staging` |
 
-Publicarea rămâne oprită cât timp variabila de repository `DEPLOY_ENABLED` nu este `true`. Dacă între timp a apărut un commit mai nou pe același branch, Deploy-ul vechi se sare singur.
+Publicarea rămâne oprită cât timp variabila de repository `DEPLOY_ENABLED` nu este `true`. Tot din workflow-ul **Deploy** se poate republica manual o versiune mai veche (§5). Dacă între timp a apărut un commit mai nou pe același branch, Deploy-ul vechi se sare singur.
 
 Separat de acest flux, workflow-ul **Pages** publică preview-ul pentru client (§8).
 
@@ -66,9 +66,32 @@ Site-ul se urcă în două treceri: întâi se copiază tot ce e nou, fără șt
 
 ## 5. Întoarcerea la versiunea anterioară
 
+Sunt două căi. Prima e rapidă și repune pe site o versiune publicată mai demult. A doua repară definitiv `main`. De obicei le folosești pe amândouă, în această ordine.
+
+### Repede: republicarea unei versiuni vechi (câteva minute)
+
+1. Găsește commit-ul versiunii bune. La fiecare publicare reușită, GitHub → **Actions** → **Deploy** → rularea respectivă arată în rezumat rândul „Published `<sha>` to `production`”. Ia SHA-ul ultimei publicări dinaintea celei stricate.
+2. GitHub → **Actions** → **Deploy** → **Run workflow**. Alege `target` (`production` sau `staging`) și scrie la `ref` SHA-ul (sau un tag).
+3. Pentru producție, aprobă rularea, ca la orice publicare (**Required reviewers**).
+
+Workflow-ul refuză versiunea dacă:
+- commit-ul nu e pe `main` (pentru `production`) sau pe `staging` (pentru `staging`), adică nu a fost niciodată publicat acolo;
+- CI-ul (`verify` și `browser`) nu a trecut pe acel commit.
+
+Se reconstruiește site-ul și serverul din commit-ul ales, cu aceleași pași ca o publicare obișnuită.
+
+Atenție: următorul push pe același branch publică din nou ce e pe branch, adică exact versiunea stricată. De aceea, după republicare, fă și pasul următor înainte de alt push.
+
+### Definitiv: anularea modificării în `main`
+
 1. Pe GitHub, anulează modificarea: butonul **Revert** din pull request-ul îmbinat, sau `git revert <commit>`.
 2. Fă push (sau îmbină pull request-ul de revert) în același branch.
-3. Publicarea pornește singură și pune pe site versiunea anterioară.
+3. Publicarea pornește singură, după CI, și pune pe site versiunea fără modificarea stricată.
+
+### Ce nu se întoarce
+
+- Baza de date. Publicarea nu rulează migrațiile, iar întoarcerea nu le anulează. Migrațiile din `server/db/migrations/` doar adaugă tabele și coloane, deci o versiune mai veche a serverului merge și pe baza de date nouă.
+- Contactele primite între timp rămân în baza de date.
 
 Nu șterge și nu înlocui nimic manual pe server.
 
