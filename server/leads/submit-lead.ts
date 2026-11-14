@@ -69,8 +69,8 @@ async function visitorWithinLimit(visitorKey: string | null, record: LeadRecord,
 
 async function notifyInBackground(id: number, record: LeadRecord, deps: SubmitLeadDeps): Promise<void> {
   try {
-    const delivered = await deps.dispatcher.dispatch(record);
-    await deps.repository.recordNotifyAttempt(id, delivered, deps.clock.now());
+    if (!(await deps.repository.claimNotifyAttempt(id, 0))) return;
+    if (await deps.dispatcher.dispatch(record)) await deps.repository.markNotified(id, deps.clock.now());
   } catch (error) {
     deps.logger.warn('[lead] could not record the notification state', { source: record.source, ...errorFieldsWithoutMessage(error) });
   }

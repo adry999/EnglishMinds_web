@@ -112,18 +112,6 @@ describe.skipIf(!url)('MySQL adapters', () => {
     expect(rows[0]?.notified_at).toBeNull();
   });
 
-  it('records notification attempts and sets notified_at only on delivery', async () => {
-    const repository = createMysqlLeadRepository(pool);
-    const id = await repository.save(record('2026-10-11T09:30:00.000Z'));
-    await repository.recordNotifyAttempt(id, false, new Date('2026-10-11T09:31:00.000Z'));
-    let [rows] = await pool.query<RowDataPacket[]>('SELECT notified_at, notify_attempts FROM leads WHERE id = ?', [id]);
-    expect(rows[0]).toMatchObject({ notified_at: null, notify_attempts: 1 });
-    await repository.recordNotifyAttempt(id, true, new Date('2026-10-11T09:32:00.000Z'));
-    [rows] = await pool.query<RowDataPacket[]>('SELECT notified_at, notify_attempts FROM leads WHERE id = ?', [id]);
-    expect(rows[0]?.notify_attempts).toBe(2);
-    expect((rows[0]?.notified_at as Date).toISOString()).toBe('2026-10-11T09:32:00.000Z');
-  });
-
   it('claims a retry only for the run that saw the same attempt count', async () => {
     const repository = createMysqlLeadRepository(pool);
     const id = await repository.save(record('2026-10-11T09:00:00.000Z'));
@@ -142,8 +130,9 @@ describe.skipIf(!url)('MySQL adapters', () => {
     const tooNew = await repository.save(record('2026-10-11T11:58:00.000Z'));
     const done = await repository.save(record('2026-10-11T09:10:00.000Z'));
     const exhausted = await repository.save(record('2026-10-11T09:20:00.000Z'));
-    await repository.recordNotifyAttempt(done, true, new Date('2026-10-11T09:11:00.000Z'));
-    for (let attempt = 0; attempt < 3; attempt += 1) await repository.recordNotifyAttempt(exhausted, false, new Date('2026-10-11T09:21:00.000Z'));
+    await repository.claimNotifyAttempt(done, 0);
+    await repository.markNotified(done, new Date('2026-10-11T09:11:00.000Z'));
+    for (let attempt = 0; attempt < 3; attempt += 1) await repository.claimNotifyAttempt(exhausted, attempt);
 
     const found = await repository.findPendingNotification({
       createdBefore: new Date('2026-10-11T11:55:00.000Z'),

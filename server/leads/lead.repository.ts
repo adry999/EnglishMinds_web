@@ -45,9 +45,6 @@ export function createMysqlLeadRepository(pool: Pool): LeadRepository {
       const [result] = await pool.execute<ResultSetHeader>('DELETE FROM leads WHERE created_at < ?', [cutoff]);
       return result.affectedRows;
     },
-    async recordNotifyAttempt(id, delivered, at) {
-      await pool.execute('UPDATE leads SET notify_attempts = notify_attempts + 1, notified_at = IF(?, ?, notified_at) WHERE id = ?', [delivered ? 1 : 0, at, id]);
-    },
     async claimNotifyAttempt(id, expectedAttempts) {
       const [result] = await pool.execute<ResultSetHeader>('UPDATE leads SET notify_attempts = notify_attempts + 1 WHERE id = ? AND notify_attempts = ?', [id, expectedAttempts]);
       return result.affectedRows === 1;

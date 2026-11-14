@@ -14,7 +14,6 @@ export type PendingNotificationQuery = {
 export interface LeadRepository {
   save(record: LeadRecord): Promise<number>;
   deleteCreatedBefore(cutoff: Date): Promise<number>;
-  recordNotifyAttempt(id: number, delivered: boolean, at: Date): Promise<void>;
   claimNotifyAttempt(id: number, expectedAttempts: number): Promise<boolean>;
   markNotified(id: number, at: Date): Promise<void>;
   findPendingNotification(query: PendingNotificationQuery): Promise<StoredLead[]>;
