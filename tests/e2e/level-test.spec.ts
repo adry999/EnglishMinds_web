@@ -33,7 +33,7 @@ test('level test -> diploma -> booking form, child name never sent', async ({ pa
   await expect(page.locator('.level-test__diploma-name')).toHaveText(CHILD);
 
   const form = leadForm.locator('form');
-  await page.getByRole('button', { name: 'Rezervă lecția demo' }).click();
+  await page.locator('level-test').getByRole('button', { name: 'Rezervă lecția demo' }).click();
   await expect(form.getByLabel('Numele părintelui')).toBeFocused();
   await expect(form.getByLabel('Numele părintelui')).toBeInViewport();
   await form.getByLabel('Numele părintelui').fill('Ana Pop');
