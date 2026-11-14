@@ -5,30 +5,45 @@ on:
     workflows: [CI]
     types: [completed]
     branches: [main, staging]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Where to publish the older version
+        type: choice
+        options: [production, staging]
+        required: true
+      ref:
+        description: Commit SHA or tag to publish again (must already be on main for production, on staging for staging, with green CI)
+        type: string
+        required: true
 
 permissions:
   contents: read
+  checks: read
 
 concurrency:
-  group: deploy-${{ github.event.workflow_run.head_branch }}
+  group: deploy-${{ github.event.workflow_run.head_branch || (inputs.target == 'production' && 'main' || 'staging') }}
   cancel-in-progress: false
 
 jobs:
   deploy:
     if: >-
-      github.event.workflow_run.conclusion == 'success' &&
+      vars.DEPLOY_ENABLED == 'true' &&
+      (github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.event == 'push' &&
-      github.event.workflow_run.head_repository.full_name == github.repository &&
-      vars.DEPLOY_ENABLED == 'true'
+      github.event.workflow_run.head_repository.full_name == github.repository))
     runs-on: ubuntu-latest
-    environment: ${{ github.event.workflow_run.head_branch == 'main' && 'production' || 'staging' }}
+    environment: ${{ github.event_name == 'workflow_dispatch' && inputs.target || (github.event.workflow_run.head_branch == 'main' && 'production' || 'staging') }}
     env:
-      SITE_ENV: ${{ github.event.workflow_run.head_branch == 'main' && 'production' || 'staging' }}
+      SITE_ENV: ${{ github.event_name == 'workflow_dispatch' && inputs.target || (github.event.workflow_run.head_branch == 'main' && 'production' || 'staging') }}
     steps:
-      - uses: actions/checkout@v4
+      - if: github.event_name == 'workflow_run'
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
       - name: Skip when a newer commit exists
+        if: github.event_name == 'workflow_run'
         id: tip
         env:
           BRANCH: ${{ github.event.workflow_run.head_branch }}
@@ -41,20 +56,36 @@ jobs:
             echo "::notice::Skipping deploy: $HEAD_SHA is no longer the tip of $BRANCH"
             echo "current=false" >> "$GITHUB_OUTPUT"
           fi
-      - if: steps.tip.outputs.current == 'true'
+      - if: github.event_name == 'workflow_dispatch'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check the rollback target
+        if: github.event_name == 'workflow_dispatch'
+        id: rollback
+        env:
+          TARGET: ${{ inputs.target }}
+          REF: ${{ inputs.ref }}
+          GH_TOKEN: ${{ github.token }}
+        run: bash scripts/check-rollback-target.sh
+      - if: github.event_name == 'workflow_dispatch'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.rollback.outputs.sha }}
+      - if: (steps.tip.outputs.current == 'true' || steps.rollback.outputs.sha != '')
         uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
           cache: npm
-      - if: steps.tip.outputs.current == 'true'
+      - if: (steps.tip.outputs.current == 'true' || steps.rollback.outputs.sha != '')
         run: npm ci
-      - if: steps.tip.outputs.current == 'true'
+      - if: (steps.tip.outputs.current == 'true' || steps.rollback.outputs.sha != '')
         run: npm run build
-      - if: steps.tip.outputs.current == 'true'
+      - if: (steps.tip.outputs.current == 'true' || steps.rollback.outputs.sha != '')
         run: npm run build:server
-      - if: steps.tip.outputs.current == 'true'
+      - if: (steps.tip.outputs.current == 'true' || steps.rollback.outputs.sha != '')
         run: sudo apt-get update && sudo apt-get install -y lftp
-      - if: steps.tip.outputs.current == 'true'
+      - if: (steps.tip.outputs.current == 'true' || steps.rollback.outputs.sha != '')
         name: Write SSH credentials
         run: |
           install -m 700 -d ~/.ssh
@@ -64,7 +95,7 @@ jobs:
         env:
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
           DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
-      - if: steps.tip.outputs.current == 'true'
+      - if: (steps.tip.outputs.current == 'true' || steps.rollback.outputs.sha != '')
         run: bash scripts/deploy.sh
         env:
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
@@ -75,3 +106,8 @@ jobs:
           DEPLOY_HTPASSWD_FILE: ${{ vars.DEPLOY_HTPASSWD_FILE }}
           DEPLOY_KEY_FILE: /home/runner/.ssh/deploy_key
           DEPLOY_KNOWN_HOSTS_FILE: /home/runner/.ssh/known_hosts
+      - if: (steps.tip.outputs.current == 'true' || steps.rollback.outputs.sha != '')
+        name: Record the published commit
+        env:
+          PUBLISHED_SHA: ${{ steps.rollback.outputs.sha || github.event.workflow_run.head_sha }}
+        run: echo "Published \`$PUBLISHED_SHA\` to \`$SITE_ENV\`." >> "$GITHUB_STEP_SUMMARY"

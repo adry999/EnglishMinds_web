@@ -100,6 +100,9 @@ Staging-ul se publică automat din branch-ul `staging` (vezi [`publicare.md`](pu
 - [ ] Fluxul de publicare funcționează.
   - Verificare: fă o modificare vizibilă de text pe branch-ul `staging`, așteaptă să treacă workflow-urile CI și Deploy, apoi deschide pagina și verifică și `/api/lead` (vezi „Rutare”).
 
+- [ ] Întoarcerea la versiunea anterioară funcționează.
+  - Verificare: după modificarea de mai sus, rulează manual workflow-ul **Deploy** cu `target` = `staging` și `ref` = SHA-ul publicării dinaintea ei ([`publicare.md`](publicare.md) §5). Pagina revine la textul vechi, iar `/api/health` răspunde `200`. Apoi fă push din nou pe `staging`, ca să revii la ultima versiune.
+
 - [ ] Site-ul nu răspunde cu 500 după prima încărcare.
   - Verificare: deschide `https://<staging>/`. Dacă apare 500, `AllowOverride` al hostingului poate interzice `Options`: șterge linia `Options -Indexes` din `.htaccess` sau cere hostingului să o permită.
 - [ ] Fișierele din `/_astro/` au cache pe termen lung.
