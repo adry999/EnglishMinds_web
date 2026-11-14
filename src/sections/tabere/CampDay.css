@@ -5,12 +5,13 @@
 .camp-day__inner {
   max-width: var(--container);
   margin-inline: auto;
-  padding: 64px var(--gutter);
+  padding: var(--space-section) var(--gutter);
 }
 
 .camp-day h2 {
   margin: 0 0 28px;
-  font-size: clamp(2rem, 4vw, 3rem);
+  font-size: var(--text-h2);
+  text-wrap: balance;
 }
 
 .camp-day ol {

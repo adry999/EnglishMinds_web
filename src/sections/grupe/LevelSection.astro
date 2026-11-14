@@ -14,13 +14,9 @@ const { level } = Astro.props;
 ---
 <section class="level-section" id={level.slug} aria-labelledby={`${level.slug}-heading`}>
   <div class="level-section__intro">
-    <Eyebrow>{`Nivelul ${level.name} · ${level.ageGroup}`}</Eyebrow>
+    <Eyebrow>{level.ageGroup}</Eyebrow>
     <h2 id={`${level.slug}-heading`}>{level.name}</h2>
     <p class="level-section__description">{level.description}</p>
-    <div class="level-section__actions">
-      <Button class="level-section__primary" href={`/lectie-demo/?grupa=${level.slug}`}>Rezervă lecția demo gratuită</Button>
-      <Button variant="outline" class="level-section__secondary" href="/test-de-nivel/">Nu știi nivelul? Fă testul</Button>
-    </div>
   </div>
   <div class="level-section__photo">
     <Photo photo={level.photo} alt="" sizes="(min-width: 1100px) 485px, (min-width: 768px) calc(100vw - 60px), calc(100vw - 44px)" />
@@ -32,5 +28,9 @@ const { level } = Astro.props;
         <li><Star size={30} /> <span>{outcome}</span></li>
       ))}
     </ul>
+  </div>
+  <div class="level-section__actions">
+    <Button class="level-section__primary" href={`/lectie-demo/?grupa=${level.slug}`}>Rezervă lecția demo gratuită</Button>
+    <Button variant="outline" class="level-section__secondary" href="/test-de-nivel/">Fă testul de nivel</Button>
   </div>
 </section>

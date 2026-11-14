@@ -3,7 +3,7 @@
   gap: 24px;
   max-width: var(--container);
   margin-inline: auto;
-  padding: 48px var(--gutter);
+  padding: var(--space-section) var(--gutter);
   scroll-margin-top: 16px;
 }
 
@@ -15,7 +15,8 @@
 }
 
 .level-section h2 {
-  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-size: var(--text-h2);
+  text-wrap: balance;
 }
 
 .level-section__description {
@@ -30,13 +31,12 @@
   align-items: stretch;
   gap: 14px;
   width: 100%;
-  margin-top: 6px;
 }
 
 .level-section__photo {
   overflow: hidden;
   border: 6px solid var(--color-sun);
-  border-radius: 36px;
+  border-radius: var(--radius-panel);
   background: var(--color-photo-bg);
   aspect-ratio: 4 / 3;
 }
@@ -50,7 +50,7 @@
 
 .level-section__outcomes {
   padding: 24px 20px;
-  border-radius: 28px;
+  border-radius: var(--radius-card);
   background: var(--color-white);
   box-shadow: 0 2px 0 var(--color-card-edge);
 }
@@ -88,22 +88,26 @@
 @media (min-width: 1100px) {
   .level-section {
     grid-template-columns: 1.2fr 1fr;
-    gap: 40px;
-    padding-block: 72px;
+    grid-template-rows: auto auto 1fr;
+    column-gap: 56px;
+    row-gap: 28px;
+    align-items: start;
+  }
+
+  .level-section__intro,
+  .level-section__outcomes,
+  .level-section__actions {
+    grid-column: 1;
   }
 
   .level-section__photo {
+    grid-column: 2;
+    grid-row: 1 / 4;
     border-width: 10px;
     aspect-ratio: 4 / 5;
   }
 
   .level-section__outcomes {
-    grid-column: 1 / -1;
-    padding: 32px 36px;
-  }
-
-  .level-section__outcomes ul {
-    grid-template-columns: 1fr 1fr;
-    gap: 16px 32px;
+    padding: 28px 32px;
   }
 }

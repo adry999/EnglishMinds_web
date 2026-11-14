@@ -5,13 +5,13 @@
   align-items: center;
   max-width: var(--container);
   margin-inline: auto;
-  padding: 64px var(--gutter);
+  padding: var(--space-section) var(--gutter);
 }
 
 .parent-benefits__photo {
   aspect-ratio: 4 / 3;
   overflow: hidden;
-  border-radius: 32px;
+  border-radius: var(--radius-card);
   background: var(--color-photo-bg);
 }
 
@@ -24,8 +24,9 @@
 
 .parent-benefits h2 {
   margin: 0 0 24px;
-  font-size: clamp(1.875rem, 3.6vw, 2.75rem);
+  font-size: var(--text-h2);
   line-height: 1.1;
+  text-wrap: balance;
 }
 
 .parent-benefits ul {
@@ -47,10 +48,4 @@
 
 .parent-benefits li .star {
   flex: none;
-}
-
-@media (min-width: 768px) {
-  .parent-benefits {
-    padding-block: 88px;
-  }
 }

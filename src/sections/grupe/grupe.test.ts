@@ -32,7 +32,8 @@ describe('groups page sections', () => {
     for (const level of site.levels) {
       const html = await render(LevelSection, { props: { level } });
       expect(html).toContain(`id="${level.slug}"`);
-      expect(html).toContain(`Nivelul ${level.name} · ${level.ageGroup}`);
+      expect(html).toContain(level.ageGroup);
+      expect(html).toContain('Fă testul de nivel');
       expect(html).toContain(level.description);
       for (const outcome of level.outcomes) expect(html).toContain(outcome);
       expect(html).toContain(`href="/lectie-demo/?grupa=${level.slug}"`);

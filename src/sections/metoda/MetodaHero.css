@@ -5,12 +5,12 @@
 
 .metoda-hero__inner {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  grid-template-columns: 1fr;
   gap: 40px;
   align-items: center;
   max-width: var(--container);
   margin-inline: auto;
-  padding: 48px var(--gutter) 88px;
+  padding: 48px var(--gutter) calc(var(--space-section) + 8px);
 }
 
 .metoda-hero__text {
@@ -21,8 +21,9 @@
 }
 
 .metoda-hero h1 {
-  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-size: var(--text-h1);
   line-height: 1;
+  text-wrap: balance;
 }
 
 .metoda-hero p:not(.badge) {
@@ -49,6 +50,12 @@
   height: 100%;
   object-fit: cover;
   object-position: 50% 25%;
+}
+
+@media (min-width: 900px) {
+  .metoda-hero__inner {
+    grid-template-columns: 1.3fr 1fr;
+  }
 }
 
 @media (min-width: 1100px) {
