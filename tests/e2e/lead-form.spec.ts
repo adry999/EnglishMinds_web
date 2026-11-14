@@ -140,7 +140,7 @@ test('/lectie-demo/?grupa=movers preselects the age group and sends source landi
   await f.phone.fill('0722 123 456');
   await f.consent.check();
   const popupPromise = page.waitForEvent('popup');
-  await page.locator('lead-form form').getByRole('button', { name: 'Rezervă lecția gratuită' }).click();
+  await page.locator('lead-form form').getByRole('button', { name: 'Rezervă lecția demo' }).click();
   await popupPromise;
   await expect(page.getByText(`Mulțumim, ${PARENT}!`)).toBeVisible({ timeout: 10_000 });
   expect(api.requests[0]).toMatchObject({ source: 'landing', childAgeGroup: '9–10 ani' });

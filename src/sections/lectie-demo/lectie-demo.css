@@ -33,32 +33,33 @@
 
 .landing-hero__inner {
   display: grid;
-  gap: 32px;
+  gap: 14px;
   max-width: var(--container);
   margin-inline: auto;
-  padding: 40px var(--gutter) 56px;
+  padding: 20px var(--gutter) 40px;
 }
 
 .landing-hero__text {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 20px;
+  gap: 12px;
   min-width: 0;
 }
 
 .landing-hero h1 {
-  font-size: clamp(2.25rem, 6vw, 4rem);
+  font-size: clamp(2rem, 9vw, var(--text-h1));
   font-weight: 900;
   line-height: 1;
+  text-wrap: balance;
 }
 
 .landing-hero__text > p:not(.badge) {
   max-width: 520px;
   margin: 0;
-  font-size: 1.1875rem;
+  font-size: 1rem;
   font-weight: 700;
-  line-height: 1.5;
+  line-height: 1.45;
 }
 
 .landing-hero__ema {
@@ -79,8 +80,8 @@
 
 .landing-hero__card {
   min-width: 0;
-  padding: clamp(24px, 3vw, 40px);
-  border-radius: 32px;
+  padding: clamp(20px, 3vw, 40px);
+  border-radius: var(--radius-panel);
   background: var(--color-cream);
   box-shadow: 0 24px 48px rgb(120 40 0 / 0.25);
   color: var(--color-navy);
@@ -102,7 +103,7 @@
 .landing-steps__inner {
   max-width: var(--container);
   margin-inline: auto;
-  padding: 48px var(--gutter);
+  padding: var(--space-section) var(--gutter);
 }
 
 .landing-steps__list {
@@ -142,7 +143,7 @@
 .landing-photos {
   max-width: var(--container);
   margin-inline: auto;
-  padding: 48px var(--gutter) 0;
+  padding: var(--space-section) var(--gutter) 0;
 }
 
 .landing-photos__grid {
@@ -157,7 +158,7 @@
 .landing-photos__item {
   aspect-ratio: 4 / 5;
   overflow: hidden;
-  border-radius: 24px;
+  border-radius: var(--radius-card);
   background: var(--color-photo-bg);
 }
 
@@ -169,7 +170,7 @@
 }
 
 .landing-band {
-  margin-top: 48px;
+  margin-top: var(--space-section);
   background: var(--color-navy);
   color: var(--color-white);
 }
@@ -212,12 +213,47 @@
   }
 }
 
+@media (max-width: 1099px) {
+  .landing-hero__text {
+    display: contents;
+  }
+
+  .landing-hero__text > * {
+    justify-self: start;
+  }
+
+  .landing-hero__ema {
+    order: 2;
+    margin-top: 4px;
+  }
+}
+
+@media (min-width: 560px) and (max-width: 1099px) {
+  .landing-hero__inner {
+    gap: 24px;
+    padding-block: 32px 48px;
+  }
+
+  .landing-hero__text > p:not(.badge) {
+    font-size: 1.125rem;
+  }
+}
+
 @media (min-width: 1100px) {
   .landing-hero__inner {
     grid-template-columns: 1.1fr 1fr;
     gap: 48px;
     align-items: center;
     padding-block: 64px 80px;
+  }
+
+  .landing-hero__text {
+    gap: 20px;
+  }
+
+  .landing-hero__text > p:not(.badge) {
+    font-size: 1.1875rem;
+    line-height: 1.5;
   }
 
   .landing-steps__list {
@@ -231,7 +267,7 @@
 }
 
 .landing-hero__card {
-  --lead-form-reserved-height: 800px;
+  --lead-form-reserved-height: 750px;
 }
 
 @media (scripting: enabled) {
@@ -248,30 +284,30 @@
 
 @media (min-width: 370px) {
   .landing-hero__card {
-    --lead-form-reserved-height: 636px;
+    --lead-form-reserved-height: 673px;
   }
 }
 
 @media (min-width: 470px) {
   .landing-hero__card {
-    --lead-form-reserved-height: 593px;
+    --lead-form-reserved-height: 607px;
   }
 }
 
-@media (min-width: 560px) {
+@media (min-width: 580px) {
   .landing-hero__card {
-    --lead-form-reserved-height: 436px;
+    --lead-form-reserved-height: 429px;
   }
 }
 
 @media (min-width: 700px) {
   .landing-hero__card {
-    --lead-form-reserved-height: 414px;
+    --lead-form-reserved-height: 429px;
   }
 }
 
 @media (min-width: 1100px) {
   .landing-hero__card {
-    --lead-form-reserved-height: 593px;
+    --lead-form-reserved-height: 607px;
   }
 }

@@ -40,7 +40,7 @@ test('level test -> diploma -> booking form, child name never sent', async ({ pa
   await form.getByLabel('Telefon', { exact: true }).fill('0722 123 456');
   await form.getByLabel(/Sunt de acord/).check();
   const popupPromise = page.waitForEvent('popup');
-  await form.getByRole('button', { name: 'Rezervă locul acum' }).click();
+  await form.getByRole('button', { name: 'Rezervă lecția demo' }).click();
   await popupPromise;
   await expect(page.getByText('Mulțumim, Ana Pop!')).toBeVisible();
 
