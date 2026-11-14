@@ -1,37 +1,36 @@
-const PHONE = '(max-width: 767.98px)';
-
 export class StickyContact extends HTMLElement {
   private observer: IntersectionObserver | null = null;
-  private phone: MediaQueryList | null = null;
-  private targetVisible = true;
+  private readonly visible = new Set<Element>();
 
-  private readonly sync = (): void => {
+  private sync(): void {
     const bar = this.querySelector<HTMLElement>('.sticky-contact');
-    if (!bar) return;
-    const hide = (this.phone?.matches ?? false) && this.targetVisible;
-    bar.hidden = hide;
-  };
+    if (bar) bar.hidden = this.visible.size > 0;
+  }
 
   connectedCallback(): void {
-    const selector = this.dataset.hideWhileVisible;
-    const target = selector ? document.querySelector(selector) : null;
-    if (!target || typeof IntersectionObserver === 'undefined') return;
-    this.phone = window.matchMedia(PHONE);
-    this.phone.addEventListener('change', this.sync);
+    const selector = this.dataset.hideWhileVisible?.trim();
+    if (!selector || typeof IntersectionObserver === 'undefined') return;
+    const targets = [...document.querySelectorAll(selector)];
+    if (targets.length === 0) return;
     this.observer = new IntersectionObserver((entries) => {
-      const latest = entries.at(-1);
-      if (latest) this.targetVisible = latest.isIntersecting;
+      for (const entry of entries) {
+        if (entry.isIntersecting) this.visible.add(entry.target);
+        else this.visible.delete(entry.target);
+      }
       this.sync();
     });
-    this.observer.observe(target);
+    for (const target of targets) {
+      this.visible.add(target);
+      this.observer.observe(target);
+    }
     this.sync();
   }
 
   disconnectedCallback(): void {
     this.observer?.disconnect();
     this.observer = null;
-    this.phone?.removeEventListener('change', this.sync);
-    this.phone = null;
+    this.visible.clear();
+    this.sync();
   }
 }
 

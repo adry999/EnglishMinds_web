@@ -1,7 +1,13 @@
 .offer-terms-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-target);
+  margin-block: -10px;
+  padding-inline: 2px;
   color: inherit;
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   font-weight: 700;
+  white-space: nowrap;
   text-decoration: underline;
   text-underline-offset: 2px;
 }

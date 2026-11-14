@@ -39,7 +39,7 @@ describe('Header', () => {
   });
 
   it('sends the main call to action to the demo lesson page', async () => {
-    expect(await render()).toMatch(/href="\/lectie-demo\/"[^>]*>Rezervă locul acum</);
+    expect(await render()).toMatch(/href="\/lectie-demo\/"[^>]*>Rezervă lecția demo</);
   });
 
   it('gives the logo link an accessible name', async () => {
