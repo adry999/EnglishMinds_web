@@ -42,8 +42,8 @@ const brandImage = await getImage({ src: photos.class, ...ogImageSize(photos.cla
     <HomeHero />
     <OfferStrip />
     <LevelsOverview />
-    <ValueCards />
     <TestTeaser />
+    <ValueCards />
     <Faq items={site.faq} heading="Ce ne întreabă părinții" eyebrow="Întrebări frecvente">
       <p>Nu găsești răspunsul? Sună-ne la <a href={`tel:${site.contact.phoneE164}`}>{site.contact.phoneDisplay}</a>.</p>
     </Faq>
@@ -52,5 +52,5 @@ const brandImage = await getImage({ src: photos.class, ...ogImageSize(photos.cla
     </HomeContact>
   </main>
   <Footer showCta={false} />
-  <StickyContact demoHref="#contact" hideWhileVisible=".home-hero__actions" />
+  <StickyContact demoHref="#contact" hideWhileVisible=".home-hero__actions, .home-contact lead-form" />
 </BaseLayout>

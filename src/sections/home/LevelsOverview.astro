@@ -1,21 +1,24 @@
 ---
 import { site } from '@shared/content/site';
 import { withBase } from '@shared/lib/with-base';
-import '@shared/ui/Eyebrow.css';
+import Eyebrow from '@shared/ui/Eyebrow.astro';
 import './LevelsOverview.css';
 ---
 <section class="levels-overview" id="cursuri" aria-labelledby="cursuri-heading">
   <div class="levels-overview__head">
-    <div>
-      <h2 id="cursuri-heading"><span class="eyebrow eyebrow--accent levels-overview__eyebrow">Grupele de vârstă</span> și structura cursurilor</h2>
+    <div class="levels-overview__title">
+      <Eyebrow>Grupele de vârstă</Eyebrow>
+      <h2 id="cursuri-heading">Structura cursurilor</h2>
     </div>
-    <p>{site.courseFacts.duration}. Un start bun pentru școală și mai departe.</p>
+    <p class="levels-overview__intro">{site.courseFacts.duration}. Un start bun pentru școală și mai departe.</p>
   </div>
   <ul class="levels-overview__list">
     {site.levels.map((level) => (
       <li class="level-card">
-        <p class="level-card__age">{level.ageGroup}</p>
-        <h3 class="level-card__name">{level.name}</h3>
+        <div class="level-card__head">
+          <p class="level-card__age">{level.ageGroup}</p>
+          <h3 class="level-card__name">{level.name}</h3>
+        </div>
         <p class="level-card__summary">{level.summary}</p>
         <a class="level-card__link" href={withBase(`/grupe/#${level.slug}`)}>
           Detalii grupă <span aria-hidden="true">→</span>

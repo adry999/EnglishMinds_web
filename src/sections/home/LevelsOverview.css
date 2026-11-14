@@ -1,7 +1,7 @@
 .levels-overview {
   max-width: var(--container);
   margin-inline: auto;
-  padding: 48px var(--gutter);
+  padding: var(--space-section) var(--gutter);
 }
 
 .levels-overview__head {
@@ -11,16 +11,18 @@
   margin-bottom: 24px;
 }
 
+.levels-overview__title {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .levels-overview__head h2 {
-  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-size: var(--text-h2);
+  text-wrap: balance;
 }
 
-.levels-overview__eyebrow {
-  display: block;
-  margin-bottom: 12px;
-}
-
-.levels-overview__head p {
+.levels-overview__intro {
   max-width: 380px;
   margin: 0;
   font-size: 1.1875rem;
@@ -37,15 +39,21 @@
 .level-card {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 18px 20px;
-  border-radius: 20px;
+  gap: 6px;
+  padding: 16px 20px 4px;
+  border-radius: var(--radius-card);
   background: var(--color-white);
   box-shadow: 0 2px 0 var(--color-card-edge);
 }
 
+.level-card__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+}
+
 .level-card__age {
-  align-self: flex-start;
   margin: 0;
   padding: 4px 14px;
   border-radius: var(--radius-pill);
@@ -66,6 +74,11 @@
 }
 
 .level-card__link {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 4px;
+  min-height: var(--touch-target);
   margin-top: auto;
   color: var(--color-text-accent);
   font-size: 1rem;
@@ -78,15 +91,16 @@
 }
 
 @media (min-width: 768px) {
-  .levels-overview {
-    padding-block: 72px;
-  }
-
   .levels-overview__head {
     flex-direction: row;
     align-items: flex-end;
     justify-content: space-between;
+    gap: 32px;
     margin-bottom: 32px;
+  }
+
+  .levels-overview__intro {
+    padding-bottom: 0.35em;
   }
 
   .levels-overview__list {
@@ -95,9 +109,15 @@
   }
 
   .level-card {
+    gap: 10px;
     min-height: 260px;
-    padding: 28px 22px;
-    border-radius: var(--radius-card);
+    padding: 28px 22px 12px;
+  }
+
+  .level-card__head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
   }
 
   .level-card__name {

@@ -4,27 +4,37 @@ import WhatsAppButton from '@shared/ui/WhatsAppButton.astro';
 import './HomeContact.css';
 
 const { contact } = site;
+const hasForm = Astro.slots.has('default');
 ---
 <section class="home-contact" id="contact" aria-labelledby="contact-heading">
   <div class="home-contact__inner">
     <div class="home-contact__main">
-      <h2 id="contact-heading">Rezervă lecția{' '}<span class="home-contact__highlight">demo gratuită</span></h2>
-      <p>{Astro.slots.has('default')
-        ? 'Lasă-ne un număr de telefon și te sunăm să stabilim ziua și ora.'
-        : 'Scrie-ne pe WhatsApp sau sună-ne și stabilim ziua și ora.'}</p>
-      <slot />
-      <div class="home-contact__actions">
-        <WhatsAppButton />
+      <div class="home-contact__intro">
+        <h2 id="contact-heading">Rezervă lecția{' '}<span class="home-contact__highlight">demo gratuită</span></h2>
+        <p>{hasForm
+          ? 'Lasă-ne un număr de telefon și te sunăm să stabilim ziua și ora.'
+          : 'Scrie-ne pe WhatsApp sau sună-ne și stabilim ziua și ora.'}</p>
+      </div>
+      {hasForm && <div class="home-contact__form"><slot /></div>}
+      <div class="home-contact__alt">
+        {hasForm && <p class="home-contact__or">sau</p>}
+        <WhatsAppButton label="Scrie-ne pe WhatsApp" />
       </div>
     </div>
     <div class="home-contact__card">
-      <p class="home-contact__label">Adresă</p>
-      <p class="home-contact__value">{`${contact.street}, ${contact.city}`}</p>
-      <a class="home-contact__maps" href={contact.mapsUrl} target="_blank" rel="noopener noreferrer">Deschide în Google Maps<span class="visually-hidden"> (se deschide într-un tab nou)</span></a>
-      <p class="home-contact__label">Telefon</p>
-      <a class="home-contact__phone" href={`tel:${contact.phoneE164}`}>{contact.phoneDisplay}</a>
-      <p class="home-contact__label">Instagram</p>
-      <a class="home-contact__value" href={contact.instagramUrl} target="_blank" rel="noopener noreferrer">{contact.instagramHandle}<span class="visually-hidden"> (se deschide într-un tab nou)</span></a>
+      <div class="home-contact__group">
+        <p class="home-contact__label">Adresă</p>
+        <p class="home-contact__value">{`${contact.street}, ${contact.city}`}</p>
+        <a class="home-contact__maps" href={contact.mapsUrl} target="_blank" rel="noopener noreferrer">Deschide în Google Maps<span class="visually-hidden"> (se deschide într-un tab nou)</span></a>
+      </div>
+      <div class="home-contact__group">
+        <p class="home-contact__label">Telefon</p>
+        <a class="home-contact__phone" href={`tel:${contact.phoneE164}`}>{contact.phoneDisplay}</a>
+      </div>
+      <div class="home-contact__group">
+        <p class="home-contact__label">Instagram</p>
+        <a class="home-contact__value" href={contact.instagramUrl} target="_blank" rel="noopener noreferrer">{contact.instagramHandle}<span class="visually-hidden"> (se deschide într-un tab nou)</span></a>
+      </div>
     </div>
   </div>
 </section>

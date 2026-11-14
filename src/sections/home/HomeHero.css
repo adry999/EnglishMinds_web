@@ -38,9 +38,14 @@
 
 .home-hero__title {
   order: 2;
-  font-size: clamp(2.5rem, 7vw, 4.875rem);
+  font-size: var(--text-h1);
   line-height: 0.98;
   letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.home-hero__nowrap {
+  white-space: nowrap;
 }
 
 .home-hero__accent {
@@ -124,7 +129,7 @@
   }
 
   .home-hero__inner {
-    grid-template-columns: 1.1fr 1fr;
+    grid-template-columns: 1.3fr 1fr;
     align-items: center;
     gap: 32px;
   }

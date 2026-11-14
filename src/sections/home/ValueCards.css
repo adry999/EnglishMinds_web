@@ -1,7 +1,7 @@
 .value-cards {
   max-width: var(--container);
   margin-inline: auto;
-  padding: 0 var(--gutter) 48px;
+  padding: var(--space-section) var(--gutter) 0;
 }
 
 .value-cards ul {
@@ -17,7 +17,7 @@
   flex-direction: column;
   gap: 12px;
   padding: 22px;
-  border-radius: 22px;
+  border-radius: var(--radius-card);
 }
 
 .value-card--navy {
@@ -37,6 +37,7 @@
 
 .value-card h3 {
   font-size: 1.75rem;
+  text-wrap: balance;
 }
 
 .value-card p {
@@ -47,13 +48,8 @@
 }
 
 @media (min-width: 768px) {
-  .value-cards {
-    padding-bottom: 72px;
-  }
-
   .value-card {
     padding: 36px;
-    border-radius: 28px;
   }
 }
 

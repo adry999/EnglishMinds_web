@@ -53,6 +53,13 @@
   }
 }
 
-.offer-strip__terms {
-  margin-top: 2px;
+.offer-strip .offer-strip__terms {
+  margin-block: -11px -13px;
+}
+
+.offer-strip__terms a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-target);
+  padding-inline: 8px;
 }
