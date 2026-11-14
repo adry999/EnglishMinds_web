@@ -4,7 +4,7 @@
   align-items: center;
   gap: 24px;
   padding: 32px;
-  border-radius: 32px;
+  border-radius: var(--radius-panel);
   background: var(--color-orange);
   color: var(--color-white);
 }

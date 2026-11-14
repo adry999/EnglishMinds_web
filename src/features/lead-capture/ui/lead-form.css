@@ -1,5 +1,6 @@
 lead-form {
   display: block;
+  container-type: inline-size;
   width: 100%;
   max-width: 640px;
 }
@@ -108,9 +109,28 @@ lead-form {
 }
 
 .lead-form__pills {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 8px;
+}
+
+.lead-form__pills .lead-form__pill {
+  grid-column: span 2;
+}
+
+.lead-form__pills .lead-form__pill:nth-child(n + 4) {
+  grid-column: span 3;
+}
+
+@container (min-width: 31rem) {
+  .lead-form__pills {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .lead-form__pills .lead-form__pill,
+  .lead-form__pills .lead-form__pill:nth-child(n + 4) {
+    grid-column: auto;
+  }
 }
 
 .lead-form__pill {
@@ -125,10 +145,13 @@ lead-form {
 }
 
 .lead-form__pill span {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  min-height: 44px;
-  padding: 10px 16px;
+  justify-content: center;
+  min-height: var(--touch-target);
+  padding: 10px 8px;
+  text-align: center;
+  white-space: nowrap;
   border: 2px solid currentColor;
   border-radius: var(--radius-pill);
   font-weight: 800;
@@ -151,20 +174,22 @@ lead-form {
 .lead-form__consent {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 4px 12px;
+  gap: 4px 4px;
   align-items: start;
 }
 
 .lead-form__consent input {
-  width: 22px;
-  height: 22px;
-  margin: 2px 0 0;
+  width: 24px;
+  height: 24px;
+  margin: 10px;
   accent-color: var(--color-orange);
 }
 
 .lead-form__consent label {
+  padding-block: 10px;
   font-weight: 600;
   font-size: 0.9375rem;
+  line-height: 1.4;
 }
 
 .lead-form__consent .lead-form__error {
@@ -188,6 +213,7 @@ lead-form {
 }
 
 .lead-form__note {
+  margin-top: -4px;
   font-size: 0.875rem;
   font-weight: 600;
   text-align: center;

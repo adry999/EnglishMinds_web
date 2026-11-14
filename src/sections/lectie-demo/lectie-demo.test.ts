@@ -30,7 +30,7 @@ describe('demo landing sections', () => {
     expect(html).toContain('Hei, eu sunt Ema! Te aștept la lecție.');
     expect(html).toMatch(/<lead-form[^>]*data-source="landing"/);
     expect(html).toContain('Rezervă locul acum');
-    expect(html).toContain('Rezervă lecția gratuită');
+    expect(html).toContain('Rezervă lecția demo');
     expect(html).toContain(site.offer.detail);
     expect(html).toContain('href="/termeni/#oferte"');
   });

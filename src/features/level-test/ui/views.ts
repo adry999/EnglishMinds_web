@@ -2,6 +2,7 @@ import type { ResultSummary } from '../model/describe-result';
 import { DIPLOMA_NOTE, diplomaLine, formatDiplomaDate } from '../model/diploma-content';
 import type { TestScore } from '../model/score-test';
 import { choiceLabels, type Mode } from '../model/select-bank';
+import { TEST_SUMMARY_LABEL } from '../model/test-summary';
 import { SKILL_LABELS, SKILLS, type Question } from '../model/types';
 import { h } from './dom';
 
@@ -26,7 +27,7 @@ export function modeView(on: Handlers): Node {
     const button = h(
       'button',
       { type: 'button', class: 'level-test__mode' },
-      h('span', { class: 'level-test__eyebrow' }, '12 întrebări · 5 minute'),
+      h('span', { class: 'level-test__eyebrow' }, TEST_SUMMARY_LABEL),
       h('span', { class: 'level-test__mode-title' }, title),
       h('span', { class: 'level-test__mode-text' }, description),
     );

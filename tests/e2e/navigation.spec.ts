@@ -36,11 +36,25 @@ test('desktop: the links are always visible and there is no toggle', async ({ pa
   await expect(page.getByRole('button', { name: 'Meniu' })).toBeHidden();
 });
 
+const PAGES = ['/', '/grupe/', '/metoda-cambridge/', '/test-de-nivel/', '/tabere/', '/blog/', '/lectie-demo/'];
+
 test('no page scrolls sideways on a phone', async ({ page, isMobile }) => {
   test.skip(!isMobile, 'phone width only');
-  for (const path of ['/', '/grupe/', '/metoda-cambridge/', '/test-de-nivel/', '/tabere/', '/blog/', '/lectie-demo/']) {
+  for (const path of PAGES) {
     await page.goto(path);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow, path).toBeLessThanOrEqual(0);
   }
 });
+
+for (const width of [320, 360]) {
+  test(`no page scrolls sideways at ${width}px`, async ({ page, isMobile }) => {
+    test.skip(!isMobile, 'phone width only');
+    await page.setViewportSize({ width, height: 640 });
+    for (const path of PAGES) {
+      await page.goto(path);
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+      expect(overflow, path).toBeLessThanOrEqual(0);
+    }
+  });
+}

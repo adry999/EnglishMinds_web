@@ -1,4 +1,5 @@
 ---
+import { TEST_DURATION_LABEL } from '@features/level-test';
 import Button from '@shared/ui/Button.astro';
 import EmaPortrait from '@shared/ui/EmaPortrait.astro';
 import Eyebrow from '@shared/ui/Eyebrow.astro';
@@ -6,13 +7,15 @@ import './TestTeaser.css';
 ---
 <section class="test-teaser" id="test" aria-labelledby="test-heading">
   <div class="test-teaser__inner">
-    <Eyebrow tone="white">Test de nivel · 3 minute</Eyebrow>
-    <h2 id="test-heading">Află ce grupă i se potrivește copilului tău</h2>
+    <div class="test-teaser__text">
+      <Eyebrow tone="white">Test de nivel · {TEST_DURATION_LABEL}</Eyebrow>
+      <h2 id="test-heading">Află ce grupă i se potrivește copilului tău</h2>
+      <Button variant="sun" class="test-teaser__cta" href="/test-de-nivel/">Fă testul de nivel</Button>
+      <p class="test-teaser__note">Testul complet, cu audio și diplomă la final.</p>
+    </div>
     <div class="test-teaser__ema">
-      <EmaPortrait size="sm" alt="Ema" />
+      <EmaPortrait size="md" alt="Ema" />
       <p class="test-teaser__bubble">Hai să vedem ce știi deja!</p>
     </div>
-    <Button variant="sun" class="test-teaser__cta" href="/test-de-nivel/">Începe testul</Button>
-    <p class="test-teaser__note">Testul complet, cu audio și diplomă la final.</p>
   </div>
 </section>

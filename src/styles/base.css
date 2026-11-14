@@ -103,3 +103,7 @@ a {
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+a[href^="tel:"] {
+  white-space: nowrap;
+}

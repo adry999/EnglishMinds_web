@@ -1,13 +1,14 @@
 .three-things {
   max-width: var(--container);
   margin-inline: auto;
-  padding: 64px var(--gutter);
+  padding: var(--space-section) var(--gutter);
 }
 
 .three-things h2 {
   margin: 0 0 32px;
-  font-size: clamp(2rem, 4vw, 3rem);
+  font-size: var(--text-h2);
   line-height: 1.1;
+  text-wrap: balance;
 }
 
 .three-things ul {
@@ -21,7 +22,7 @@
 
 .three-things__card {
   padding: 32px;
-  border-radius: 28px;
+  border-radius: var(--radius-card);
 }
 
 .three-things__number {
@@ -72,8 +73,3 @@
   color: var(--color-text-accent);
 }
 
-@media (min-width: 768px) {
-  .three-things {
-    padding-block: 88px;
-  }
-}

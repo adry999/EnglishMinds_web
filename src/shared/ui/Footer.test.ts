@@ -17,6 +17,19 @@ describe('Footer', () => {
     expect(html).toContain('+40 775 630 680');
   });
 
+  it('leads the call to action with the demo booking, then WhatsApp, then the phone as a plain link', async () => {
+    const html = await render();
+    const actions = html.match(/<div class="site-footer__actions">([\s\S]*?)<\/div>/)?.[1] ?? '';
+    const links = [...actions.matchAll(/<a ([^>]*)>([^<]*)<\/a>/g)].map((m) => [m[1], m[2]]);
+    expect(links).toHaveLength(3);
+    expect(links[0]?.[0]).toMatch(/class="button button--sun"[^>]*href="\/lectie-demo\/"/);
+    expect(links[0]?.[1]).toBe('Rezervă lecția demo gratuită');
+    expect(links[1]?.[0]).toMatch(/class="button button--whatsapp"[^>]*href="https:\/\/wa\.me\/40775630680"/);
+    expect(links[1]?.[1]).toBe('Scrie-ne pe WhatsApp');
+    expect(links[2]?.[0]).toBe('class="site-footer__phone" href="tel:+40775630680"');
+    expect(links[2]?.[1]).toBe('+40 775 630 680');
+  });
+
   it('shows the address and Instagram', async () => {
     const html = await render();
     expect(html).toContain('Str. Observatorului 90, et.2, Cluj-Napoca');

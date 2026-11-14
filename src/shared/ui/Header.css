@@ -168,12 +168,53 @@
 
 @media (max-width: 419.98px) {
   .site-header__inner {
-    gap: 8px;
+    gap: 8px 6px;
   }
 
   .site-header__cta {
-    padding: 10px 14px;
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-target);
+    padding: 8px 12px;
     font-size: 0.9375rem;
+  }
+
+  .site-header__toggle {
+    width: var(--touch-target);
+    height: var(--touch-target);
+  }
+}
+
+@media (max-width: 374.98px) {
+  .site-header__cta {
+    padding-inline: 10px;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 359.98px) {
+  .site-header__inner {
+    gap: 8px 4px;
+    padding-inline: 12px;
+  }
+
+  .site-header .logo__line {
+    font-size: 1.5rem;
+  }
+
+  .site-header .logo__star {
+    width: 18px;
+    height: 18px;
+  }
+
+  .site-header .logo__academy {
+    margin-left: 18px;
+    font-size: 0.75rem;
+  }
+
+  .site-header__cta {
+    padding-inline: 8px;
+    font-size: 0.8125rem;
   }
 }
 

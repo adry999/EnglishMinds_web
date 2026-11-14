@@ -5,12 +5,12 @@
 
 .tabere-hero__inner {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  grid-template-columns: 1fr;
   gap: 40px;
   align-items: center;
   max-width: var(--container);
   margin-inline: auto;
-  padding: 48px var(--gutter) 88px;
+  padding: 48px var(--gutter) calc(var(--space-section) + 8px);
 }
 
 .tabere-hero__text {
@@ -21,8 +21,9 @@
 }
 
 .tabere-hero h1 {
-  font-size: clamp(2.75rem, 6.5vw, 5rem);
-  line-height: 0.98;
+  font-size: var(--text-h1);
+  line-height: 1;
+  text-wrap: balance;
 }
 
 .tabere-hero p:not(.badge) {
@@ -53,4 +54,10 @@
   height: 100%;
   object-fit: cover;
   object-position: 50% 60%;
+}
+
+@media (min-width: 900px) {
+  .tabere-hero__inner {
+    grid-template-columns: 1.3fr 1fr;
+  }
 }

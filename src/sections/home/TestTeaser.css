@@ -1,5 +1,5 @@
 .test-teaser {
-  padding: 48px 0;
+  padding-block: var(--space-section);
   background: var(--color-orange);
   color: var(--color-white);
 }
@@ -14,16 +14,44 @@
   padding-inline: var(--gutter);
 }
 
+.test-teaser__text {
+  display: contents;
+}
+
+.test-teaser__text > .eyebrow {
+  order: 1;
+}
+
 .test-teaser h2 {
+  order: 2;
   max-width: 760px;
-  font-size: clamp(1.875rem, 5vw, 3.25rem);
+  font-size: var(--text-h2);
   line-height: 1;
+  text-wrap: balance;
 }
 
 .test-teaser__ema {
+  order: 3;
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.test-teaser__ema .ema-portrait {
+  --ema-size: 84px;
+  --ema-ring: 4px;
+  box-shadow: none;
+}
+
+.test-teaser__cta {
+  order: 4;
+}
+
+.test-teaser__note {
+  order: 5;
+  margin: 0;
+  font-size: var(--text-button);
+  font-weight: 700;
 }
 
 .test-teaser__bubble {
@@ -36,28 +64,65 @@
   font-weight: 800;
 }
 
-.test-teaser__note {
-  margin: 0;
-  font-size: var(--text-button);
-  font-weight: 700;
-}
-
 .test-teaser a:focus-visible {
   outline-color: var(--color-white);
+}
+
+@media (min-width: 768px) {
+  .test-teaser__ema {
+    gap: 20px;
+  }
+
+  .test-teaser__ema .ema-portrait {
+    --ema-size: 120px;
+    --ema-ring: 6px;
+  }
 }
 
 @media (min-width: 1100px) {
   .test-teaser {
     background: var(--gradient-hero);
   }
-}
 
-@media (min-width: 768px) {
-  .test-teaser {
-    padding-block: 96px;
+  .test-teaser__inner {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    align-items: center;
+    gap: 48px;
+  }
+
+  .test-teaser__text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+  }
+
+  .test-teaser .test-teaser__text > *,
+  .test-teaser__ema {
+    order: 0;
   }
 
   .test-teaser__ema {
-    gap: 20px;
+    position: relative;
+    justify-self: center;
+    padding-top: 28px;
+  }
+
+  .test-teaser__ema .ema-portrait {
+    --ema-size: 340px;
+    --ema-ring: 10px;
+    box-shadow: 0 20px 40px rgb(150 50 0 / 0.3);
+  }
+
+  .test-teaser__bubble {
+    position: absolute;
+    top: 0;
+    left: -48px;
+    padding: 16px 22px;
+    border-radius: 24px 24px 24px 4px;
+    font-size: 1.375rem;
+    box-shadow: 0 8px 18px rgb(0 0 0 / 0.15);
+    transform: rotate(-4deg);
   }
 }

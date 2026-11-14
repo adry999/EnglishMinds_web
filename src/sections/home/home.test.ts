@@ -16,11 +16,13 @@ describe('home sections', () => {
   it('hero has the single h1, the test link and the contact anchor', async () => {
     const html = await render(HomeHero);
     expect(html.match(/<h1/g)).toHaveLength(1);
-    expect(html).toContain('Engleză de la 5 ani, după metoda');
+    expect(html).toContain('Engleză de la <span class="home-hero__nowrap">5 ani</span>, după metoda');
     expect(html).toContain('href="/test-de-nivel/"');
     expect(html).toContain('href="#contact"');
     expect(html).toContain('Hei, eu sunt Ema!');
     expect(html).toContain('loading="eager"');
+    expect(html).toContain('Fă testul de nivel');
+    expect(html).toContain('Rezervă lecția demo gratuită');
   });
 
   it('offer strip shows label, headline and detail', async () => {
@@ -39,6 +41,12 @@ describe('home sections', () => {
     expect(html).toContain('id="cursuri"');
   });
 
+  it('levels overview has a separate eyebrow above the h2', async () => {
+    const html = await render(LevelsOverview);
+    expect(html).toMatch(/<p class="eyebrow eyebrow--accent"[^>]*>Grupele de vârstă<\/p>/);
+    expect(html).toMatch(/<h2 id="cursuri-heading"[^>]*>Structura cursurilor<\/h2>/);
+  });
+
   it('renders the three value cards in order', async () => {
     const html = await render(ValueCards);
     const order = ['Program structurat pe niveluri', 'Metodologie Cambridge', 'Rezultate vizibile după prima lună'];
@@ -52,6 +60,8 @@ describe('home sections', () => {
     expect(html).toContain('id="test"');
     expect(html).toContain('href="/test-de-nivel/"');
     expect(html).toContain('Află ce grupă i se potrivește copilului tău');
+    expect(html).toContain('Test de nivel · 5 minute');
+    expect(html).toContain('Fă testul de nivel');
   });
 
   it('contact section has phone, WhatsApp, maps link and a slot for the form', async () => {
@@ -62,11 +72,14 @@ describe('home sections', () => {
     expect(html).toContain('href="https://www.google.com/maps/search/?api=1&amp;query=');
     expect(html).toContain('<form id="viitor"></form>');
     expect(html).toContain('Lasă-ne un număr de telefon');
+    expect(html).toContain('Scrie-ne pe WhatsApp</a>');
+    expect(html).toContain('class="home-contact__or"');
   });
 
   it('contact section does not promise a phone form when no form is slotted', async () => {
     const html = await render(HomeContact);
     expect(html).not.toContain('Lasă-ne un număr de telefon');
     expect(html).toContain('Scrie-ne pe WhatsApp sau sună-ne și stabilim ziua și ora.');
+    expect(html).not.toContain('class="home-contact__or"');
   });
 });

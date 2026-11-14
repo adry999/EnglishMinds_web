@@ -10,6 +10,8 @@
   font-weight: 900;
   font-size: var(--text-button);
   line-height: 1.1;
+  text-align: center;
+  text-wrap: balance;
   text-decoration: none;
 }
 

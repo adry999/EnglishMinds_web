@@ -1,5 +1,5 @@
 .test-band {
-  padding: 48px 0;
+  padding: var(--space-section) 0;
   background: var(--color-sun);
   color: var(--color-navy);
 }
@@ -15,8 +15,9 @@
 }
 
 .test-band h2 {
-  font-size: 1.875rem;
+  font-size: var(--text-h2);
   font-weight: 900;
+  text-wrap: balance;
 }
 
 .test-band__cta:focus-visible {

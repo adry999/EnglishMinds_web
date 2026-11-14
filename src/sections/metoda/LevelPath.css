@@ -5,13 +5,14 @@
 .level-path__inner {
   max-width: var(--container);
   margin-inline: auto;
-  padding: 64px var(--gutter);
+  padding: var(--space-section) var(--gutter);
 }
 
 .level-path h2 {
   margin: 8px 0 32px;
-  font-size: clamp(2rem, 4vw, 3rem);
+  font-size: var(--text-h2);
   line-height: 1.1;
+  text-wrap: balance;
 }
 
 .level-path__steps {
@@ -72,12 +73,6 @@
   font-size: 1.0625rem;
   font-weight: 600;
   line-height: 1.55;
-}
-
-@media (min-width: 768px) {
-  .level-path__inner {
-    padding-block: 88px;
-  }
 }
 
 @media (min-width: 1100px) {

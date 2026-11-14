@@ -14,7 +14,9 @@
   --color-whatsapp: #25d366;
   --color-white: #fff;
 
-  --gradient-hero: linear-gradient(115deg, var(--color-orange) 0 55%, var(--color-orange-light) 100%);
+  --gradient-hero:
+    linear-gradient(to bottom, var(--color-orange) 0, rgb(236 100 35 / 0) 160px),
+    linear-gradient(115deg, var(--color-orange) 0 55%, var(--color-orange-light) 100%);
   --color-ema-bg: #ef8a2a;
   --color-photo-bg: #f3e3c8;
   --color-card-edge: var(--color-cream-border);
@@ -23,8 +25,15 @@
   --font-label: var(--font-barlow-condensed);
   --text-button: 1.1875rem;
 
+  --text-h1: clamp(2.5rem, 5.2vw, 4.25rem);
+  --text-h2: clamp(1.875rem, 4vw, 3rem);
+
+  --space-section: clamp(48px, 7vw, 80px);
+  --touch-target: 44px;
+
   --radius-pill: 999px;
   --radius-card: 24px;
+  --radius-panel: 32px;
 
   --container: 1200px;
   --gutter: 16px;

@@ -1,12 +1,13 @@
 .camp-summary {
   max-width: var(--container);
   margin-inline: auto;
-  padding: 64px var(--gutter);
+  padding: var(--space-section) var(--gutter);
 }
 
 .camp-summary h2 {
   margin: 0 0 28px;
-  font-size: clamp(2rem, 4vw, 3rem);
+  font-size: var(--text-h2);
+  text-wrap: balance;
 }
 
 .camp-summary dl {
@@ -36,4 +37,12 @@
   font-size: 1.375rem;
   font-weight: 900;
   overflow-wrap: anywhere;
+}
+
+.camp-summary dd .vat-note {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.35;
 }

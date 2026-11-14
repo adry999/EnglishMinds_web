@@ -34,8 +34,9 @@ const anpcPictogram = Object.values(
       <div class="site-footer__cta">
         <p class="site-footer__title">Rezervă lecția{' '}<span class="site-footer__highlight">demo gratuită</span></p>
         <div class="site-footer__actions">
-          <WhatsAppButton />
-          <Button href={`tel:${contact.phoneE164}`} variant="sun">{contact.phoneDisplay}</Button>
+          <Button href="/lectie-demo/" variant="sun">Rezervă lecția demo gratuită</Button>
+          <WhatsAppButton label="Scrie-ne pe WhatsApp" />
+          <a class="site-footer__phone" href={`tel:${contact.phoneE164}`}>{contact.phoneDisplay}</a>
         </div>
       </div>
     )}
@@ -51,6 +52,12 @@ const anpcPictogram = Object.values(
           </svg>
           <span>Urmărește-ne pe Instagram</span>
           <span class="visually-hidden">(se deschide într-un tab nou)</span>
+        </a>
+        <a class="site-footer__anpc" href={ANPC_SAL_URL} target="_blank" rel="noopener noreferrer">
+          {anpcPictogram
+            ? <img src={anpcPictogram.src} width="250" height="50" alt={ANPC_SAL_LABEL} />
+            : <span>{ANPC_SAL_LABEL}</span>}
+          <span class="visually-hidden"> (se deschide într-un tab nou)</span>
         </a>
       </div>
       <nav class="site-footer__col" aria-labelledby="footer-pages">
@@ -76,12 +83,6 @@ const anpcPictogram = Object.values(
         </address>
       </div>
     </div>
-    <a class="site-footer__anpc" href={ANPC_SAL_URL} target="_blank" rel="noopener noreferrer">
-      {anpcPictogram
-        ? <img src={anpcPictogram.src} width="250" height="50" alt={ANPC_SAL_LABEL} />
-        : <span>{ANPC_SAL_LABEL}</span>}
-      <span class="visually-hidden"> (se deschide într-un tab nou)</span>
-    </a>
     <div class="site-footer__bottom">
       <p class="site-footer__copy">© {year} {site.name}</p>
       <nav class="site-footer__legal" aria-label="Informații legale">
