@@ -72,6 +72,10 @@
   text-decoration: none;
 }
 
+.home-contact__whatsapp {
+  margin-top: 16px;
+}
+
 .home-contact__maps {
   color: var(--color-text-accent);
   font-weight: 800;

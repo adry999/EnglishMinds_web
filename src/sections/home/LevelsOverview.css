@@ -16,8 +16,7 @@
 }
 
 .levels-overview__eyebrow {
-  display: block;
-  margin-bottom: 12px;
+  margin: 0 0 12px;
 }
 
 .levels-overview__head p {

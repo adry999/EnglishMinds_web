@@ -1,7 +1,7 @@
 .value-cards {
   max-width: var(--container);
   margin-inline: auto;
-  padding: 0 var(--gutter) 48px;
+  padding: 48px var(--gutter);
 }
 
 .value-cards ul {
@@ -48,7 +48,7 @@
 
 @media (min-width: 768px) {
   .value-cards {
-    padding-bottom: 72px;
+    padding-block: 72px;
   }
 
   .value-card {
