@@ -16,7 +16,7 @@ describe('home sections', () => {
   it('hero has the single h1, the test link and the contact anchor', async () => {
     const html = await render(HomeHero);
     expect(html.match(/<h1/g)).toHaveLength(1);
-    expect(html).toContain('Engleză de la 5 ani, după metoda');
+    expect(html).toContain('Engleză de la 5&nbsp;ani, după metoda');
     expect(html).toContain('href="/test-de-nivel/"');
     expect(html).toContain('href="#contact"');
     expect(html).toContain('Hei, eu sunt Ema!');

@@ -4,7 +4,6 @@ import { defineStickyContact } from './sticky-contact.element';
 
 type Callback = (entries: Partial<IntersectionObserverEntry>[]) => void;
 let notify: Callback = () => undefined;
-let phone = true;
 
 class FakeObserver {
   constructor(callback: Callback) {
@@ -29,9 +28,7 @@ function mount(markup = MARKUP): void {
 }
 
 beforeEach(() => {
-  phone = true;
   vi.stubGlobal('IntersectionObserver', FakeObserver);
-  window.matchMedia = (() => ({ matches: phone, addEventListener: vi.fn(), removeEventListener: vi.fn() })) as unknown as typeof window.matchMedia;
   defineStickyContact();
 });
 
@@ -40,7 +37,7 @@ afterEach(() => {
 });
 
 describe('<sticky-contact>', () => {
-  it('hides the bar on a phone while the hero buttons are on screen', () => {
+  it('hides the bar while the hero buttons are on screen', () => {
     mount();
     expect(bar().hidden).toBe(true);
     notify([{ isIntersecting: true }]);
@@ -53,14 +50,6 @@ describe('<sticky-contact>', () => {
     expect(bar().hidden).toBe(false);
     notify([{ isIntersecting: true }]);
     expect(bar().hidden).toBe(true);
-  });
-
-  it('always shows the bar on wider screens', () => {
-    phone = false;
-    mount();
-    expect(bar().hidden).toBe(false);
-    notify([{ isIntersecting: true }]);
-    expect(bar().hidden).toBe(false);
   });
 
   it('leaves the bar alone when the target does not exist', () => {

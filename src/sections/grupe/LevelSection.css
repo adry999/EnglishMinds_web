@@ -33,6 +33,17 @@
   margin-top: 6px;
 }
 
+.level-section__test {
+  align-self: center;
+  color: var(--color-text-accent);
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.level-section__test:hover {
+  text-decoration: underline;
+}
+
 .level-section__photo {
   overflow: hidden;
   border: 6px solid var(--color-sun);
@@ -81,6 +92,8 @@
   .level-section__actions {
     flex-direction: row;
     flex-wrap: wrap;
+    align-items: center;
+    gap: 20px;
     width: auto;
   }
 }
@@ -89,6 +102,7 @@
   .level-section {
     grid-template-columns: 1.2fr 1fr;
     gap: 40px;
+    align-items: center;
     padding-block: 72px;
   }
 

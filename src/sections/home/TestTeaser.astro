@@ -3,16 +3,31 @@ import Button from '@shared/ui/Button.astro';
 import EmaPortrait from '@shared/ui/EmaPortrait.astro';
 import Eyebrow from '@shared/ui/Eyebrow.astro';
 import './TestTeaser.css';
+
+const steps = [
+  { title: 'Întrebări pe vârsta lui', text: 'Alegi vârsta, iar Ema îi dă exerciții potrivite.' },
+  { title: 'Exerciții audio', text: 'Copilul ascultă și alege ce a auzit.' },
+  { title: 'Grupa și diploma', text: 'La final vezi grupa recomandată și descarci diploma.' },
+];
 ---
 <section class="test-teaser" id="test" aria-labelledby="test-heading">
   <div class="test-teaser__inner">
-    <Eyebrow tone="white">Test de nivel · 3 minute</Eyebrow>
-    <h2 id="test-heading">Află ce grupă i se potrivește copilului tău</h2>
-    <div class="test-teaser__ema">
-      <EmaPortrait size="sm" alt="Ema" />
-      <p class="test-teaser__bubble">Hai să vedem ce știi deja!</p>
+    <div class="test-teaser__main">
+      <Eyebrow tone="white">Test de nivel · 3 minute</Eyebrow>
+      <h2 id="test-heading">Află ce grupă i se potrivește copilului tău</h2>
+      <div class="test-teaser__ema">
+        <EmaPortrait size="sm" alt="Ema" />
+        <p class="test-teaser__bubble">Hai să vedem ce știi deja!</p>
+      </div>
+      <Button variant="sun" class="test-teaser__cta" href="/test-de-nivel/">Începe testul</Button>
     </div>
-    <Button variant="sun" class="test-teaser__cta" href="/test-de-nivel/">Începe testul</Button>
-    <p class="test-teaser__note">Testul complet, cu audio și diplomă la final.</p>
+    <ol class="test-teaser__steps">
+      {steps.map((step) => (
+        <li>
+          <h3>{step.title}</h3>
+          <p>{step.text}</p>
+        </li>
+      ))}
+    </ol>
   </div>
 </section>

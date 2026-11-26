@@ -13,9 +13,6 @@ const { contact } = site;
         ? 'Lasă-ne un număr de telefon și te sunăm să stabilim ziua și ora.'
         : 'Scrie-ne pe WhatsApp sau sună-ne și stabilim ziua și ora.'}</p>
       <slot />
-      <div class="home-contact__actions">
-        <WhatsAppButton />
-      </div>
     </div>
     <div class="home-contact__card">
       <p class="home-contact__label">Adresă</p>
@@ -25,6 +22,9 @@ const { contact } = site;
       <a class="home-contact__phone" href={`tel:${contact.phoneE164}`}>{contact.phoneDisplay}</a>
       <p class="home-contact__label">Instagram</p>
       <a class="home-contact__value" href={contact.instagramUrl} target="_blank" rel="noopener noreferrer">{contact.instagramHandle}<span class="visually-hidden"> (se deschide într-un tab nou)</span></a>
+      <div class="home-contact__whatsapp">
+        <WhatsAppButton label="Scrie-ne pe WhatsApp" />
+      </div>
     </div>
   </div>
 </section>
